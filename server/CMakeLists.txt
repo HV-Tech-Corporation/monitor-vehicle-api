@@ -24,7 +24,7 @@ pkg_check_modules(GSTREAMER_APP REQUIRED gstreamer-app-1.0)
 link_directories(${GSTREAMER_LIBRARY_DIRS})
 
 # C++17 이상을 사용할 수 있도록 설정
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(ENV{TVM_LOG_DEBUG} 1)
 
@@ -35,7 +35,6 @@ include_directories(${GSTREAMER_INCLUDE_DIRS} ${GSTREAMER_APP_INCLUDE_DIRS})
 set(SOURCE_SERVER_DIR
     src/server.cpp
     src/response.cpp
-    
     src/hungarian.cpp
     src/kalman_filter.cpp
     src/munkres.cpp

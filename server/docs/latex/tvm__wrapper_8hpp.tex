@@ -1,0 +1,22 @@
+\doxysection{include/tvm\+\_\+wrapper.hpp File Reference}
+\hypertarget{tvm__wrapper_8hpp}{}\label{tvm__wrapper_8hpp}\index{include/tvm\_wrapper.hpp@{include/tvm\_wrapper.hpp}}
+{\ttfamily \#include $<$tvm/runtime/module.\+h$>$}\newline
+{\ttfamily \#include $<$tvm/runtime/packed\+\_\+func.\+h$>$}\newline
+{\ttfamily \#include $<$tvm/runtime/ndarray.\+h$>$}\newline
+{\ttfamily \#include $<$opencv4/opencv2/opencv.\+hpp$>$}\newline
+{\ttfamily \#include $<$thread$>$}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceapi}{api}}
+\item 
+namespace \mbox{\hyperlink{namespaceapi_1_1detection}{api\+::detection}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceapi_1_1detection_af3f8400426b114d2eaa679155a650b28}{api\+::detection\+::load\+\_\+model}} (const std\+::string \&model\+\_\+path, const std\+::string device="{}cpu"{})
+\item 
+void \mbox{\hyperlink{namespaceapi_1_1detection_a056dcd1d8f9bf5b4dddaf53f218b9bb8}{api\+::detection\+::detect}} (std\+::atomic$<$ bool $>$ \&start\+\_\+detection, std\+::atomic$<$ bool $>$ \&pause\+\_\+detection, std\+::mutex \&frame\+\_\+mutex, std\+::condition\+\_\+variable \&detection\+\_\+cv, cv\+::\+Mat \&shared\+\_\+frame)
+\end{DoxyCompactItemize}

@@ -1,0 +1,93 @@
+\doxysection{Object\+Tracker Class Reference}
+\hypertarget{class_object_tracker}{}\label{class_object_tracker}\index{ObjectTracker@{ObjectTracker}}
+
+
+{\ttfamily \#include $<$tracker.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_object_tracker_adb4db35c2a82ae90cbdaa266cac5c775}{Object\+Tracker}} ()
+\item 
+\mbox{\hyperlink{class_object_tracker_a48d45fe0c7e4e0b4b9b50fcd3d215886}{\texorpdfstring{$\sim$}{\string~}\+Object\+Tracker}} ()=default
+\item 
+void \mbox{\hyperlink{class_object_tracker_a8e5ac84d5acd1e902861606a58be78c8}{Run}} (const std\+::vector$<$ cv\+::\+Rect $>$ \&detections)
+\item 
+std\+::map$<$ int, \mbox{\hyperlink{class_track}{Track}} $>$ \mbox{\hyperlink{class_object_tracker_ae8037ad89ce4559f632d9b3fb13c92cd}{Get\+Tracks}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static float \mbox{\hyperlink{class_object_tracker_abeabfdab4c40c9b59dc0696e0f0b565f}{Calculate\+Iou}} (const cv\+::\+Rect \&det, const \mbox{\hyperlink{class_track}{Track}} \&track)
+\item 
+static void \mbox{\hyperlink{class_object_tracker_a9d67bb3a88d79631f1e37deaa3284db2}{Hungarian\+Matching}} (const std\+::vector$<$ std\+::vector$<$ float $>$ $>$ \&iou\+\_\+matrix, size\+\_\+t nrows, size\+\_\+t ncols, std\+::vector$<$ std\+::vector$<$ float $>$ $>$ \&association)
+\item 
+static void \mbox{\hyperlink{class_object_tracker_a9097ab1d9ebfa7badbedd59f290fdba2}{Associate\+Detections\+To\+Trackers}} (const std\+::vector$<$ cv\+::\+Rect $>$ \&detection, std\+::map$<$ int, \mbox{\hyperlink{class_track}{Track}} $>$ \&tracks, std\+::map$<$ int, cv\+::\+Rect $>$ \&matched, std\+::vector$<$ cv\+::\+Rect $>$ \&unmatched\+\_\+det, float iou\+\_\+threshold=0.\+3)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_object_tracker_adb4db35c2a82ae90cbdaa266cac5c775}\index{ObjectTracker@{ObjectTracker}!ObjectTracker@{ObjectTracker}}
+\index{ObjectTracker@{ObjectTracker}!ObjectTracker@{ObjectTracker}}
+\doxysubsubsection{\texorpdfstring{ObjectTracker()}{ObjectTracker()}}
+{\footnotesize\ttfamily \label{class_object_tracker_adb4db35c2a82ae90cbdaa266cac5c775} 
+Object\+Tracker\+::\+Object\+Tracker (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_object_tracker_a48d45fe0c7e4e0b4b9b50fcd3d215886}\index{ObjectTracker@{ObjectTracker}!````~ObjectTracker@{\texorpdfstring{$\sim$}{\string~}ObjectTracker}}
+\index{````~ObjectTracker@{\texorpdfstring{$\sim$}{\string~}ObjectTracker}!ObjectTracker@{ObjectTracker}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}ObjectTracker()}{\string~ObjectTracker()}}
+{\footnotesize\ttfamily \label{class_object_tracker_a48d45fe0c7e4e0b4b9b50fcd3d215886} 
+Object\+Tracker\+::\texorpdfstring{$\sim$}{\string~}\+Object\+Tracker (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_object_tracker_a9097ab1d9ebfa7badbedd59f290fdba2}\index{ObjectTracker@{ObjectTracker}!AssociateDetectionsToTrackers@{AssociateDetectionsToTrackers}}
+\index{AssociateDetectionsToTrackers@{AssociateDetectionsToTrackers}!ObjectTracker@{ObjectTracker}}
+\doxysubsubsection{\texorpdfstring{AssociateDetectionsToTrackers()}{AssociateDetectionsToTrackers()}}
+{\footnotesize\ttfamily \label{class_object_tracker_a9097ab1d9ebfa7badbedd59f290fdba2} 
+void Object\+Tracker\+::\+Associate\+Detections\+To\+Trackers (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Rect $>$ \&}]{detection}{, }\item[{std\+::map$<$ int, \mbox{\hyperlink{class_track}{Track}} $>$ \&}]{tracks}{, }\item[{std\+::map$<$ int, cv\+::\+Rect $>$ \&}]{matched}{, }\item[{std\+::vector$<$ cv\+::\+Rect $>$ \&}]{unmatched\+\_\+det}{, }\item[{float}]{iou\+\_\+threshold}{ = {\ttfamily 0.3}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Assigns detections to tracked object (both represented as bounding boxes) Returns 2 lists of matches, unmatched\+\_\+detections 
+\begin{DoxyParams}{Parameters}
+{\em detection} & \\
+\hline
+{\em tracks} & \\
+\hline
+{\em matched} & \\
+\hline
+{\em unmatched\+\_\+det} & \\
+\hline
+{\em iou\+\_\+threshold} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_object_tracker_abeabfdab4c40c9b59dc0696e0f0b565f}\index{ObjectTracker@{ObjectTracker}!CalculateIou@{CalculateIou}}
+\index{CalculateIou@{CalculateIou}!ObjectTracker@{ObjectTracker}}
+\doxysubsubsection{\texorpdfstring{CalculateIou()}{CalculateIou()}}
+{\footnotesize\ttfamily \label{class_object_tracker_abeabfdab4c40c9b59dc0696e0f0b565f} 
+float Object\+Tracker\+::\+Calculate\+Iou (\begin{DoxyParamCaption}\item[{const cv\+::\+Rect \&}]{det}{, }\item[{const \mbox{\hyperlink{class_track}{Track}} \&}]{track}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_object_tracker_ae8037ad89ce4559f632d9b3fb13c92cd}\index{ObjectTracker@{ObjectTracker}!GetTracks@{GetTracks}}
+\index{GetTracks@{GetTracks}!ObjectTracker@{ObjectTracker}}
+\doxysubsubsection{\texorpdfstring{GetTracks()}{GetTracks()}}
+{\footnotesize\ttfamily \label{class_object_tracker_ae8037ad89ce4559f632d9b3fb13c92cd} 
+std\+::map$<$ int, \mbox{\hyperlink{class_track}{Track}} $>$ Object\+Tracker\+::\+Get\+Tracks (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_object_tracker_a9d67bb3a88d79631f1e37deaa3284db2}\index{ObjectTracker@{ObjectTracker}!HungarianMatching@{HungarianMatching}}
+\index{HungarianMatching@{HungarianMatching}!ObjectTracker@{ObjectTracker}}
+\doxysubsubsection{\texorpdfstring{HungarianMatching()}{HungarianMatching()}}
+{\footnotesize\ttfamily \label{class_object_tracker_a9d67bb3a88d79631f1e37deaa3284db2} 
+void Object\+Tracker\+::\+Hungarian\+Matching (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::vector$<$ float $>$ $>$ \&}]{iou\+\_\+matrix}{, }\item[{size\+\_\+t}]{nrows}{, }\item[{size\+\_\+t}]{ncols}{, }\item[{std\+::vector$<$ std\+::vector$<$ float $>$ $>$ \&}]{association}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_object_tracker_a8e5ac84d5acd1e902861606a58be78c8}\index{ObjectTracker@{ObjectTracker}!Run@{Run}}
+\index{Run@{Run}!ObjectTracker@{ObjectTracker}}
+\doxysubsubsection{\texorpdfstring{Run()}{Run()}}
+{\footnotesize\ttfamily \label{class_object_tracker_a8e5ac84d5acd1e902861606a58be78c8} 
+void Object\+Tracker\+::\+Run (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Rect $>$ \&}]{detections}{}\end{DoxyParamCaption})}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{tracker_8hpp}{tracker.\+hpp}}\item 
+src/\mbox{\hyperlink{tracker_8cpp}{tracker.\+cpp}}\end{DoxyCompactItemize}

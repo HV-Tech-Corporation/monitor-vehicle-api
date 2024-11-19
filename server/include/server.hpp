@@ -1,3 +1,16 @@
+/**
+ * @file server.hpp
+ * @brief Handles client connections and responses for video streaming and detection requests.
+ * 
+ * This file contains functions that handle various client requests for video streaming
+ * and vehicle detection.
+ * 
+ * Supported endpoints:
+ * - /start_stream : Start video streaming.
+ * - /resume_stream : Resume video streaming.
+ * - /pause_stream : Pause video streaming.
+ * - /start_detection : Start vehicle detection in the video.
+ */
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
@@ -12,8 +25,23 @@
 #include "response.hpp" // 응답 관리를 위한 response.hpp
 #include "tvm_wrapper.hpp"
 
+
+/**
+ * @class server::rtp::app
+ * @brief Handles video streaming and detection requests.
+ *
+ * This class provides functions to handle various client requests, including starting, pausing,
+ * and resuming video streaming, as well as starting vehicle detection.
+ */
 namespace server {
     namespace rtp {
+        /**
+         * @class app
+         * @brief Handles video streaming and detection requests.
+         *
+         * This class provides functions to handle various client requests, including starting, pausing,
+         * and resuming video streaming, as well as starting vehicle detection.
+         */
         struct app {
             uint16_t port_num = 5004;
 
@@ -21,7 +49,17 @@ namespace server {
                 port_num = p;
                 return *this;
             }
-            // 클라이언트 요청을 처리하는 함수
+            /**
+             * @brief Handles client connections and provides responses for each request.
+             * 
+             * Supported endpoints:
+             * - /start_stream : Start video streaming.
+             * - /resume_stream : Resume video streaming.
+             * - /pause_stream : Pause video streaming.
+             * - /start_detection : Start vehicle detection in the video.
+             * 
+             * @param socket The client socket connection.
+             */
             void handle_streaming_request(boost::asio::ip::tcp::socket& socket);
             // GStreamer 파이프라인
             std::string get_gstream_pipeline() const;
@@ -42,6 +80,9 @@ namespace server {
         extern std::condition_variable detection_cv;
         extern std::mutex frame_mutex;
         extern cv::Mat shared_frame;
+
+        
+
 
         
     } // namespace rtp

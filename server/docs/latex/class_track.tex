@@ -1,0 +1,118 @@
+\doxysection{Track Class Reference}
+\hypertarget{class_track}{}\label{class_track}\index{Track@{Track}}
+
+
+{\ttfamily \#include $<$track.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_track_a11457bcda8be04595018c11173d8241c}{Track}} ()
+\item 
+\mbox{\hyperlink{class_track_a45d31a87679b4c25394cf2c033efe433}{\texorpdfstring{$\sim$}{\string~}\+Track}} ()=default
+\item 
+void \mbox{\hyperlink{class_track_a4b6013f63206395494c8f72d48303cd8}{Init}} (const cv\+::\+Rect \&bbox)
+\item 
+void \mbox{\hyperlink{class_track_ae7ddcfd82a2526e882cc29004dde7da1}{Predict}} ()
+\item 
+void \mbox{\hyperlink{class_track_a3b36a2558d4aa54ce543049664f71515}{Update}} (const cv\+::\+Rect \&bbox)
+\item 
+cv\+::\+Rect \mbox{\hyperlink{class_track_abc743ffbd527364b383be2e90ccdb0b5}{Get\+State\+As\+Bbox}} () const
+\item 
+std\+::pair$<$ cv\+::\+Point, cv\+::\+Point $>$ \mbox{\hyperlink{class_track_a0d66e84a53f3e22e6dae26321c4cd60d}{Get\+State\+As\+Line}} () const
+\item 
+cv\+::\+Point \mbox{\hyperlink{class_track_ac02459f56e35156b06abde00afc45ce2}{Get\+Predicted\+Point}} () const
+\item 
+float \mbox{\hyperlink{class_track_a118dc15b4634bf8afb867b1267d00a10}{Get\+NIS}} () const
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{class_track_a0a343d99fbe33fe22be5888f1a2f8b2d}{coast\+\_\+cycles\+\_\+}} = 0
+\item 
+int \mbox{\hyperlink{class_track_ad222d2d10c706e419812ff01c1ec30bd}{hit\+\_\+streak\+\_\+}} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_track_a11457bcda8be04595018c11173d8241c}\index{Track@{Track}!Track@{Track}}
+\index{Track@{Track}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{Track()}{Track()}}
+{\footnotesize\ttfamily \label{class_track_a11457bcda8be04595018c11173d8241c} 
+Track\+::\+Track (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_track_a45d31a87679b4c25394cf2c033efe433}\index{Track@{Track}!````~Track@{\texorpdfstring{$\sim$}{\string~}Track}}
+\index{````~Track@{\texorpdfstring{$\sim$}{\string~}Track}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}Track()}{\string~Track()}}
+{\footnotesize\ttfamily \label{class_track_a45d31a87679b4c25394cf2c033efe433} 
+Track\+::\texorpdfstring{$\sim$}{\string~}\+Track (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_track_a118dc15b4634bf8afb867b1267d00a10}\index{Track@{Track}!GetNIS@{GetNIS}}
+\index{GetNIS@{GetNIS}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{GetNIS()}{GetNIS()}}
+{\footnotesize\ttfamily \label{class_track_a118dc15b4634bf8afb867b1267d00a10} 
+float Track\+::\+Get\+NIS (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_track_ac02459f56e35156b06abde00afc45ce2}\index{Track@{Track}!GetPredictedPoint@{GetPredictedPoint}}
+\index{GetPredictedPoint@{GetPredictedPoint}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{GetPredictedPoint()}{GetPredictedPoint()}}
+{\footnotesize\ttfamily \label{class_track_ac02459f56e35156b06abde00afc45ce2} 
+cv\+::\+Point Track\+::\+Get\+Predicted\+Point (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_track_abc743ffbd527364b383be2e90ccdb0b5}\index{Track@{Track}!GetStateAsBbox@{GetStateAsBbox}}
+\index{GetStateAsBbox@{GetStateAsBbox}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{GetStateAsBbox()}{GetStateAsBbox()}}
+{\footnotesize\ttfamily \label{class_track_abc743ffbd527364b383be2e90ccdb0b5} 
+cv\+::\+Rect Track\+::\+Get\+State\+As\+Bbox (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+Returns the current bounding box estimate \begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+\Hypertarget{class_track_a0d66e84a53f3e22e6dae26321c4cd60d}\index{Track@{Track}!GetStateAsLine@{GetStateAsLine}}
+\index{GetStateAsLine@{GetStateAsLine}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{GetStateAsLine()}{GetStateAsLine()}}
+{\footnotesize\ttfamily \label{class_track_a0d66e84a53f3e22e6dae26321c4cd60d} 
+std\+::pair$<$ cv\+::\+Point, cv\+::\+Point $>$ Track\+::\+Get\+State\+As\+Line (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_track_a4b6013f63206395494c8f72d48303cd8}\index{Track@{Track}!Init@{Init}}
+\index{Init@{Init}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{Init()}{Init()}}
+{\footnotesize\ttfamily \label{class_track_a4b6013f63206395494c8f72d48303cd8} 
+void Track\+::\+Init (\begin{DoxyParamCaption}\item[{const cv\+::\+Rect \&}]{bbox}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_track_ae7ddcfd82a2526e882cc29004dde7da1}\index{Track@{Track}!Predict@{Predict}}
+\index{Predict@{Predict}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{Predict()}{Predict()}}
+{\footnotesize\ttfamily \label{class_track_ae7ddcfd82a2526e882cc29004dde7da1} 
+void Track\+::\+Predict (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{class_track_a3b36a2558d4aa54ce543049664f71515}\index{Track@{Track}!Update@{Update}}
+\index{Update@{Update}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_track_a3b36a2558d4aa54ce543049664f71515} 
+void Track\+::\+Update (\begin{DoxyParamCaption}\item[{const cv\+::\+Rect \&}]{bbox}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_track_a0a343d99fbe33fe22be5888f1a2f8b2d}\index{Track@{Track}!coast\_cycles\_@{coast\_cycles\_}}
+\index{coast\_cycles\_@{coast\_cycles\_}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{coast\_cycles\_}{coast\_cycles\_}}
+{\footnotesize\ttfamily \label{class_track_a0a343d99fbe33fe22be5888f1a2f8b2d} 
+int Track\+::coast\+\_\+cycles\+\_\+ = 0}
+
+\Hypertarget{class_track_ad222d2d10c706e419812ff01c1ec30bd}\index{Track@{Track}!hit\_streak\_@{hit\_streak\_}}
+\index{hit\_streak\_@{hit\_streak\_}!Track@{Track}}
+\doxysubsubsection{\texorpdfstring{hit\_streak\_}{hit\_streak\_}}
+{\footnotesize\ttfamily \label{class_track_ad222d2d10c706e419812ff01c1ec30bd} 
+int Track\+::hit\+\_\+streak\+\_\+ = 0}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{track_8hpp}{track.\+hpp}}\item 
+src/\mbox{\hyperlink{track_8cpp}{track.\+cpp}}\end{DoxyCompactItemize}

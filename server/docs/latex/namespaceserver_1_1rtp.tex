@@ -1,0 +1,179 @@
+\doxysection{server\+::rtp Namespace Reference}
+\hypertarget{namespaceserver_1_1rtp}{}\label{namespaceserver_1_1rtp}\index{server::rtp@{server::rtp}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{structserver_1_1rtp_1_1app}{app}}
+\begin{DoxyCompactList}\small\item\em Handles video streaming and detection requests. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_a8f0e9c488d00884aa5cd45d606984096}{pause\+\_\+streaming}} (false)
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_a232d1d55b60a2d8032c40d04b05de188}{rewind\+\_\+streaming}} (false)
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_ae6a398297df01aedef7e1c3149e2a64a}{start\+\_\+detection}} (false)
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_ae128600472be2eed4df3e1bbe151f421}{pause\+\_\+detection}} (false)
+\item 
+void \mbox{\hyperlink{namespaceserver_1_1rtp_a93b3400c2f526a4a49fa17a0929d3064}{start\+\_\+server}} (uint16\+\_\+t port)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{namespaceserver_1_1rtp_af2ac153bfeb2391cc764d2e0d7ebe83f}{client\+\_\+ip}}
+\item 
+std\+::condition\+\_\+variable \mbox{\hyperlink{namespaceserver_1_1rtp_aabbbe34584d774f77f6cb76ae16c56ef}{detection\+\_\+cv}}
+\item 
+std\+::mutex \mbox{\hyperlink{namespaceserver_1_1rtp_adc563692790db9ad0566f21cf6ce387e}{frame\+\_\+mutex}}
+\item 
+cv\+::\+Mat \mbox{\hyperlink{namespaceserver_1_1rtp_a0e27acd7ff3301623d6a356c251a225e}{shared\+\_\+frame}}
+\item 
+tvm\+::runtime\+::\+Module \mbox{\hyperlink{namespaceserver_1_1rtp_a2be001c689064247a9f0a9846796c79d}{loaded\+\_\+lib}}
+\item 
+tvm\+::runtime\+::\+Module \mbox{\hyperlink{namespaceserver_1_1rtp_a875197123c6c66947dc828ecf5c1b5c5}{mod}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceserver_1_1rtp_a545085a36150440fb0139ce1d3383cad}{set\+\_\+input}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceserver_1_1rtp_a2e3cb9cdd5275c606a367c0ca699bc56}{run}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceserver_1_1rtp_aa05f2270ca86b82b60d8be0a625cde8d}{get\+\_\+output}}
+\item 
+DLDevice \mbox{\hyperlink{namespaceserver_1_1rtp_a56015619368abb43f35b08faa4437cdb}{dev}}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1rtp_af6f4da23ff8c19580fc2e309d773b737}{video\+\_\+path}} = "{}/Users/gyujinkim/Desktop/Github/monitor-\/vehicle-\/api/server/traffic\+\_\+jam2.\+mp4"{}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_af1d79d8897ac606556f4019c6142e23d}{pause\+\_\+streaming}}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_afbd21d26c680a2b3cf549e82b80d6562}{rewind\+\_\+streaming}}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_a9195f8a7e1a9ef5b13a43c8d22ee482a}{start\+\_\+detection}}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_a15638ba7e40291d9f45ec5fbd805eae2}{pause\+\_\+detection}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceserver_1_1rtp_ae128600472be2eed4df3e1bbe151f421}\index{server::rtp@{server::rtp}!pause\_detection@{pause\_detection}}
+\index{pause\_detection@{pause\_detection}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{pause\_detection()}{pause\_detection()}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_ae128600472be2eed4df3e1bbe151f421} 
+std\+::atomic$<$ bool $>$ server\+::rtp\+::pause\+\_\+detection (\begin{DoxyParamCaption}\item[{false}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceserver_1_1rtp_a8f0e9c488d00884aa5cd45d606984096}\index{server::rtp@{server::rtp}!pause\_streaming@{pause\_streaming}}
+\index{pause\_streaming@{pause\_streaming}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{pause\_streaming()}{pause\_streaming()}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a8f0e9c488d00884aa5cd45d606984096} 
+std\+::atomic$<$ bool $>$ server\+::rtp\+::pause\+\_\+streaming (\begin{DoxyParamCaption}\item[{false}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceserver_1_1rtp_a232d1d55b60a2d8032c40d04b05de188}\index{server::rtp@{server::rtp}!rewind\_streaming@{rewind\_streaming}}
+\index{rewind\_streaming@{rewind\_streaming}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{rewind\_streaming()}{rewind\_streaming()}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a232d1d55b60a2d8032c40d04b05de188} 
+std\+::atomic$<$ bool $>$ server\+::rtp\+::rewind\+\_\+streaming (\begin{DoxyParamCaption}\item[{false}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceserver_1_1rtp_ae6a398297df01aedef7e1c3149e2a64a}\index{server::rtp@{server::rtp}!start\_detection@{start\_detection}}
+\index{start\_detection@{start\_detection}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{start\_detection()}{start\_detection()}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_ae6a398297df01aedef7e1c3149e2a64a} 
+std\+::atomic$<$ bool $>$ server\+::rtp\+::start\+\_\+detection (\begin{DoxyParamCaption}\item[{false}]{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceserver_1_1rtp_a93b3400c2f526a4a49fa17a0929d3064}\index{server::rtp@{server::rtp}!start\_server@{start\_server}}
+\index{start\_server@{start\_server}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{start\_server()}{start\_server()}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a93b3400c2f526a4a49fa17a0929d3064} 
+void server\+::rtp\+::start\+\_\+server (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{port}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespaceserver_1_1rtp_af2ac153bfeb2391cc764d2e0d7ebe83f}\index{server::rtp@{server::rtp}!client\_ip@{client\_ip}}
+\index{client\_ip@{client\_ip}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{client\_ip}{client\_ip}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_af2ac153bfeb2391cc764d2e0d7ebe83f} 
+std\+::string server\+::rtp\+::client\+\_\+ip}
+
+\Hypertarget{namespaceserver_1_1rtp_aabbbe34584d774f77f6cb76ae16c56ef}\index{server::rtp@{server::rtp}!detection\_cv@{detection\_cv}}
+\index{detection\_cv@{detection\_cv}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{detection\_cv}{detection\_cv}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_aabbbe34584d774f77f6cb76ae16c56ef} 
+std\+::condition\+\_\+variable server\+::rtp\+::detection\+\_\+cv}
+
+\Hypertarget{namespaceserver_1_1rtp_a56015619368abb43f35b08faa4437cdb}\index{server::rtp@{server::rtp}!dev@{dev}}
+\index{dev@{dev}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{dev}{dev}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a56015619368abb43f35b08faa4437cdb} 
+DLDevice server\+::rtp\+::dev}
+
+\Hypertarget{namespaceserver_1_1rtp_adc563692790db9ad0566f21cf6ce387e}\index{server::rtp@{server::rtp}!frame\_mutex@{frame\_mutex}}
+\index{frame\_mutex@{frame\_mutex}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{frame\_mutex}{frame\_mutex}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_adc563692790db9ad0566f21cf6ce387e} 
+std\+::mutex server\+::rtp\+::frame\+\_\+mutex}
+
+\Hypertarget{namespaceserver_1_1rtp_aa05f2270ca86b82b60d8be0a625cde8d}\index{server::rtp@{server::rtp}!get\_output@{get\_output}}
+\index{get\_output@{get\_output}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{get\_output}{get\_output}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_aa05f2270ca86b82b60d8be0a625cde8d} 
+tvm\+::runtime\+::\+Packed\+Func server\+::rtp\+::get\+\_\+output}
+
+\Hypertarget{namespaceserver_1_1rtp_a2be001c689064247a9f0a9846796c79d}\index{server::rtp@{server::rtp}!loaded\_lib@{loaded\_lib}}
+\index{loaded\_lib@{loaded\_lib}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{loaded\_lib}{loaded\_lib}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a2be001c689064247a9f0a9846796c79d} 
+tvm\+::runtime\+::\+Module server\+::rtp\+::loaded\+\_\+lib}
+
+\Hypertarget{namespaceserver_1_1rtp_a875197123c6c66947dc828ecf5c1b5c5}\index{server::rtp@{server::rtp}!mod@{mod}}
+\index{mod@{mod}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{mod}{mod}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a875197123c6c66947dc828ecf5c1b5c5} 
+tvm\+::runtime\+::\+Module server\+::rtp\+::mod}
+
+\Hypertarget{namespaceserver_1_1rtp_a15638ba7e40291d9f45ec5fbd805eae2}\index{server::rtp@{server::rtp}!pause\_detection@{pause\_detection}}
+\index{pause\_detection@{pause\_detection}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{pause\_detection}{pause\_detection}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a15638ba7e40291d9f45ec5fbd805eae2} 
+std\+::atomic$<$bool$>$ server\+::rtp\+::pause\+\_\+detection\hspace{0.3cm}{\ttfamily [extern]}}
+
+\Hypertarget{namespaceserver_1_1rtp_af1d79d8897ac606556f4019c6142e23d}\index{server::rtp@{server::rtp}!pause\_streaming@{pause\_streaming}}
+\index{pause\_streaming@{pause\_streaming}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{pause\_streaming}{pause\_streaming}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_af1d79d8897ac606556f4019c6142e23d} 
+std\+::atomic$<$bool$>$ server\+::rtp\+::pause\+\_\+streaming\hspace{0.3cm}{\ttfamily [extern]}}
+
+\Hypertarget{namespaceserver_1_1rtp_afbd21d26c680a2b3cf549e82b80d6562}\index{server::rtp@{server::rtp}!rewind\_streaming@{rewind\_streaming}}
+\index{rewind\_streaming@{rewind\_streaming}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{rewind\_streaming}{rewind\_streaming}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_afbd21d26c680a2b3cf549e82b80d6562} 
+std\+::atomic$<$bool$>$ server\+::rtp\+::rewind\+\_\+streaming\hspace{0.3cm}{\ttfamily [extern]}}
+
+\Hypertarget{namespaceserver_1_1rtp_a2e3cb9cdd5275c606a367c0ca699bc56}\index{server::rtp@{server::rtp}!run@{run}}
+\index{run@{run}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{run}{run}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a2e3cb9cdd5275c606a367c0ca699bc56} 
+tvm\+::runtime\+::\+Packed\+Func server\+::rtp\+::run}
+
+\Hypertarget{namespaceserver_1_1rtp_a545085a36150440fb0139ce1d3383cad}\index{server::rtp@{server::rtp}!set\_input@{set\_input}}
+\index{set\_input@{set\_input}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{set\_input}{set\_input}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a545085a36150440fb0139ce1d3383cad} 
+tvm\+::runtime\+::\+Packed\+Func server\+::rtp\+::set\+\_\+input}
+
+\Hypertarget{namespaceserver_1_1rtp_a0e27acd7ff3301623d6a356c251a225e}\index{server::rtp@{server::rtp}!shared\_frame@{shared\_frame}}
+\index{shared\_frame@{shared\_frame}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{shared\_frame}{shared\_frame}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a0e27acd7ff3301623d6a356c251a225e} 
+cv\+::\+Mat server\+::rtp\+::shared\+\_\+frame}
+
+\Hypertarget{namespaceserver_1_1rtp_a9195f8a7e1a9ef5b13a43c8d22ee482a}\index{server::rtp@{server::rtp}!start\_detection@{start\_detection}}
+\index{start\_detection@{start\_detection}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{start\_detection}{start\_detection}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_a9195f8a7e1a9ef5b13a43c8d22ee482a} 
+std\+::atomic$<$bool$>$ server\+::rtp\+::start\+\_\+detection\hspace{0.3cm}{\ttfamily [extern]}}
+
+\Hypertarget{namespaceserver_1_1rtp_af6f4da23ff8c19580fc2e309d773b737}\index{server::rtp@{server::rtp}!video\_path@{video\_path}}
+\index{video\_path@{video\_path}!server::rtp@{server::rtp}}
+\doxysubsubsection{\texorpdfstring{video\_path}{video\_path}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1rtp_af6f4da23ff8c19580fc2e309d773b737} 
+const std\+::string server\+::rtp\+::video\+\_\+path = "{}/Users/gyujinkim/Desktop/Github/monitor-\/vehicle-\/api/server/traffic\+\_\+jam2.\+mp4"{}}
+

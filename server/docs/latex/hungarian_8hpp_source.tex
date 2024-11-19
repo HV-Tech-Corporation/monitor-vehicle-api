@@ -1,0 +1,30 @@
+\doxysection{hungarian.\+hpp}
+\hypertarget{hungarian_8hpp_source}{}\label{hungarian_8hpp_source}\index{include/hungarian.hpp@{include/hungarian.hpp}}
+\mbox{\hyperlink{hungarian_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ HUNGARIAN\_H}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ HUNGARIAN\_H}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <limits>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_hungarian_algorithm}{HungarianAlgorithm}}\ \{}
+\DoxyCodeLine{00010\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{double}\ \mbox{\hyperlink{class_hungarian_algorithm_a2696b848cb9f7c3e85d4551f032aeec3}{Solve}}(\textcolor{keyword}{const}\ std::vector<std::vector<double>>\&\ costMatrix,\ std::vector<int>\&\ assignment);}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ assignmentoptimal(\textcolor{keywordtype}{int}\ *assignment,\ \textcolor{keywordtype}{double}\ *cost,\ \textcolor{keywordtype}{double}\ *distMatrix,\ \textcolor{keywordtype}{int}\ nOfRows,\ \textcolor{keywordtype}{int}\ nOfColumns);}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ buildassignmentvector(\textcolor{keywordtype}{int}\ *assignment,\ \textcolor{keywordtype}{bool}\ *starMatrix,\ \textcolor{keywordtype}{int}\ nOfRows,\ \textcolor{keywordtype}{int}\ nOfColumns);}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ step2a(\textcolor{keywordtype}{int}\ *assignment,\ \textcolor{keywordtype}{double}\ *distMatrix,\ \textcolor{keywordtype}{bool}\ *starMatrix,\ \textcolor{keywordtype}{bool}\ *newStarMatrix,\ \textcolor{keywordtype}{bool}\ *primeMatrix,\ \textcolor{keywordtype}{bool}\ *coveredColumns,\ \textcolor{keywordtype}{bool}\ *coveredRows,\ \textcolor{keywordtype}{int}\ nOfRows,\ \textcolor{keywordtype}{int}\ nOfColumns,\ \textcolor{keywordtype}{int}\ minDim);}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ step2b(\textcolor{keywordtype}{int}\ *assignment,\ \textcolor{keywordtype}{double}\ *distMatrix,\ \textcolor{keywordtype}{bool}\ *starMatrix,\ \textcolor{keywordtype}{bool}\ *newStarMatrix,\ \textcolor{keywordtype}{bool}\ *primeMatrix,\ \textcolor{keywordtype}{bool}\ *coveredColumns,\ \textcolor{keywordtype}{bool}\ *coveredRows,\ \textcolor{keywordtype}{int}\ nOfRows,\ \textcolor{keywordtype}{int}\ nOfColumns,\ \textcolor{keywordtype}{int}\ minDim);}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ step3(\textcolor{keywordtype}{int}\ *assignment,\ \textcolor{keywordtype}{double}\ *distMatrix,\ \textcolor{keywordtype}{bool}\ *starMatrix,\ \textcolor{keywordtype}{bool}\ *newStarMatrix,\ \textcolor{keywordtype}{bool}\ *primeMatrix,\ \textcolor{keywordtype}{bool}\ *coveredColumns,\ \textcolor{keywordtype}{bool}\ *coveredRows,\ \textcolor{keywordtype}{int}\ nOfRows,\ \textcolor{keywordtype}{int}\ nOfColumns,\ \textcolor{keywordtype}{int}\ minDim);}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ step4(\textcolor{keywordtype}{int}\ *assignment,\ \textcolor{keywordtype}{double}\ *distMatrix,\ \textcolor{keywordtype}{bool}\ *starMatrix,\ \textcolor{keywordtype}{bool}\ *newStarMatrix,\ \textcolor{keywordtype}{bool}\ *primeMatrix,\ \textcolor{keywordtype}{bool}\ *coveredColumns,\ \textcolor{keywordtype}{bool}\ *coveredRows,\ \textcolor{keywordtype}{int}\ nOfRows,\ \textcolor{keywordtype}{int}\ nOfColumns,\ \textcolor{keywordtype}{int}\ minDim,\ \textcolor{keywordtype}{int}\ row,\ \textcolor{keywordtype}{int}\ col);}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ step5(\textcolor{keywordtype}{int}\ *assignment,\ \textcolor{keywordtype}{double}\ *distMatrix,\ \textcolor{keywordtype}{bool}\ *starMatrix,\ \textcolor{keywordtype}{bool}\ *newStarMatrix,\ \textcolor{keywordtype}{bool}\ *primeMatrix,\ \textcolor{keywordtype}{bool}\ *coveredColumns,\ \textcolor{keywordtype}{bool}\ *coveredRows,\ \textcolor{keywordtype}{int}\ nOfRows,\ \textcolor{keywordtype}{int}\ nOfColumns,\ \textcolor{keywordtype}{int}\ minDim);}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ computeassignmentcost(\textcolor{keywordtype}{int}\ *assignment,\ \textcolor{keywordtype}{double}\ *cost,\ \textcolor{keywordtype}{double}\ *distMatrix,\ \textcolor{keywordtype}{int}\ nOfRows);}
+\DoxyCodeLine{00022\ \};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

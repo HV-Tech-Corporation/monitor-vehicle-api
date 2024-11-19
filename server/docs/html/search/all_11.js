@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['saved_5fids_0',['saved_ids',['../namespaceapi_1_1detection.html#a420dbed2ebe21edfbe7c21367b95b425',1,'api::detection']]],
+  ['send_5ffile_5fdoxygen_1',['send_file_doxygen',['../server_8cpp.html#ac25856d745ae14e6ef69cc0423efcbb8',1,'server.cpp']]],
+  ['send_5fimage_5flist_5fresponse_2',['send_image_list_response',['../server_8cpp.html#aa462693f9b57abace54b87f894355413',1,'server.cpp']]],
+  ['send_5fimage_5fresponse_3',['send_image_response',['../server_8cpp.html#a462d65c04f2f05f897c17db069e888fc',1,'server.cpp']]],
+  ['send_5fresponse_4',['send_response',['../server_8cpp.html#acee138acfa836202ef942dbfb8f0cc59',1,'server.cpp']]],
+  ['server_5',['server',['../namespaceserver.html',1,'']]],
+  ['server_20api_20documentation_6',['Vehicle Monitoring Server API Documentation',['../index.html',1,'']]],
+  ['server_2ecpp_7',['server.cpp',['../server_8cpp.html',1,'']]],
+  ['server_2ehpp_8',['server.hpp',['../server_8hpp.html',1,'']]],
+  ['server_3a_3ahttp_5fresponse_9',['http_response',['../namespaceserver_1_1http__response.html',1,'server']]],
+  ['server_3a_3ahttp_5fresponse_3a_3amisc_5fstrings_10',['misc_strings',['../namespaceserver_1_1http__response_1_1misc__strings.html',1,'server::http_response']]],
+  ['server_3a_3ahttp_5fresponse_3a_3aresponse_5fbody_11',['response_body',['../namespaceserver_1_1http__response_1_1response__body.html',1,'server::http_response']]],
+  ['server_3a_3ahttp_5fresponse_3a_3astatus_5fstrings_12',['status_strings',['../namespaceserver_1_1http__response_1_1status__strings.html',1,'server::http_response']]],
+  ['server_3a_3artp_13',['rtp',['../namespaceserver_1_1rtp.html',1,'server']]],
+  ['set_5finput_14',['set_input',['../namespaceserver_1_1rtp.html#a545085a36150440fb0139ce1d3383cad',1,'server::rtp::set_input'],['../namespaceapi_1_1detection.html#ab50e4169b386b67d5c6562126f618944',1,'api::detection::set_input']]],
+  ['set_5fstatus_15',['set_status',['../structserver_1_1http__response_1_1response.html#a04ee1437ca8b78882e04a7a8cdc2f4c6',1,'server::http_response::response']]],
+  ['shared_5fframe_16',['shared_frame',['../namespaceserver_1_1rtp.html#a0e27acd7ff3301623d6a356c251a225e',1,'server::rtp']]],
+  ['solve_17',['Solve',['../class_hungarian_algorithm.html#a2696b848cb9f7c3e85d4551f032aeec3',1,'HungarianAlgorithm']]],
+  ['solve_18',['solve',['../class_munkres.html#a743f554d8574ec8342d24ed81f7187b1',1,'Munkres']]],
+  ['start_5fdetection_19',['start_detection',['../namespaceserver_1_1rtp.html#a9195f8a7e1a9ef5b13a43c8d22ee482a',1,'server::rtp::start_detection'],['../namespaceserver_1_1rtp.html#ae6a398297df01aedef7e1c3149e2a64a',1,'server::rtp::start_detection(false)']]],
+  ['start_5fserver_20',['start_server',['../namespaceserver_1_1rtp.html#a93b3400c2f526a4a49fa17a0929d3064',1,'server::rtp']]],
+  ['start_5fstreaming_21',['start_streaming',['../structserver_1_1rtp_1_1app.html#ae374e62edb0032082da662ddc279e4d2',1,'server::rtp::app']]],
+  ['started_22',['🚀 Getting Started',['../index.html#autotoc_md6',1,'']]],
+  ['status_23',['status',['../structserver_1_1http__response_1_1response.html#a4f62791bd1036c828ada6a6a1d700eed',1,'server::http_response::response']]],
+  ['streaming_24',['🎥 Video Streaming',['../index.html#autotoc_md3',1,'']]]
+];

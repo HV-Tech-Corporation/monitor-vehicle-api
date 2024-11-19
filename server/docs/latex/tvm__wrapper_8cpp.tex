@@ -1,0 +1,77 @@
+\doxysection{src/tvm\+\_\+wrapper.cpp File Reference}
+\hypertarget{tvm__wrapper_8cpp}{}\label{tvm__wrapper_8cpp}\index{src/tvm\_wrapper.cpp@{src/tvm\_wrapper.cpp}}
+{\ttfamily \#include "{}tvm\+\_\+wrapper.\+hpp"{}}\newline
+{\ttfamily \#include "{}tracker.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{api\+::detection\+::\+Detected\+Object}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceapi}{api}}
+\item 
+namespace \mbox{\hyperlink{namespaceapi_1_1detection}{api\+::detection}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{tvm__wrapper_8cpp_afcb4f758d185c04a4e95667c36a592b0}{IoU}} (const cv\+::\+Rect \&box1, const cv\+::\+Rect \&box2)
+\item 
+std\+::vector$<$ int $>$ \mbox{\hyperlink{tvm__wrapper_8cpp_a2a174ba67aa02ce151a0c4afc46cdb38}{Non\+Maximum\+Suppression}} (const std\+::vector$<$ \mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{api\+::detection\+::\+Detected\+Object}} $>$ \&tracking\+\_\+object\+\_\+group, float iou\+\_\+threshold)
+\item 
+tvm\+::runtime\+::\+NDArray \mbox{\hyperlink{tvm__wrapper_8cpp_a87a0ad9fc86095e041a3fd28a44bb745}{preprocess\+\_\+frame}} (cv\+::\+Mat \&frame, int \+\_\+batch, int \+\_\+input\+\_\+w, int \+\_\+input\+\_\+h)
+\item 
+std\+::vector$<$ cv\+::\+Rect $>$ \mbox{\hyperlink{tvm__wrapper_8cpp_ad96d789ad3ef272f4057b2b8870336f8}{Process\+YOLOOutput}} (tvm\+::runtime\+::\+NDArray output, const std\+::vector$<$ std\+::string $>$ \&class\+\_\+names, cv\+::\+Mat \&frame, std\+::vector$<$ \mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{api\+::detection\+::\+Detected\+Object}} $>$ \&tracked\+Objects, int \&current\+ID, float conf\+\_\+threshold=0.\+75)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+tvm\+::runtime\+::\+Module \mbox{\hyperlink{namespaceapi_1_1detection_a409a7c89f01b0193e9987322e26e85f1}{api\+::detection\+::loaded\+\_\+lib}}
+\item 
+tvm\+::runtime\+::\+Module \mbox{\hyperlink{namespaceapi_1_1detection_a97b6e97db4c969f9f64491862d2613b8}{api\+::detection\+::mod}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceapi_1_1detection_ab50e4169b386b67d5c6562126f618944}{api\+::detection\+::set\+\_\+input}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceapi_1_1detection_af5caf7ab9cdbe2ed1ed8ad831c596ef4}{api\+::detection\+::run}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceapi_1_1detection_a91ffeaf01a94fb4b12140f58b4451b1e}{api\+::detection\+::get\+\_\+output}}
+\item 
+DLDevice \mbox{\hyperlink{namespaceapi_1_1detection_a9a80085072bd2fa6d480229aebe0b500}{api\+::detection\+::dev}}
+\item 
+std\+::set$<$ int $>$ \mbox{\hyperlink{namespaceapi_1_1detection_a420dbed2ebe21edfbe7c21367b95b425}{api\+::detection\+::saved\+\_\+ids}}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{Detected\+Object}} $>$ \mbox{\hyperlink{namespaceapi_1_1detection_add41da847b2cf9e45c87e920400d1eb4}{api\+::detection\+::tracked\+Objects}}
+\item 
+int \mbox{\hyperlink{namespaceapi_1_1detection_a363cb23fc967f9041921c1e87a55296d}{api\+::detection\+::current\+Id}} = 0
+\item 
+\mbox{\hyperlink{class_object_tracker}{Object\+Tracker}} \mbox{\hyperlink{namespaceapi_1_1detection_a69344b03fa1044aa44febdc81678850e}{api\+::detection\+::tracker}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{tvm__wrapper_8cpp_afcb4f758d185c04a4e95667c36a592b0}\index{tvm\_wrapper.cpp@{tvm\_wrapper.cpp}!IoU@{IoU}}
+\index{IoU@{IoU}!tvm\_wrapper.cpp@{tvm\_wrapper.cpp}}
+\doxysubsubsection{\texorpdfstring{IoU()}{IoU()}}
+{\footnotesize\ttfamily \label{tvm__wrapper_8cpp_afcb4f758d185c04a4e95667c36a592b0} 
+float IoU (\begin{DoxyParamCaption}\item[{const cv\+::\+Rect \&}]{box1}{, }\item[{const cv\+::\+Rect \&}]{box2}{}\end{DoxyParamCaption})}
+
+\Hypertarget{tvm__wrapper_8cpp_a2a174ba67aa02ce151a0c4afc46cdb38}\index{tvm\_wrapper.cpp@{tvm\_wrapper.cpp}!NonMaximumSuppression@{NonMaximumSuppression}}
+\index{NonMaximumSuppression@{NonMaximumSuppression}!tvm\_wrapper.cpp@{tvm\_wrapper.cpp}}
+\doxysubsubsection{\texorpdfstring{NonMaximumSuppression()}{NonMaximumSuppression()}}
+{\footnotesize\ttfamily \label{tvm__wrapper_8cpp_a2a174ba67aa02ce151a0c4afc46cdb38} 
+std\+::vector$<$ int $>$ Non\+Maximum\+Suppression (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ \mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{api\+::detection\+::\+Detected\+Object}} $>$ \&}]{tracking\+\_\+object\+\_\+group}{, }\item[{float}]{iou\+\_\+threshold}{}\end{DoxyParamCaption})}
+
+\Hypertarget{tvm__wrapper_8cpp_a87a0ad9fc86095e041a3fd28a44bb745}\index{tvm\_wrapper.cpp@{tvm\_wrapper.cpp}!preprocess\_frame@{preprocess\_frame}}
+\index{preprocess\_frame@{preprocess\_frame}!tvm\_wrapper.cpp@{tvm\_wrapper.cpp}}
+\doxysubsubsection{\texorpdfstring{preprocess\_frame()}{preprocess\_frame()}}
+{\footnotesize\ttfamily \label{tvm__wrapper_8cpp_a87a0ad9fc86095e041a3fd28a44bb745} 
+tvm\+::runtime\+::\+NDArray preprocess\+\_\+frame (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame}{, }\item[{int}]{\+\_\+batch}{, }\item[{int}]{\+\_\+input\+\_\+w}{, }\item[{int}]{\+\_\+input\+\_\+h}{}\end{DoxyParamCaption})}
+
+\Hypertarget{tvm__wrapper_8cpp_ad96d789ad3ef272f4057b2b8870336f8}\index{tvm\_wrapper.cpp@{tvm\_wrapper.cpp}!ProcessYOLOOutput@{ProcessYOLOOutput}}
+\index{ProcessYOLOOutput@{ProcessYOLOOutput}!tvm\_wrapper.cpp@{tvm\_wrapper.cpp}}
+\doxysubsubsection{\texorpdfstring{ProcessYOLOOutput()}{ProcessYOLOOutput()}}
+{\footnotesize\ttfamily \label{tvm__wrapper_8cpp_ad96d789ad3ef272f4057b2b8870336f8} 
+std\+::vector$<$ cv\+::\+Rect $>$ Process\+YOLOOutput (\begin{DoxyParamCaption}\item[{tvm\+::runtime\+::\+NDArray}]{output}{, }\item[{const std\+::vector$<$ std\+::string $>$ \&}]{class\+\_\+names}{, }\item[{cv\+::\+Mat \&}]{frame}{, }\item[{std\+::vector$<$ \mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{api\+::detection\+::\+Detected\+Object}} $>$ \&}]{tracked\+Objects}{, }\item[{int \&}]{current\+ID}{, }\item[{float}]{conf\+\_\+threshold}{ = {\ttfamily 0.75}}\end{DoxyParamCaption})}
+

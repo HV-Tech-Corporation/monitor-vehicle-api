@@ -1,0 +1,153 @@
+\doxysection{copy.\+hpp}
+\hypertarget{copy_8hpp_source}{}\label{copy_8hpp_source}\index{src/copy.hpp@{src/copy.hpp}}
+\mbox{\hyperlink{copy_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#include\ <opencv2/opencv.hpp>}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <sstream>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <sys/socket.h>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <unistd.h>}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{copy_8hpp_a997026dc867ad83367f206b7b42f1001}{handle\_client}}(\textcolor{keywordtype}{int}\ client\_socket)\ \{}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\ \ \ \ \#include\ <iostream>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <boost/asio.hpp>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{response_8hpp}{response.hpp}}"{}}}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{using\ }boost::asio::ip::tcp;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{namespace\ }http\ =\ \mbox{\hyperlink{namespaceserver_1_1http__response}{server::http\_response}};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{copy_8hpp_a997026dc867ad83367f206b7b42f1001}{handle\_client}}(tcp::socket\&\ socket)\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 클라이언트로부터\ 요청\ 수신\ (단순화된\ HTTP\ 요청\ 수신)}}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ data[1024];}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ boost::system::error\_code\ error;}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ length\ =\ socket.read\_some(boost::asio::buffer(data),\ error);}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (error\ ==\ boost::asio::error::eof)\ \{}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 연결\ 종료}}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (error)\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ boost::system::system\_error(error);}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ std::string\ request(data,\ length);}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Received\ request:\ "{}}\ <<\ request\ <<\ std::endl;}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 응답\ 객체\ 생성\ 및\ 설정}}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ http::response\ res;}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 요청\ 경로에\ 따라\ 응답\ 설정}}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (request.find(\textcolor{stringliteral}{"{}GET\ /\ "{}})\ !=\ std::string::npos)\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ res.set\_status(http::response\_type::ok);}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ res.add\_header(\textcolor{stringliteral}{"{}Content-\/Type"{}},\ \textcolor{stringliteral}{"{}text/plain"{}});}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ res.content\ =\ \textcolor{stringliteral}{"{}Hello,\ World!"{}};}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ res.set\_status(http::response\_type::not\_found);}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ res.add\_header(\textcolor{stringliteral}{"{}Content-\/Type"{}},\ \textcolor{stringliteral}{"{}text/plain"{}});}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ res.content\ =\ \textcolor{stringliteral}{"{}404\ Not\ Found"{}};}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 응답\ 버퍼\ 전송}}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ buffers\ =\ res.to\_buffers();}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ boost::asio::write(socket,\ buffers);}
+\DoxyCodeLine{00053\ \ \ \ \ \}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordflow}{catch}\ (std::exception\&\ e)\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Exception\ in\ client\ handling:\ "{}}\ <<\ e.what()\ <<\ std::endl;}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{keywordtype}{void}\ start\_server(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ port)\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ boost::asio::io\_context\ io\_context;}
+\DoxyCodeLine{00061\ \ \ \ \ tcp::acceptor\ acceptor(io\_context,\ tcp::endpoint(tcp::v4(),\ port));}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Server\ started\ on\ port\ "{}}\ <<\ port\ <<\ std::endl;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ tcp::socket\ socket(io\_context);}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ acceptor.accept(socket);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 클라이언트\ 요청\ 처리}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{copy_8hpp_a997026dc867ad83367f206b7b42f1001}{handle\_client}}(socket);}
+\DoxyCodeLine{00071\ \ \ \ \ \}}
+\DoxyCodeLine{00072\ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{copy_8hpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main}}()\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ start\_server(8080);\ \ \textcolor{comment}{//\ 8080\ 포트에서\ 서버\ 시작}}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordflow}{catch}\ (std::exception\&\ e)\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Server\ exception:\ "{}}\ <<\ e.what()\ <<\ std::endl;}
+\DoxyCodeLine{00080\ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00082\ \}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \}}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{copy_8hpp_ae66f6b31b5ad750f1fe042a706a4e3d4}{main}}()\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{comment}{//\ 비디오\ 파일\ 열기}}
+\DoxyCodeLine{00088\ \ \ \ \ cv::VideoCapture\ cap(\textcolor{stringliteral}{"{}HDCCTVTraffic.mp4"{}});}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordflow}{if}\ (!cap.isOpened())\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Error:\ Could\ not\ open\ video\ file."{}}\ <<\ std::endl;}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00092\ \ \ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{comment}{//\ 비디오\ 크기\ 정보\ 가져오기}}
+\DoxyCodeLine{00095\ \ \ \ \ cv::Size\ frame\_size\ =\ cv::Size((\textcolor{keywordtype}{int})cap.get(cv::CAP\_PROP\_FRAME\_WIDTH),\ (\textcolor{keywordtype}{int})cap.get(cv::CAP\_PROP\_FRAME\_HEIGHT));}
+\DoxyCodeLine{00096\ \ \ \ \ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{comment}{//\ 비디오\ FPS\ 가져오기}}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{double}\ fps\ =\ cap.get(cv::CAP\_PROP\_FPS);}
+\DoxyCodeLine{00099\ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}FPS:\ "{}}\ <<\ fps\ <<\ std::endl;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{comment}{//\ GStreamer\ 파이프라인\ 설정}}
+\DoxyCodeLine{00102\ \ \ \ \ std::string\ pipeline\ =\ \textcolor{stringliteral}{"{}appsrc\ !\ videoconvert\ !\ video/x-\/raw,format=I420\ !\ x264enc\ tune=zerolatency\ bitrate=2000\ speed-\/preset=ultrafast\ !\ "{}}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rtph264pay\ config-\/interval=1\ pt=96\ !\ "{}}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}udpsink\ host=127.0.0.1\ port=5004"{}};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//\ GStreamer\ 파이프라인을\ 통해\ VideoWriter\ 열기}}
+\DoxyCodeLine{00107\ \ \ \ \ cv::VideoWriter\ writer;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordflow}{if}\ (!writer.open(pipeline,\ cv::CAP\_GSTREAMER,\ 0,\ fps,\ frame\_size,\ \textcolor{keyword}{true}))\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Error:\ Could\ not\ open\ GStreamer\ pipeline\ for\ writing."{}}\ <<\ std::endl;}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00111\ \ \ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \ \ cv::Mat\ frame;}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{double}\ start\_time\ =\ cv::getTickCount();\ \textcolor{comment}{//\ 시작\ 시간}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordflow}{while}\ (\textcolor{keyword}{true})\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 비디오\ 파일에서\ 프레임\ 읽기}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ cap\ >>\ frame;}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (frame.empty())\ \textcolor{keywordflow}{break};\ \ \textcolor{comment}{//\ 파일\ 끝에\ 도달하면\ 종료}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 현재\ 타임스탬프\ 계산\ (초\ 단위)}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ time\_in\_seconds\ =\ (cv::getTickCount()\ -\/\ start\_time)\ /\ cv::getTickFrequency();}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 타임스탬프를\ 비디오\ 프레임에\ 추가}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ std::stringstream\ timestamp\_stream;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ timestamp\_stream\ <<\ \textcolor{stringliteral}{"{}Time:\ "{}}\ <<\ time\_in\_seconds\ <<\ \textcolor{stringliteral}{"{}s"{}};}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ std::string\ timestamp\ =\ timestamp\_stream.str();}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 텍스트로\ 타임스탬프\ 표시}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ cv::putText(frame,\ timestamp,\ cv::Point(10,\ 30),\ cv::FONT\_HERSHEY\_SIMPLEX,\ 1,\ cv::Scalar(255,\ 255,\ 255),\ 2);}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 프레임을\ GStreamer를\ 통해\ 전송}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ writer.write(frame);}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 프레임\ 간\ 시간\ 지연\ (FPS에\ 맞게\ 지연)}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ elapsed\_time\ =\ (cv::getTickCount()\ -\/\ start\_time)\ /\ cv::getTickFrequency();}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delay\_time\ =\ (1.0\ /\ fps)\ -\/\ elapsed\_time;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (delay\_time\ >\ 0)\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ cv::waitKey(delay\_time\ *\ 1000);\ \ \textcolor{comment}{//\ 밀리초로\ 변환}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00141\ \ \ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{comment}{//\ 리소스\ 해제}}
+\DoxyCodeLine{00144\ \ \ \ \ cap.release();}
+\DoxyCodeLine{00145\ \ \ \ \ writer.release();}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00147\ \}}
+
+\end{DoxyCode}

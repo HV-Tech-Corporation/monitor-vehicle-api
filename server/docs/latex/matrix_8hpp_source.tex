@@ -1,0 +1,78 @@
+\doxysection{matrix.\+hpp}
+\hypertarget{matrix_8hpp_source}{}\label{matrix_8hpp_source}\index{include/matrix.hpp@{include/matrix.hpp}}
+\mbox{\hyperlink{matrix_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ \ \ Copyright\ (c)\ 2007\ John\ Weaver}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ \ \ This\ program\ is\ free\ software;\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ \ \ it\ under\ the\ terms\ of\ the\ GNU\ General\ Public\ License\ as\ published\ by}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ \ \ the\ Free\ Software\ Foundation;\ either\ version\ 2\ of\ the\ License,\ or}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ \ \ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ \ \ This\ program\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ \ \ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ \ \ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ \ \ GNU\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ \ \ You\ should\ have\ received\ a\ copy\ of\ the\ GNU\ General\ Public\ License}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ \ \ along\ with\ this\ program;\ if\ not,\ write\ to\ the\ Free\ Software}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *\ \ \ Foundation,\ Inc.,\ 59\ Temple\ Place,\ Suite\ 330,\ Boston,\ MA\ \ 02111-\/1307\ USA}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#ifndef\ \_MATRIX\_H\_}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#define\ \_MATRIX\_H\_}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <initializer\_list>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <cstdlib>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <ostream>}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00027\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_matrix}{Matrix}}\ \{}
+\DoxyCodeLine{00028\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00029\ \ \ \mbox{\hyperlink{class_matrix_a9d567e3a121b1be0c3f9c461cab524fe}{Matrix}}();}
+\DoxyCodeLine{00030\ \ \ \mbox{\hyperlink{class_matrix_a9d567e3a121b1be0c3f9c461cab524fe}{Matrix}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}});}
+\DoxyCodeLine{00031\ \ \ \mbox{\hyperlink{class_matrix_a9d567e3a121b1be0c3f9c461cab524fe}{Matrix}}(\textcolor{keyword}{const}\ std::initializer\_list<std::initializer\_list<T>>\ init);}
+\DoxyCodeLine{00032\ \ \ \mbox{\hyperlink{class_matrix_a9d567e3a121b1be0c3f9c461cab524fe}{Matrix}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{class_matrix}{Matrix<T>}}\ \&other);}
+\DoxyCodeLine{00033\ \ \ \mbox{\hyperlink{class_matrix}{Matrix<T>}}\ \&\ \mbox{\hyperlink{class_matrix_a8d1a6d2863b582f254a075a9bcc75516}{operator=\ }}(\textcolor{keyword}{const}\ \mbox{\hyperlink{class_matrix}{Matrix<T>}}\ \&other);}
+\DoxyCodeLine{00034\ \ \ \mbox{\hyperlink{class_matrix_a91aa704de674203e96aece9e1955ccd3}{\string~Matrix}}();}
+\DoxyCodeLine{00035\ \ \ \textcolor{comment}{//\ all\ operations\ modify\ the\ matrix\ in-\/place.}}
+\DoxyCodeLine{00036\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_matrix_a61cc9e991bbc443da6644265808116c5}{resize}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}},\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}},\ \textcolor{keyword}{const}\ T\ default\_value\ =\ 0);}
+\DoxyCodeLine{00037\ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_matrix_ad39022f082bfee09e24d098796e14e10}{clear}}();}
+\DoxyCodeLine{00038\ \ \ T\&\ \mbox{\hyperlink{class_matrix_aff72f739717ef910678e04ae807f287a}{operator\ ()\ }}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ y);}
+\DoxyCodeLine{00039\ \ \ \textcolor{keyword}{const}\ T\&\ \mbox{\hyperlink{class_matrix_aff72f739717ef910678e04ae807f287a}{operator\ ()\ }}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00040\ \ \ \textcolor{keyword}{const}\ T\ \mbox{\hyperlink{class_matrix_af36b6a12bf1ec84601442fbf4e996554}{min}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00041\ \ \ \textcolor{keyword}{const}\ T\ \mbox{\hyperlink{class_matrix_a447d760b71dd518adc2351c3286b133b}{max}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00042\ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_matrix_a0c8b3762ae5b75d0eb167735017cd039}{minsize}}()\ \{\ \textcolor{keywordflow}{return}\ ((m\_rows\ <\ m\_columns)\ ?\ m\_rows\ :\ m\_columns);\ \}}
+\DoxyCodeLine{00043\ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_columns;\}}
+\DoxyCodeLine{00044\ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{size\_t}\ \mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_rows;\}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{friend}\ std::ostream\&\ \mbox{\hyperlink{class_matrix_a116e48b76fb80ef08788e7f26bb264b9}{operator<<}}(std::ostream\&\ os,\ \textcolor{keyword}{const}\ \mbox{\hyperlink{class_matrix}{Matrix}}\ \&matrix)}
+\DoxyCodeLine{00047\ \ \ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ os\ <<\ \textcolor{stringliteral}{"{}Matrix:"{}}\ <<\ std::endl;}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}()\ ;\ row++\ )}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}()\ ;\ col++\ )}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ os.width(8);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ os\ <<\ matrix(row,\ col)\ <<\ \textcolor{stringliteral}{"{},"{}};}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ os\ <<\ std::endl;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ os;}
+\DoxyCodeLine{00059\ \ \ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00062\ \ \ T\ **m\_matrix;}
+\DoxyCodeLine{00063\ \ \ \textcolor{keywordtype}{size\_t}\ m\_rows;}
+\DoxyCodeLine{00064\ \ \ \textcolor{keywordtype}{size\_t}\ m\_columns;}
+\DoxyCodeLine{00065\ \};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \textcolor{preprocessor}{\#ifndef\ USE\_EXPORT\_KEYWORD}}
+\DoxyCodeLine{00068\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{matrix_8cpp}{matrix.cpp}}"{}}}
+\DoxyCodeLine{00069\ \textcolor{comment}{//\#define\ export\ /*export*/}}
+\DoxyCodeLine{00070\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ !defined(\_MATRIX\_H\_)\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

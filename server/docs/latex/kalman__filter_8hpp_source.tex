@@ -1,0 +1,55 @@
+\doxysection{kalman\+\_\+filter.\+hpp}
+\hypertarget{kalman__filter_8hpp_source}{}\label{kalman__filter_8hpp_source}\index{include/kalman\_filter.hpp@{include/kalman\_filter.hpp}}
+\mbox{\hyperlink{kalman__filter_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <eigen3/Eigen/Dense>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{comment}{//\ abstract\ class\ for\ Kalman\ filter}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ implementation\ could\ be\ KF/EKF/UKF...}}
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_kalman_filter}{KalmanFilter}}\ \{}
+\DoxyCodeLine{00009\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{comment}{//\ constructor}}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{explicit}\ \mbox{\hyperlink{class_kalman_filter_af62adc7715c0c05c4fb6e88c26b55a3a}{KalmanFilter}}(\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ num\_states,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ num\_obs);}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{comment}{//\ destructor}}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keyword}{virtual}\ \mbox{\hyperlink{class_kalman_filter_aa971e0ec56ef5bd1469fc732dc01a87d}{\string~KalmanFilter}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_kalman_filter_a028dac6e3912327b6ec40cf21715f6a5}{Coast}}();}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_kalman_filter_a903a48afbdd877c5e06c9626f50054e4}{Predict}}();}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{virtual}\ Eigen::VectorXd\ \mbox{\hyperlink{class_kalman_filter_a61adf8a7a52e7d7fd96c00806a1a1f85}{PredictionToObservation}}(\textcolor{keyword}{const}\ Eigen::VectorXd\ \&state);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_kalman_filter_a1215aa5d9990de0780a203c3ee8e94ba}{Update}}(\textcolor{keyword}{const}\ Eigen::VectorXd\ \&z);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{class_kalman_filter_a4bea2fee7fe996717898fce2a8adfe8a}{CalculateLogLikelihood}}(\textcolor{keyword}{const}\ Eigen::VectorXd\&\ y,\ \textcolor{keyword}{const}\ Eigen::MatrixXd\&\ S);}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{comment}{//\ State\ vector}}
+\DoxyCodeLine{00052\ \ \ \ \ Eigen::VectorXd\ \mbox{\hyperlink{class_kalman_filter_a3cbd1b9be0cda3f599462462569253b7}{x\_}},\ \mbox{\hyperlink{class_kalman_filter_a7b8bbdac37d501ec9d9aab3ed484a923}{x\_predict\_}};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{comment}{//\ Error\ covariance\ matrix}}
+\DoxyCodeLine{00055\ \ \ \ \ Eigen::MatrixXd\ \mbox{\hyperlink{class_kalman_filter_a1c4f9c136dbc4f3dc75f24e203147523}{P\_}},\ \mbox{\hyperlink{class_kalman_filter_a5168b613d2459cc8ad76d87b35beb925}{P\_predict\_}};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{//\ State\ transition\ matrix}}
+\DoxyCodeLine{00058\ \ \ \ \ Eigen::MatrixXd\ \mbox{\hyperlink{class_kalman_filter_aef2c2f51acb425cbd07ad03bf2079f0c}{F\_}};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{//\ Covariance\ matrix\ of\ process\ noise}}
+\DoxyCodeLine{00061\ \ \ \ \ Eigen::MatrixXd\ \mbox{\hyperlink{class_kalman_filter_a471917f1190f2713b193ad8d949598f3}{Q\_}};}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{comment}{//\ measurement\ matrix}}
+\DoxyCodeLine{00064\ \ \ \ \ Eigen::MatrixXd\ \mbox{\hyperlink{class_kalman_filter_a12141ff5a93816d96d390e0d5ae29b96}{H\_}};}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ covariance\ matrix\ of\ observation\ noise}}
+\DoxyCodeLine{00067\ \ \ \ \ Eigen::MatrixXd\ \mbox{\hyperlink{class_kalman_filter_a92672c5ad8c47876d29511b7c28a435a}{R\_}};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_kalman_filter_afca58bc8dcd3ca7d2234ffc6e4f0e22a}{num\_states\_}},\ \mbox{\hyperlink{class_kalman_filter_a308b3d85acf87228ac86aab84effd189}{num\_obs\_}};}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{class_kalman_filter_a81c3f8e6c36b648b05b3d155b5cff89b}{log\_likelihood\_delta\_}};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{class_kalman_filter_ac880eda4f363201d7bc5f222a55279be}{NIS\_}};}
+\DoxyCodeLine{00074\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,191 @@
+\doxysection{Kalman\+Filter Class Reference}
+\hypertarget{class_kalman_filter}{}\label{class_kalman_filter}\index{KalmanFilter@{KalmanFilter}}
+
+
+{\ttfamily \#include $<$kalman\+\_\+filter.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_kalman_filter_af62adc7715c0c05c4fb6e88c26b55a3a}{Kalman\+Filter}} (unsigned int num\+\_\+states, unsigned int num\+\_\+obs)
+\item 
+virtual \mbox{\hyperlink{class_kalman_filter_aa971e0ec56ef5bd1469fc732dc01a87d}{\texorpdfstring{$\sim$}{\string~}\+Kalman\+Filter}} ()=default
+\item 
+virtual void \mbox{\hyperlink{class_kalman_filter_a028dac6e3912327b6ec40cf21715f6a5}{Coast}} ()
+\item 
+void \mbox{\hyperlink{class_kalman_filter_a903a48afbdd877c5e06c9626f50054e4}{Predict}} ()
+\item 
+virtual Eigen\+::\+Vector\+Xd \mbox{\hyperlink{class_kalman_filter_a61adf8a7a52e7d7fd96c00806a1a1f85}{Prediction\+To\+Observation}} (const Eigen\+::\+Vector\+Xd \&state)
+\item 
+virtual void \mbox{\hyperlink{class_kalman_filter_a1215aa5d9990de0780a203c3ee8e94ba}{Update}} (const Eigen\+::\+Vector\+Xd \&z)
+\item 
+float \mbox{\hyperlink{class_kalman_filter_a4bea2fee7fe996717898fce2a8adfe8a}{Calculate\+Log\+Likelihood}} (const Eigen\+::\+Vector\+Xd \&y, const Eigen\+::\+Matrix\+Xd \&S)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+Eigen\+::\+Vector\+Xd \mbox{\hyperlink{class_kalman_filter_a3cbd1b9be0cda3f599462462569253b7}{x\+\_\+}}
+\item 
+Eigen\+::\+Vector\+Xd \mbox{\hyperlink{class_kalman_filter_a7b8bbdac37d501ec9d9aab3ed484a923}{x\+\_\+predict\+\_\+}}
+\item 
+Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{class_kalman_filter_a1c4f9c136dbc4f3dc75f24e203147523}{P\+\_\+}}
+\item 
+Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{class_kalman_filter_a5168b613d2459cc8ad76d87b35beb925}{P\+\_\+predict\+\_\+}}
+\item 
+Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{class_kalman_filter_aef2c2f51acb425cbd07ad03bf2079f0c}{F\+\_\+}}
+\item 
+Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{class_kalman_filter_a471917f1190f2713b193ad8d949598f3}{Q\+\_\+}}
+\item 
+Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{class_kalman_filter_a12141ff5a93816d96d390e0d5ae29b96}{H\+\_\+}}
+\item 
+Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{class_kalman_filter_a92672c5ad8c47876d29511b7c28a435a}{R\+\_\+}}
+\item 
+unsigned int \mbox{\hyperlink{class_kalman_filter_afca58bc8dcd3ca7d2234ffc6e4f0e22a}{num\+\_\+states\+\_\+}}
+\item 
+unsigned int \mbox{\hyperlink{class_kalman_filter_a308b3d85acf87228ac86aab84effd189}{num\+\_\+obs\+\_\+}}
+\item 
+float \mbox{\hyperlink{class_kalman_filter_a81c3f8e6c36b648b05b3d155b5cff89b}{log\+\_\+likelihood\+\_\+delta\+\_\+}}
+\item 
+float \mbox{\hyperlink{class_kalman_filter_ac880eda4f363201d7bc5f222a55279be}{NIS\+\_\+}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_kalman_filter_af62adc7715c0c05c4fb6e88c26b55a3a}\index{KalmanFilter@{KalmanFilter}!KalmanFilter@{KalmanFilter}}
+\index{KalmanFilter@{KalmanFilter}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{KalmanFilter()}{KalmanFilter()}}
+{\footnotesize\ttfamily \label{class_kalman_filter_af62adc7715c0c05c4fb6e88c26b55a3a} 
+Kalman\+Filter\+::\+Kalman\+Filter (\begin{DoxyParamCaption}\item[{unsigned int}]{num\+\_\+states}{, }\item[{unsigned int}]{num\+\_\+obs}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+user need to define H matrix \& R matrix 
+\begin{DoxyParams}{Parameters}
+{\em num\+\_\+states} & \\
+\hline
+{\em num\+\_\+obs} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_kalman_filter_aa971e0ec56ef5bd1469fc732dc01a87d}\index{KalmanFilter@{KalmanFilter}!````~KalmanFilter@{\texorpdfstring{$\sim$}{\string~}KalmanFilter}}
+\index{````~KalmanFilter@{\texorpdfstring{$\sim$}{\string~}KalmanFilter}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}KalmanFilter()}{\string~KalmanFilter()}}
+{\footnotesize\ttfamily \label{class_kalman_filter_aa971e0ec56ef5bd1469fc732dc01a87d} 
+virtual Kalman\+Filter\+::\texorpdfstring{$\sim$}{\string~}\+Kalman\+Filter (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_kalman_filter_a4bea2fee7fe996717898fce2a8adfe8a}\index{KalmanFilter@{KalmanFilter}!CalculateLogLikelihood@{CalculateLogLikelihood}}
+\index{CalculateLogLikelihood@{CalculateLogLikelihood}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{CalculateLogLikelihood()}{CalculateLogLikelihood()}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a4bea2fee7fe996717898fce2a8adfe8a} 
+float Kalman\+Filter\+::\+Calculate\+Log\+Likelihood (\begin{DoxyParamCaption}\item[{const Eigen\+::\+Vector\+Xd \&}]{y}{, }\item[{const Eigen\+::\+Matrix\+Xd \&}]{S}{}\end{DoxyParamCaption})}
+
+Calculate marginal log-\/likelihood to evaluate different parameter choices \Hypertarget{class_kalman_filter_a028dac6e3912327b6ec40cf21715f6a5}\index{KalmanFilter@{KalmanFilter}!Coast@{Coast}}
+\index{Coast@{Coast}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{Coast()}{Coast()}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a028dac6e3912327b6ec40cf21715f6a5} 
+void Kalman\+Filter\+::\+Coast (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Coast state and state covariance using the process model User can use this function without change the internal tracking state x\+\_\+ \Hypertarget{class_kalman_filter_a903a48afbdd877c5e06c9626f50054e4}\index{KalmanFilter@{KalmanFilter}!Predict@{Predict}}
+\index{Predict@{Predict}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{Predict()}{Predict()}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a903a48afbdd877c5e06c9626f50054e4} 
+void Kalman\+Filter\+::\+Predict (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+Predict without measurement update \Hypertarget{class_kalman_filter_a61adf8a7a52e7d7fd96c00806a1a1f85}\index{KalmanFilter@{KalmanFilter}!PredictionToObservation@{PredictionToObservation}}
+\index{PredictionToObservation@{PredictionToObservation}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{PredictionToObservation()}{PredictionToObservation()}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a61adf8a7a52e7d7fd96c00806a1a1f85} 
+Eigen\+::\+Vector\+Xd Kalman\+Filter\+::\+Prediction\+To\+Observation (\begin{DoxyParamCaption}\item[{const Eigen\+::\+Vector\+Xd \&}]{state}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+This function maps the true state space into the observed space using the observation model User can implement their own method for more complicated models \Hypertarget{class_kalman_filter_a1215aa5d9990de0780a203c3ee8e94ba}\index{KalmanFilter@{KalmanFilter}!Update@{Update}}
+\index{Update@{Update}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a1215aa5d9990de0780a203c3ee8e94ba} 
+void Kalman\+Filter\+::\+Update (\begin{DoxyParamCaption}\item[{const Eigen\+::\+Vector\+Xd \&}]{z}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+Updates the state by using Extended Kalman Filter equations 
+\begin{DoxyParams}{Parameters}
+{\em z} & The measurement at k+1 \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_kalman_filter_aef2c2f51acb425cbd07ad03bf2079f0c}\index{KalmanFilter@{KalmanFilter}!F\_@{F\_}}
+\index{F\_@{F\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{F\_}{F\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_aef2c2f51acb425cbd07ad03bf2079f0c} 
+Eigen\+::\+Matrix\+Xd Kalman\+Filter\+::\+F\+\_\+}
+
+\Hypertarget{class_kalman_filter_a12141ff5a93816d96d390e0d5ae29b96}\index{KalmanFilter@{KalmanFilter}!H\_@{H\_}}
+\index{H\_@{H\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{H\_}{H\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a12141ff5a93816d96d390e0d5ae29b96} 
+Eigen\+::\+Matrix\+Xd Kalman\+Filter\+::\+H\+\_\+}
+
+\Hypertarget{class_kalman_filter_a81c3f8e6c36b648b05b3d155b5cff89b}\index{KalmanFilter@{KalmanFilter}!log\_likelihood\_delta\_@{log\_likelihood\_delta\_}}
+\index{log\_likelihood\_delta\_@{log\_likelihood\_delta\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{log\_likelihood\_delta\_}{log\_likelihood\_delta\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a81c3f8e6c36b648b05b3d155b5cff89b} 
+float Kalman\+Filter\+::log\+\_\+likelihood\+\_\+delta\+\_\+}
+
+\Hypertarget{class_kalman_filter_ac880eda4f363201d7bc5f222a55279be}\index{KalmanFilter@{KalmanFilter}!NIS\_@{NIS\_}}
+\index{NIS\_@{NIS\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{NIS\_}{NIS\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_ac880eda4f363201d7bc5f222a55279be} 
+float Kalman\+Filter\+::\+NIS\+\_\+}
+
+\Hypertarget{class_kalman_filter_a308b3d85acf87228ac86aab84effd189}\index{KalmanFilter@{KalmanFilter}!num\_obs\_@{num\_obs\_}}
+\index{num\_obs\_@{num\_obs\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{num\_obs\_}{num\_obs\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a308b3d85acf87228ac86aab84effd189} 
+unsigned int Kalman\+Filter\+::num\+\_\+obs\+\_\+}
+
+\Hypertarget{class_kalman_filter_afca58bc8dcd3ca7d2234ffc6e4f0e22a}\index{KalmanFilter@{KalmanFilter}!num\_states\_@{num\_states\_}}
+\index{num\_states\_@{num\_states\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{num\_states\_}{num\_states\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_afca58bc8dcd3ca7d2234ffc6e4f0e22a} 
+unsigned int Kalman\+Filter\+::num\+\_\+states\+\_\+}
+
+\Hypertarget{class_kalman_filter_a1c4f9c136dbc4f3dc75f24e203147523}\index{KalmanFilter@{KalmanFilter}!P\_@{P\_}}
+\index{P\_@{P\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{P\_}{P\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a1c4f9c136dbc4f3dc75f24e203147523} 
+Eigen\+::\+Matrix\+Xd Kalman\+Filter\+::\+P\+\_\+}
+
+\Hypertarget{class_kalman_filter_a5168b613d2459cc8ad76d87b35beb925}\index{KalmanFilter@{KalmanFilter}!P\_predict\_@{P\_predict\_}}
+\index{P\_predict\_@{P\_predict\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{P\_predict\_}{P\_predict\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a5168b613d2459cc8ad76d87b35beb925} 
+Eigen\+::\+Matrix\+Xd Kalman\+Filter\+::\+P\+\_\+predict\+\_\+}
+
+\Hypertarget{class_kalman_filter_a471917f1190f2713b193ad8d949598f3}\index{KalmanFilter@{KalmanFilter}!Q\_@{Q\_}}
+\index{Q\_@{Q\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{Q\_}{Q\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a471917f1190f2713b193ad8d949598f3} 
+Eigen\+::\+Matrix\+Xd Kalman\+Filter\+::\+Q\+\_\+}
+
+\Hypertarget{class_kalman_filter_a92672c5ad8c47876d29511b7c28a435a}\index{KalmanFilter@{KalmanFilter}!R\_@{R\_}}
+\index{R\_@{R\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{R\_}{R\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a92672c5ad8c47876d29511b7c28a435a} 
+Eigen\+::\+Matrix\+Xd Kalman\+Filter\+::\+R\+\_\+}
+
+\Hypertarget{class_kalman_filter_a3cbd1b9be0cda3f599462462569253b7}\index{KalmanFilter@{KalmanFilter}!x\_@{x\_}}
+\index{x\_@{x\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{x\_}{x\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a3cbd1b9be0cda3f599462462569253b7} 
+Eigen\+::\+Vector\+Xd Kalman\+Filter\+::x\+\_\+}
+
+\Hypertarget{class_kalman_filter_a7b8bbdac37d501ec9d9aab3ed484a923}\index{KalmanFilter@{KalmanFilter}!x\_predict\_@{x\_predict\_}}
+\index{x\_predict\_@{x\_predict\_}!KalmanFilter@{KalmanFilter}}
+\doxysubsubsection{\texorpdfstring{x\_predict\_}{x\_predict\_}}
+{\footnotesize\ttfamily \label{class_kalman_filter_a7b8bbdac37d501ec9d9aab3ed484a923} 
+Eigen\+::\+Vector\+Xd Kalman\+Filter\+::x\+\_\+predict\+\_\+}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{kalman__filter_8hpp}{kalman\+\_\+filter.\+hpp}}\item 
+src/\mbox{\hyperlink{kalman__filter_8cpp}{kalman\+\_\+filter.\+cpp}}\end{DoxyCompactItemize}

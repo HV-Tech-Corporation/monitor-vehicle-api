@@ -1,0 +1,52 @@
+\doxysection{src/response.cpp File Reference}
+\hypertarget{response_8cpp}{}\label{response_8cpp}\index{src/response.cpp@{src/response.cpp}}
+{\ttfamily \#include "{}response.\+hpp"{}}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceserver}{server}}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1http__response}{server\+::http\+\_\+response}}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings}{server\+::http\+\_\+response\+::status\+\_\+strings}}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1http__response_1_1misc__strings}{server\+::http\+\_\+response\+::misc\+\_\+strings}}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1http__response_1_1response__body}{server\+::http\+\_\+response\+::response\+\_\+body}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+const std\+::string \& \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings_aaede1b4fbc145279fea3525dee5a3e7f}{server\+::http\+\_\+response\+::status\+\_\+strings\+::to\+\_\+string}} (\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\+\_\+type}} status)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings_aaedcf8f7c5ee8b049d4f4206cda49e2b}{server\+::http\+\_\+response\+::status\+\_\+strings\+::ok}} = "{}HTTP/1.\+1 200 OK\textbackslash{}r\textbackslash{}n"{}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings_acb677f12e54347b07ee4f6653daf4336}{server\+::http\+\_\+response\+::status\+\_\+strings\+::bad\+\_\+request}} = "{}HTTP/1.\+0 400 Bad Request\textbackslash{}r\textbackslash{}n"{}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings_acaad0a367b5c448b7de4fed5d3c992d3}{server\+::http\+\_\+response\+::status\+\_\+strings\+::unauthorized}} = "{}HTTP/1.\+0 401 Unauthorized\textbackslash{}r\textbackslash{}n"{}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings_a399f39fb63446ecec7799adf2b503b90}{server\+::http\+\_\+response\+::status\+\_\+strings\+::forbidden}} = "{}HTTP/1.\+0 403 Forbidden\textbackslash{}r\textbackslash{}n"{}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings_a6882677ccb7df7a8fbd008a67b30c525}{server\+::http\+\_\+response\+::status\+\_\+strings\+::not\+\_\+found}} = "{}HTTP/1.\+0 404 Not Found\textbackslash{}r\textbackslash{}n"{}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings_a40cc693bac3f1a2f5869b19863110a8e}{server\+::http\+\_\+response\+::status\+\_\+strings\+::internal\+\_\+server\+\_\+error}} = "{}HTTP/1.\+0 500 Internal Server Error\textbackslash{}r\textbackslash{}n"{}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1http__response_1_1misc__strings_ae32f394e9fb2f754a37f49a73cc2e28c}{server\+::http\+\_\+response\+::misc\+\_\+strings\+::name\+\_\+value\+\_\+separator}} = "{}\+: "{}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1http__response_1_1misc__strings_a18af70d67d252bb35a563095001e174c}{server\+::http\+\_\+response\+::misc\+\_\+strings\+::crlf}} = "{}\textbackslash{}r\textbackslash{}n"{}
+\item 
+const char \mbox{\hyperlink{namespaceserver_1_1http__response_1_1response__body_ad1f8553d7ab372b12d88ea3f2c1c7117}{server\+::http\+\_\+response\+::response\+\_\+body\+::ok}} \mbox{[}$\,$\mbox{]} = "{}"{}
+\item 
+const char \mbox{\hyperlink{namespaceserver_1_1http__response_1_1response__body_adc072fba51bf89745ed82c361b97c680}{server\+::http\+\_\+response\+::response\+\_\+body\+::bad\+\_\+requeset}} \mbox{[}$\,$\mbox{]}
+\item 
+const char \mbox{\hyperlink{namespaceserver_1_1http__response_1_1response__body_a4764d16c257f81b3a75a73a3eca04b1b}{server\+::http\+\_\+response\+::response\+\_\+body\+::unauthorized}} \mbox{[}$\,$\mbox{]}
+\item 
+const char \mbox{\hyperlink{namespaceserver_1_1http__response_1_1response__body_a9f5030a308eb4b5ed270e7e60e484515}{server\+::http\+\_\+response\+::response\+\_\+body\+::forbidden}} \mbox{[}$\,$\mbox{]}
+\item 
+const char \mbox{\hyperlink{namespaceserver_1_1http__response_1_1response__body_aae0f7cb7a1d7bc02231e73c8f0dc4f78}{server\+::http\+\_\+response\+::response\+\_\+body\+::not\+\_\+found}} \mbox{[}$\,$\mbox{]}
+\item 
+const char \mbox{\hyperlink{namespaceserver_1_1http__response_1_1response__body_aa5822eb642ef31ff8a2d0672e4dc2ab4}{server\+::http\+\_\+response\+::response\+\_\+body\+::internal\+\_\+server\+\_\+error}} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}

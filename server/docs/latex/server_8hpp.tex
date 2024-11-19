@@ -1,0 +1,60 @@
+\doxysection{include/server.hpp File Reference}
+\hypertarget{server_8hpp}{}\label{server_8hpp}\index{include/server.hpp@{include/server.hpp}}
+
+
+Handles client connections and responses for video streaming and detection requests.  
+
+
+{\ttfamily \#include $<$boost/asio.\+hpp$>$}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$opencv2/opencv.\+hpp$>$}\newline
+{\ttfamily \#include $<$atomic$>$}\newline
+{\ttfamily \#include $<$mutex$>$}\newline
+{\ttfamily \#include $<$condition\+\_\+variable$>$}\newline
+{\ttfamily \#include "{}response.\+hpp"{}}\newline
+{\ttfamily \#include "{}tvm\+\_\+wrapper.\+hpp"{}}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{structserver_1_1rtp_1_1app}{server\+::rtp\+::app}}
+\begin{DoxyCompactList}\small\item\em Handles video streaming and detection requests. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceserver}{server}}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1rtp}{server\+::rtp}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceserver_1_1rtp_a93b3400c2f526a4a49fa17a0929d3064}{server\+::rtp\+::start\+\_\+server}} (uint16\+\_\+t port)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const std\+::string \mbox{\hyperlink{namespaceserver_1_1rtp_af6f4da23ff8c19580fc2e309d773b737}{server\+::rtp\+::video\+\_\+path}} = "{}/Users/gyujinkim/Desktop/Github/monitor-\/vehicle-\/api/server/traffic\+\_\+jam2.\+mp4"{}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_af1d79d8897ac606556f4019c6142e23d}{server\+::rtp\+::pause\+\_\+streaming}}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_afbd21d26c680a2b3cf549e82b80d6562}{server\+::rtp\+::rewind\+\_\+streaming}}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_a9195f8a7e1a9ef5b13a43c8d22ee482a}{server\+::rtp\+::start\+\_\+detection}}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_a15638ba7e40291d9f45ec5fbd805eae2}{server\+::rtp\+::pause\+\_\+detection}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Handles client connections and responses for video streaming and detection requests. 
+
+This file contains functions that handle various client requests for video streaming and vehicle detection.
+
+Supported endpoints\+:
+\begin{DoxyItemize}
+\item /start\+\_\+stream \+: Start video streaming.
+\item /resume\+\_\+stream \+: Resume video streaming.
+\item /pause\+\_\+stream \+: Pause video streaming.
+\item /start\+\_\+detection \+: Start vehicle detection in the video. 
+\end{DoxyItemize}

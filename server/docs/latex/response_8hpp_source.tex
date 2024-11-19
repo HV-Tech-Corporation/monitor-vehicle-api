@@ -1,0 +1,47 @@
+\doxysection{response.\+hpp}
+\hypertarget{response_8hpp_source}{}\label{response_8hpp_source}\index{include/response.hpp@{include/response.hpp}}
+\mbox{\hyperlink{response_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ RESPONSE\_HPP}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ RESPONSE\_HPP}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <boost/asio.hpp>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceserver}{server}}\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keyword}{namespace\ }http\_response\ \{}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 응답\ 상태\ 코드}}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum\ class}\ \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\_type}}\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea444bcb3a3fcf8389296c49467f27e1d6}{ok}}\ =\ 200,}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea373d9e6e1aaf30e691dadb57eb22d7b1}{bad\_request}}\ =\ 400,}
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea36fd540552b3b1b34e8f0bd8897cbf1e}{unauthorized}}\ =\ 401,}
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea350f9d68221a0db19024ee40cfc3c7f8}{forbidden}}\ =\ 403,}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea7500611bf7030bc99d25c354e7b64714}{not\_found}}\ =\ 404,}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbeace0ad649797c3b15fbed0b35850fa92a}{internal\_server\_error}}\ =\ 500,}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 응답\ 구조체\ 정의}}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structserver_1_1http__response_1_1response}{response}}\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\_type}}\ \mbox{\hyperlink{structserver_1_1http__response_1_1response_a4f62791bd1036c828ada6a6a1d700eed}{status}};}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<std::pair<std::string,\ std::string>>\ \mbox{\hyperlink{structserver_1_1http__response_1_1response_aa72d35ac26bf9077855d6f09e59a5ad4}{headers}};}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ \mbox{\hyperlink{structserver_1_1http__response_1_1response_a8200a7625642dbd9c086a5d5ceaf555d}{content}};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 상태\ 코드\ 설정}}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structserver_1_1http__response_1_1response_a04ee1437ca8b78882e04a7a8cdc2f4c6}{set\_status}}(\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\_type}}\ status\_code);}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 헤더\ 추가}}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structserver_1_1http__response_1_1response_a5c50503fe43393451b5b1cc80ad29930}{add\_header}}(\textcolor{keyword}{const}\ std::string\&\ name,\ \textcolor{keyword}{const}\ std::string\&\ value);}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 버퍼로\ 변환하여\ 네트워크\ 전송\ 준비}}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<boost::asio::const\_buffer>\ \mbox{\hyperlink{structserver_1_1http__response_1_1response_a8f6b12ba44d597482decb5e3f9e1cae4}{to\_buffers}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ \mbox{\hyperlink{structserver_1_1http__response_1_1response_a82ca578a7137af8a4e63820cf0111738}{response\_body\_to\_string}}(\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\_type}}\ \mbox{\hyperlink{structserver_1_1http__response_1_1response_a4f62791bd1036c828ada6a6a1d700eed}{status}});}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \}\ \textcolor{comment}{//\ namespace\ http\_response}}
+\DoxyCodeLine{00039\ \}\ \textcolor{comment}{//\ namespace\ server}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

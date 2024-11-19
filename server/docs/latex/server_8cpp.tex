@@ -1,0 +1,90 @@
+\doxysection{src/server.cpp File Reference}
+\hypertarget{server_8cpp}{}\label{server_8cpp}\index{src/server.cpp@{src/server.cpp}}
+{\ttfamily \#include "{}server.\+hpp"{}}\newline
+{\ttfamily \#include $<$boost/filesystem.\+hpp$>$}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceserver}{server}}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1rtp}{server\+::rtp}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_a8f0e9c488d00884aa5cd45d606984096}{server\+::rtp\+::pause\+\_\+streaming}} (false)
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_a232d1d55b60a2d8032c40d04b05de188}{server\+::rtp\+::rewind\+\_\+streaming}} (false)
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_ae6a398297df01aedef7e1c3149e2a64a}{server\+::rtp\+::start\+\_\+detection}} (false)
+\item 
+std\+::atomic$<$ bool $>$ \mbox{\hyperlink{namespaceserver_1_1rtp_ae128600472be2eed4df3e1bbe151f421}{server\+::rtp\+::pause\+\_\+detection}} (false)
+\item 
+void \mbox{\hyperlink{server_8cpp_acee138acfa836202ef942dbfb8f0cc59}{send\+\_\+response}} (boost\+::asio\+::ip\+::tcp\+::socket \&socket, \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{server\+::http\+\_\+response\+::response\+\_\+type}} status)
+\item 
+std\+::string \mbox{\hyperlink{server_8cpp_a1ff13e4cdb1a6d53ff9d36d4cad1d974}{get\+\_\+content\+\_\+type}} (const std\+::string \&file\+\_\+path)
+\item 
+void \mbox{\hyperlink{server_8cpp_ac25856d745ae14e6ef69cc0423efcbb8}{send\+\_\+file\+\_\+doxygen}} (boost\+::asio\+::ip\+::tcp\+::socket \&socket, const std\+::string \&file\+\_\+path)
+\item 
+void \mbox{\hyperlink{server_8cpp_aa462693f9b57abace54b87f894355413}{send\+\_\+image\+\_\+list\+\_\+response}} (boost\+::asio\+::ip\+::tcp\+::socket \&socket)
+\item 
+void \mbox{\hyperlink{server_8cpp_a462d65c04f2f05f897c17db069e888fc}{send\+\_\+image\+\_\+response}} (boost\+::asio\+::ip\+::tcp\+::socket \&socket, const std\+::string \&filename)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{namespaceserver_1_1rtp_af2ac153bfeb2391cc764d2e0d7ebe83f}{server\+::rtp\+::client\+\_\+ip}}
+\item 
+std\+::condition\+\_\+variable \mbox{\hyperlink{namespaceserver_1_1rtp_aabbbe34584d774f77f6cb76ae16c56ef}{server\+::rtp\+::detection\+\_\+cv}}
+\item 
+std\+::mutex \mbox{\hyperlink{namespaceserver_1_1rtp_adc563692790db9ad0566f21cf6ce387e}{server\+::rtp\+::frame\+\_\+mutex}}
+\item 
+cv\+::\+Mat \mbox{\hyperlink{namespaceserver_1_1rtp_a0e27acd7ff3301623d6a356c251a225e}{server\+::rtp\+::shared\+\_\+frame}}
+\item 
+tvm\+::runtime\+::\+Module \mbox{\hyperlink{namespaceserver_1_1rtp_a2be001c689064247a9f0a9846796c79d}{server\+::rtp\+::loaded\+\_\+lib}}
+\item 
+tvm\+::runtime\+::\+Module \mbox{\hyperlink{namespaceserver_1_1rtp_a875197123c6c66947dc828ecf5c1b5c5}{server\+::rtp\+::mod}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceserver_1_1rtp_a545085a36150440fb0139ce1d3383cad}{server\+::rtp\+::set\+\_\+input}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceserver_1_1rtp_a2e3cb9cdd5275c606a367c0ca699bc56}{server\+::rtp\+::run}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceserver_1_1rtp_aa05f2270ca86b82b60d8be0a625cde8d}{server\+::rtp\+::get\+\_\+output}}
+\item 
+DLDevice \mbox{\hyperlink{namespaceserver_1_1rtp_a56015619368abb43f35b08faa4437cdb}{server\+::rtp\+::dev}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{server_8cpp_a1ff13e4cdb1a6d53ff9d36d4cad1d974}\index{server.cpp@{server.cpp}!get\_content\_type@{get\_content\_type}}
+\index{get\_content\_type@{get\_content\_type}!server.cpp@{server.cpp}}
+\doxysubsubsection{\texorpdfstring{get\_content\_type()}{get\_content\_type()}}
+{\footnotesize\ttfamily \label{server_8cpp_a1ff13e4cdb1a6d53ff9d36d4cad1d974} 
+std\+::string get\+\_\+content\+\_\+type (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file\+\_\+path}{}\end{DoxyParamCaption})}
+
+\Hypertarget{server_8cpp_ac25856d745ae14e6ef69cc0423efcbb8}\index{server.cpp@{server.cpp}!send\_file\_doxygen@{send\_file\_doxygen}}
+\index{send\_file\_doxygen@{send\_file\_doxygen}!server.cpp@{server.cpp}}
+\doxysubsubsection{\texorpdfstring{send\_file\_doxygen()}{send\_file\_doxygen()}}
+{\footnotesize\ttfamily \label{server_8cpp_ac25856d745ae14e6ef69cc0423efcbb8} 
+void send\+\_\+file\+\_\+doxygen (\begin{DoxyParamCaption}\item[{boost\+::asio\+::ip\+::tcp\+::socket \&}]{socket}{, }\item[{const std\+::string \&}]{file\+\_\+path}{}\end{DoxyParamCaption})}
+
+\Hypertarget{server_8cpp_aa462693f9b57abace54b87f894355413}\index{server.cpp@{server.cpp}!send\_image\_list\_response@{send\_image\_list\_response}}
+\index{send\_image\_list\_response@{send\_image\_list\_response}!server.cpp@{server.cpp}}
+\doxysubsubsection{\texorpdfstring{send\_image\_list\_response()}{send\_image\_list\_response()}}
+{\footnotesize\ttfamily \label{server_8cpp_aa462693f9b57abace54b87f894355413} 
+void send\+\_\+image\+\_\+list\+\_\+response (\begin{DoxyParamCaption}\item[{boost\+::asio\+::ip\+::tcp\+::socket \&}]{socket}{}\end{DoxyParamCaption})}
+
+\Hypertarget{server_8cpp_a462d65c04f2f05f897c17db069e888fc}\index{server.cpp@{server.cpp}!send\_image\_response@{send\_image\_response}}
+\index{send\_image\_response@{send\_image\_response}!server.cpp@{server.cpp}}
+\doxysubsubsection{\texorpdfstring{send\_image\_response()}{send\_image\_response()}}
+{\footnotesize\ttfamily \label{server_8cpp_a462d65c04f2f05f897c17db069e888fc} 
+void send\+\_\+image\+\_\+response (\begin{DoxyParamCaption}\item[{boost\+::asio\+::ip\+::tcp\+::socket \&}]{socket}{, }\item[{const std\+::string \&}]{filename}{}\end{DoxyParamCaption})}
+
+\Hypertarget{server_8cpp_acee138acfa836202ef942dbfb8f0cc59}\index{server.cpp@{server.cpp}!send\_response@{send\_response}}
+\index{send\_response@{send\_response}!server.cpp@{server.cpp}}
+\doxysubsubsection{\texorpdfstring{send\_response()}{send\_response()}}
+{\footnotesize\ttfamily \label{server_8cpp_acee138acfa836202ef942dbfb8f0cc59} 
+void send\+\_\+response (\begin{DoxyParamCaption}\item[{boost\+::asio\+::ip\+::tcp\+::socket \&}]{socket}{, }\item[{\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{server\+::http\+\_\+response\+::response\+\_\+type}}}]{status}{}\end{DoxyParamCaption})}
+

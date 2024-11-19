@@ -1,0 +1,38 @@
+\doxysection{track.\+hpp}
+\hypertarget{track_8hpp_source}{}\label{track_8hpp_source}\index{include/track.hpp@{include/track.hpp}}
+\mbox{\hyperlink{track_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <opencv2/core.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{kalman__filter_8hpp}{kalman\_filter.hpp}}"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_track}{Track}}\ \{}
+\DoxyCodeLine{00007\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00009\ \ \ \ \ \mbox{\hyperlink{class_track_a11457bcda8be04595018c11173d8241c}{Track}}();}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{comment}{//\ Destructor}}
+\DoxyCodeLine{00012\ \ \ \ \ \mbox{\hyperlink{class_track_a45d31a87679b4c25394cf2c033efe433}{\string~Track}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_track_a4b6013f63206395494c8f72d48303cd8}{Init}}(\textcolor{keyword}{const}\ cv::Rect\&\ bbox);}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_track_ae7ddcfd82a2526e882cc29004dde7da1}{Predict}}();}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_track_a3b36a2558d4aa54ce543049664f71515}{Update}}(\textcolor{keyword}{const}\ cv::Rect\&\ bbox);}
+\DoxyCodeLine{00017\ \ \ \ \ cv::Rect\ \mbox{\hyperlink{class_track_abc743ffbd527364b383be2e90ccdb0b5}{GetStateAsBbox}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00018\ \ \ \ \ std::pair<cv::Point,\ cv::Point>\ \mbox{\hyperlink{class_track_a0d66e84a53f3e22e6dae26321c4cd60d}{GetStateAsLine}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ \ \ \ \ cv::Point\ \mbox{\hyperlink{class_track_ac02459f56e35156b06abde00afc45ce2}{GetPredictedPoint}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00020\ \ \ \ \ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{float}\ \mbox{\hyperlink{class_track_a118dc15b4634bf8afb867b1267d00a10}{GetNIS}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{int}\ \mbox{\hyperlink{class_track_a0a343d99fbe33fe22be5888f1a2f8b2d}{coast\_cycles\_}}\ =\ 0,\ \mbox{\hyperlink{class_track_ad222d2d10c706e419812ff01c1ec30bd}{hit\_streak\_}}\ =\ 0;}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00026\ \ \ \ \ Eigen::VectorXd\ ConvertBboxToObservation(\textcolor{keyword}{const}\ cv::Rect\&\ bbox)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00027\ \ \ \ \ cv::Rect\ ConvertStateToBbox(\textcolor{keyword}{const}\ Eigen::VectorXd\ \&state)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00028\ \ \ \ \ std::pair<cv::Point,\ cv::Point>\ ConvertStateToLine(\textcolor{keyword}{const}\ Eigen::VectorXd\ \&state)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00029\ \ \ \ \ }
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \mbox{\hyperlink{class_kalman_filter}{KalmanFilter}}\ kf\_;}
+\DoxyCodeLine{00032\ \};}
+
+\end{DoxyCode}

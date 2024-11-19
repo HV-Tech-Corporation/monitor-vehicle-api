@@ -1,0 +1,64 @@
+\doxysection{server\+::http\+\_\+response Namespace Reference}
+\hypertarget{namespaceserver_1_1http__response}{}\label{namespaceserver_1_1http__response}\index{server::http\_response@{server::http\_response}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1http__response_1_1misc__strings}{misc\+\_\+strings}}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1http__response_1_1response__body}{response\+\_\+body}}
+\item 
+namespace \mbox{\hyperlink{namespaceserver_1_1http__response_1_1status__strings}{status\+\_\+strings}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structserver_1_1http__response_1_1response}{response}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\+\_\+type}} \{ \newline
+\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea444bcb3a3fcf8389296c49467f27e1d6}{ok}} = 200
+, \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea373d9e6e1aaf30e691dadb57eb22d7b1}{bad\+\_\+request}} = 400
+, \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea36fd540552b3b1b34e8f0bd8897cbf1e}{unauthorized}} = 401
+, \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea350f9d68221a0db19024ee40cfc3c7f8}{forbidden}} = 403
+, \newline
+\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea7500611bf7030bc99d25c354e7b64714}{not\+\_\+found}} = 404
+, \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbeace0ad649797c3b15fbed0b35850fa92a}{internal\+\_\+server\+\_\+error}} = 500
+ \}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}\index{server::http\_response@{server::http\_response}!response\_type@{response\_type}}
+\index{response\_type@{response\_type}!server::http\_response@{server::http\_response}}
+\doxysubsubsection{\texorpdfstring{response\_type}{response\_type}}
+{\footnotesize\ttfamily \label{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe} 
+enum class \mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{server\+::http\+\_\+response\+::response\+\_\+type}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ok@{ok}!server::http\_response@{server::http\_response}}\index{server::http\_response@{server::http\_response}!ok@{ok}}}\Hypertarget{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea444bcb3a3fcf8389296c49467f27e1d6}\label{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe} 
+ok&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{bad\_request@{bad\_request}!server::http\_response@{server::http\_response}}\index{server::http\_response@{server::http\_response}!bad\_request@{bad\_request}}}\Hypertarget{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea373d9e6e1aaf30e691dadb57eb22d7b1}\label{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe} 
+bad\+\_\+request&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{unauthorized@{unauthorized}!server::http\_response@{server::http\_response}}\index{server::http\_response@{server::http\_response}!unauthorized@{unauthorized}}}\Hypertarget{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea36fd540552b3b1b34e8f0bd8897cbf1e}\label{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe} 
+unauthorized&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{forbidden@{forbidden}!server::http\_response@{server::http\_response}}\index{server::http\_response@{server::http\_response}!forbidden@{forbidden}}}\Hypertarget{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea350f9d68221a0db19024ee40cfc3c7f8}\label{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe} 
+forbidden&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{not\_found@{not\_found}!server::http\_response@{server::http\_response}}\index{server::http\_response@{server::http\_response}!not\_found@{not\_found}}}\Hypertarget{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbea7500611bf7030bc99d25c354e7b64714}\label{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe} 
+not\+\_\+found&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{internal\_server\_error@{internal\_server\_error}!server::http\_response@{server::http\_response}}\index{server::http\_response@{server::http\_response}!internal\_server\_error@{internal\_server\_error}}}\Hypertarget{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbeace0ad649797c3b15fbed0b35850fa92a}\label{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe} 
+internal\+\_\+server\+\_\+error&\\
+\hline
+
+\end{DoxyEnumFields}

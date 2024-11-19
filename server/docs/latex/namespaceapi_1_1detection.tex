@@ -1,0 +1,115 @@
+\doxysection{api\+::detection Namespace Reference}
+\hypertarget{namespaceapi_1_1detection}{}\label{namespaceapi_1_1detection}\index{api::detection@{api::detection}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{Detected\+Object}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{namespaceapi_1_1detection_af3f8400426b114d2eaa679155a650b28}{load\+\_\+model}} (const std\+::string \&model\+\_\+path, const std\+::string device="{}cpu"{})
+\item 
+void \mbox{\hyperlink{namespaceapi_1_1detection_a056dcd1d8f9bf5b4dddaf53f218b9bb8}{detect}} (std\+::atomic$<$ bool $>$ \&start\+\_\+detection, std\+::atomic$<$ bool $>$ \&pause\+\_\+detection, std\+::mutex \&frame\+\_\+mutex, std\+::condition\+\_\+variable \&detection\+\_\+cv, cv\+::\+Mat \&shared\+\_\+frame)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+tvm\+::runtime\+::\+Module \mbox{\hyperlink{namespaceapi_1_1detection_a409a7c89f01b0193e9987322e26e85f1}{loaded\+\_\+lib}}
+\item 
+tvm\+::runtime\+::\+Module \mbox{\hyperlink{namespaceapi_1_1detection_a97b6e97db4c969f9f64491862d2613b8}{mod}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceapi_1_1detection_ab50e4169b386b67d5c6562126f618944}{set\+\_\+input}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceapi_1_1detection_af5caf7ab9cdbe2ed1ed8ad831c596ef4}{run}}
+\item 
+tvm\+::runtime\+::\+Packed\+Func \mbox{\hyperlink{namespaceapi_1_1detection_a91ffeaf01a94fb4b12140f58b4451b1e}{get\+\_\+output}}
+\item 
+DLDevice \mbox{\hyperlink{namespaceapi_1_1detection_a9a80085072bd2fa6d480229aebe0b500}{dev}}
+\item 
+std\+::set$<$ int $>$ \mbox{\hyperlink{namespaceapi_1_1detection_a420dbed2ebe21edfbe7c21367b95b425}{saved\+\_\+ids}}
+\item 
+std\+::vector$<$ \mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{Detected\+Object}} $>$ \mbox{\hyperlink{namespaceapi_1_1detection_add41da847b2cf9e45c87e920400d1eb4}{tracked\+Objects}}
+\item 
+int \mbox{\hyperlink{namespaceapi_1_1detection_a363cb23fc967f9041921c1e87a55296d}{current\+Id}} = 0
+\item 
+\mbox{\hyperlink{class_object_tracker}{Object\+Tracker}} \mbox{\hyperlink{namespaceapi_1_1detection_a69344b03fa1044aa44febdc81678850e}{tracker}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespaceapi_1_1detection_a056dcd1d8f9bf5b4dddaf53f218b9bb8}\index{api::detection@{api::detection}!detect@{detect}}
+\index{detect@{detect}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{detect()}{detect()}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_a056dcd1d8f9bf5b4dddaf53f218b9bb8} 
+void api\+::detection\+::detect (\begin{DoxyParamCaption}\item[{std\+::atomic$<$ bool $>$ \&}]{start\+\_\+detection}{, }\item[{std\+::atomic$<$ bool $>$ \&}]{pause\+\_\+detection}{, }\item[{std\+::mutex \&}]{frame\+\_\+mutex}{, }\item[{std\+::condition\+\_\+variable \&}]{detection\+\_\+cv}{, }\item[{cv\+::\+Mat \&}]{shared\+\_\+frame}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespaceapi_1_1detection_af3f8400426b114d2eaa679155a650b28}\index{api::detection@{api::detection}!load\_model@{load\_model}}
+\index{load\_model@{load\_model}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{load\_model()}{load\_model()}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_af3f8400426b114d2eaa679155a650b28} 
+void api\+::detection\+::load\+\_\+model (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{model\+\_\+path}{, }\item[{const std\+::string}]{device}{ = {\ttfamily "{}cpu"{}}}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespaceapi_1_1detection_a363cb23fc967f9041921c1e87a55296d}\index{api::detection@{api::detection}!currentId@{currentId}}
+\index{currentId@{currentId}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{currentId}{currentId}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_a363cb23fc967f9041921c1e87a55296d} 
+int api\+::detection\+::current\+Id = 0}
+
+\Hypertarget{namespaceapi_1_1detection_a9a80085072bd2fa6d480229aebe0b500}\index{api::detection@{api::detection}!dev@{dev}}
+\index{dev@{dev}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{dev}{dev}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_a9a80085072bd2fa6d480229aebe0b500} 
+DLDevice api\+::detection\+::dev}
+
+\Hypertarget{namespaceapi_1_1detection_a91ffeaf01a94fb4b12140f58b4451b1e}\index{api::detection@{api::detection}!get\_output@{get\_output}}
+\index{get\_output@{get\_output}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{get\_output}{get\_output}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_a91ffeaf01a94fb4b12140f58b4451b1e} 
+tvm\+::runtime\+::\+Packed\+Func api\+::detection\+::get\+\_\+output}
+
+\Hypertarget{namespaceapi_1_1detection_a409a7c89f01b0193e9987322e26e85f1}\index{api::detection@{api::detection}!loaded\_lib@{loaded\_lib}}
+\index{loaded\_lib@{loaded\_lib}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{loaded\_lib}{loaded\_lib}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_a409a7c89f01b0193e9987322e26e85f1} 
+tvm\+::runtime\+::\+Module api\+::detection\+::loaded\+\_\+lib}
+
+\Hypertarget{namespaceapi_1_1detection_a97b6e97db4c969f9f64491862d2613b8}\index{api::detection@{api::detection}!mod@{mod}}
+\index{mod@{mod}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{mod}{mod}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_a97b6e97db4c969f9f64491862d2613b8} 
+tvm\+::runtime\+::\+Module api\+::detection\+::mod}
+
+\Hypertarget{namespaceapi_1_1detection_af5caf7ab9cdbe2ed1ed8ad831c596ef4}\index{api::detection@{api::detection}!run@{run}}
+\index{run@{run}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{run}{run}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_af5caf7ab9cdbe2ed1ed8ad831c596ef4} 
+tvm\+::runtime\+::\+Packed\+Func api\+::detection\+::run}
+
+\Hypertarget{namespaceapi_1_1detection_a420dbed2ebe21edfbe7c21367b95b425}\index{api::detection@{api::detection}!saved\_ids@{saved\_ids}}
+\index{saved\_ids@{saved\_ids}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{saved\_ids}{saved\_ids}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_a420dbed2ebe21edfbe7c21367b95b425} 
+std\+::set$<$int$>$ api\+::detection\+::saved\+\_\+ids}
+
+\Hypertarget{namespaceapi_1_1detection_ab50e4169b386b67d5c6562126f618944}\index{api::detection@{api::detection}!set\_input@{set\_input}}
+\index{set\_input@{set\_input}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{set\_input}{set\_input}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_ab50e4169b386b67d5c6562126f618944} 
+tvm\+::runtime\+::\+Packed\+Func api\+::detection\+::set\+\_\+input}
+
+\Hypertarget{namespaceapi_1_1detection_add41da847b2cf9e45c87e920400d1eb4}\index{api::detection@{api::detection}!trackedObjects@{trackedObjects}}
+\index{trackedObjects@{trackedObjects}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{trackedObjects}{trackedObjects}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_add41da847b2cf9e45c87e920400d1eb4} 
+std\+::vector$<$\mbox{\hyperlink{structapi_1_1detection_1_1_detected_object}{Detected\+Object}}$>$ api\+::detection\+::tracked\+Objects}
+
+\Hypertarget{namespaceapi_1_1detection_a69344b03fa1044aa44febdc81678850e}\index{api::detection@{api::detection}!tracker@{tracker}}
+\index{tracker@{tracker}!api::detection@{api::detection}}
+\doxysubsubsection{\texorpdfstring{tracker}{tracker}}
+{\footnotesize\ttfamily \label{namespaceapi_1_1detection_a69344b03fa1044aa44febdc81678850e} 
+\mbox{\hyperlink{class_object_tracker}{Object\+Tracker}} api\+::detection\+::tracker}
+

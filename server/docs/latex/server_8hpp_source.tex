@@ -1,0 +1,60 @@
+\doxysection{server.\+hpp}
+\hypertarget{server_8hpp_source}{}\label{server_8hpp_source}\index{include/server.hpp@{include/server.hpp}}
+\mbox{\hyperlink{server_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#ifndef\ SERVER\_HPP}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#define\ SERVER\_HPP}}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <boost/asio.hpp>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <opencv2/opencv.hpp>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <atomic>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <mutex>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <condition\_variable>}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{response_8hpp}{response.hpp}}"{}}\ \textcolor{comment}{//\ 응답\ 관리를\ 위한\ response.hpp}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{tvm__wrapper_8hpp}{tvm\_wrapper.hpp}}"{}}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceserver}{server}}\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{namespace\ }rtp\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\mbox{\hyperlink{structserver_1_1rtp_1_1app}{app}}\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ uint16\_t\ \mbox{\hyperlink{structserver_1_1rtp_1_1app_a60d94d354023163220f79ed1658783b9}{port\_num}}\ =\ 5004;}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structserver_1_1rtp_1_1app}{app}}\&\ \mbox{\hyperlink{structserver_1_1rtp_1_1app_a729f814d407bcd82f5bed22d8f7aa52d}{port}}(uint16\_t\ p)\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \mbox{\hyperlink{structserver_1_1rtp_1_1app_a60d94d354023163220f79ed1658783b9}{port\_num}}\ =\ p;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structserver_1_1rtp_1_1app_a337e1ba0b7748c0b930892da8d00a3b7}{handle\_streaming\_request}}(boost::asio::ip::tcp::socket\&\ socket);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ GStreamer\ 파이프라인}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ \mbox{\hyperlink{structserver_1_1rtp_1_1app_a44a89eba59afd96f910c74484611fa8f}{get\_gstream\_pipeline}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 비디오\ 스트리밍\ 함수}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{structserver_1_1rtp_1_1app_ae374e62edb0032082da662ddc279e4d2}{start\_streaming}}(\textcolor{keyword}{const}\ std::string\&\ \mbox{\hyperlink{namespaceserver_1_1rtp_af6f4da23ff8c19580fc2e309d773b737}{video\_path}});\ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \};\ \textcolor{comment}{//struct\ app}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 서버\ 시작\ 함수}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceserver_1_1rtp_a93b3400c2f526a4a49fa17a0929d3064}{start\_server}}(uint16\_t\ port);\ \ }
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::string\ \mbox{\hyperlink{namespaceserver_1_1rtp_af6f4da23ff8c19580fc2e309d773b737}{video\_path}}\ =\ \textcolor{stringliteral}{"{}/Users/gyujinkim/Desktop/Github/monitor-\/vehicle-\/api/server/traffic\_jam2.mp4"{}};}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ std::atomic<bool>\ \mbox{\hyperlink{namespaceserver_1_1rtp_af1d79d8897ac606556f4019c6142e23d}{pause\_streaming}};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ std::atomic<bool>\ \mbox{\hyperlink{namespaceserver_1_1rtp_afbd21d26c680a2b3cf549e82b80d6562}{rewind\_streaming}};}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ std::atomic<bool>\ \mbox{\hyperlink{namespaceserver_1_1rtp_a9195f8a7e1a9ef5b13a43c8d22ee482a}{start\_detection}};}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ std::atomic<bool>\ \mbox{\hyperlink{namespaceserver_1_1rtp_a15638ba7e40291d9f45ec5fbd805eae2}{pause\_detection}};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ std::condition\_variable\ \mbox{\hyperlink{namespaceserver_1_1rtp_aabbbe34584d774f77f6cb76ae16c56ef}{detection\_cv}};}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ std::mutex\ \mbox{\hyperlink{namespaceserver_1_1rtp_adc563692790db9ad0566f21cf6ce387e}{frame\_mutex}};}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ cv::Mat\ \mbox{\hyperlink{namespaceserver_1_1rtp_a0e27acd7ff3301623d6a356c251a225e}{shared\_frame}};}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00088\ \ \ \ \ \}\ \textcolor{comment}{//\ namespace\ rtp}}
+\DoxyCodeLine{00089\ \}\ \textcolor{comment}{//\ namespace\ server}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ SERVER\_HPP}}
+
+\end{DoxyCode}

@@ -1,0 +1,91 @@
+\doxysection{server\+::rtp\+::app Class Reference}
+\hypertarget{structserver_1_1rtp_1_1app}{}\label{structserver_1_1rtp_1_1app}\index{server::rtp::app@{server::rtp::app}}
+
+
+Handles video streaming and detection requests.  
+
+
+
+
+{\ttfamily \#include $<$server.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structserver_1_1rtp_1_1app}{app}} \& \mbox{\hyperlink{structserver_1_1rtp_1_1app_a729f814d407bcd82f5bed22d8f7aa52d}{port}} (uint16\+\_\+t p)
+\item 
+void \mbox{\hyperlink{structserver_1_1rtp_1_1app_a337e1ba0b7748c0b930892da8d00a3b7}{handle\+\_\+streaming\+\_\+request}} (boost\+::asio\+::ip\+::tcp\+::socket \&socket)
+\begin{DoxyCompactList}\small\item\em Handles client connections and provides responses for each request. \end{DoxyCompactList}\item 
+std\+::string \mbox{\hyperlink{structserver_1_1rtp_1_1app_a44a89eba59afd96f910c74484611fa8f}{get\+\_\+gstream\+\_\+pipeline}} () const
+\item 
+void \mbox{\hyperlink{structserver_1_1rtp_1_1app_ae374e62edb0032082da662ddc279e4d2}{start\+\_\+streaming}} (const std\+::string \&\mbox{\hyperlink{namespaceserver_1_1rtp_af6f4da23ff8c19580fc2e309d773b737}{video\+\_\+path}})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint16\+\_\+t \mbox{\hyperlink{structserver_1_1rtp_1_1app_a60d94d354023163220f79ed1658783b9}{port\+\_\+num}} = 5004
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Handles video streaming and detection requests. 
+
+This class provides functions to handle various client requests, including starting, pausing, and resuming video streaming, as well as starting vehicle detection. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structserver_1_1rtp_1_1app_a44a89eba59afd96f910c74484611fa8f}\index{server::rtp::app@{server::rtp::app}!get\_gstream\_pipeline@{get\_gstream\_pipeline}}
+\index{get\_gstream\_pipeline@{get\_gstream\_pipeline}!server::rtp::app@{server::rtp::app}}
+\doxysubsubsection{\texorpdfstring{get\_gstream\_pipeline()}{get\_gstream\_pipeline()}}
+{\footnotesize\ttfamily \label{structserver_1_1rtp_1_1app_a44a89eba59afd96f910c74484611fa8f} 
+std\+::string server\+::rtp\+::app\+::get\+\_\+gstream\+\_\+pipeline (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{structserver_1_1rtp_1_1app_a337e1ba0b7748c0b930892da8d00a3b7}\index{server::rtp::app@{server::rtp::app}!handle\_streaming\_request@{handle\_streaming\_request}}
+\index{handle\_streaming\_request@{handle\_streaming\_request}!server::rtp::app@{server::rtp::app}}
+\doxysubsubsection{\texorpdfstring{handle\_streaming\_request()}{handle\_streaming\_request()}}
+{\footnotesize\ttfamily \label{structserver_1_1rtp_1_1app_a337e1ba0b7748c0b930892da8d00a3b7} 
+void server\+::rtp\+::app\+::handle\+\_\+streaming\+\_\+request (\begin{DoxyParamCaption}\item[{boost\+::asio\+::ip\+::tcp\+::socket \&}]{socket}{}\end{DoxyParamCaption})}
+
+
+
+Handles client connections and provides responses for each request. 
+
+Supported endpoints\+:
+\begin{DoxyItemize}
+\item /start\+\_\+stream \+: Start video streaming.
+\item /resume\+\_\+stream \+: Resume video streaming.
+\item /pause\+\_\+stream \+: Pause video streaming.
+\item /start\+\_\+detection \+: Start vehicle detection in the video.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em socket} & The client socket connection. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{structserver_1_1rtp_1_1app_a729f814d407bcd82f5bed22d8f7aa52d}\index{server::rtp::app@{server::rtp::app}!port@{port}}
+\index{port@{port}!server::rtp::app@{server::rtp::app}}
+\doxysubsubsection{\texorpdfstring{port()}{port()}}
+{\footnotesize\ttfamily \label{structserver_1_1rtp_1_1app_a729f814d407bcd82f5bed22d8f7aa52d} 
+\mbox{\hyperlink{structserver_1_1rtp_1_1app}{app}} \& server\+::rtp\+::app\+::port (\begin{DoxyParamCaption}\item[{uint16\+\_\+t}]{p}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\Hypertarget{structserver_1_1rtp_1_1app_ae374e62edb0032082da662ddc279e4d2}\index{server::rtp::app@{server::rtp::app}!start\_streaming@{start\_streaming}}
+\index{start\_streaming@{start\_streaming}!server::rtp::app@{server::rtp::app}}
+\doxysubsubsection{\texorpdfstring{start\_streaming()}{start\_streaming()}}
+{\footnotesize\ttfamily \label{structserver_1_1rtp_1_1app_ae374e62edb0032082da662ddc279e4d2} 
+void server\+::rtp\+::app\+::start\+\_\+streaming (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{video\+\_\+path}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structserver_1_1rtp_1_1app_a60d94d354023163220f79ed1658783b9}\index{server::rtp::app@{server::rtp::app}!port\_num@{port\_num}}
+\index{port\_num@{port\_num}!server::rtp::app@{server::rtp::app}}
+\doxysubsubsection{\texorpdfstring{port\_num}{port\_num}}
+{\footnotesize\ttfamily \label{structserver_1_1rtp_1_1app_a60d94d354023163220f79ed1658783b9} 
+uint16\+\_\+t server\+::rtp\+::app\+::port\+\_\+num = 5004}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{server_8hpp}{server.\+hpp}}\item 
+src/\mbox{\hyperlink{server_8cpp}{server.\+cpp}}\end{DoxyCompactItemize}

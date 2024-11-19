@@ -1,0 +1,470 @@
+\doxysection{munkres.\+hpp}
+\hypertarget{munkres_8hpp_source}{}\label{munkres_8hpp_source}\index{include/munkres.hpp@{include/munkres.hpp}}
+\mbox{\hyperlink{munkres_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ \ \ Copyright\ (c)\ 2007\ John\ Weaver}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *\ \ \ Copyright\ (c)\ 2015\ Miroslav\ Krajicek}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ \ \ This\ program\ is\ free\ software;\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ \ \ it\ under\ the\ terms\ of\ the\ GNU\ General\ Public\ License\ as\ published\ by}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ \ \ the\ Free\ Software\ Foundation;\ either\ version\ 2\ of\ the\ License,\ or}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *\ \ \ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ \ \ This\ program\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ \ \ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ \ \ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *\ \ \ GNU\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ \ \ You\ should\ have\ received\ a\ copy\ of\ the\ GNU\ General\ Public\ License}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *\ \ \ along\ with\ this\ program;\ if\ not,\ write\ to\ the\ Free\ Software}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ *\ \ \ Foundation,\ Inc.,\ 59\ Temple\ Place,\ Suite\ 330,\ Boston,\ MA\ \ 02111-\/1307\ USA}}
+\DoxyCodeLine{00018\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#if\ !defined(\_MUNKRES\_H\_)}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#define\ \_MUNKRES\_H\_}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{matrix_8hpp}{matrix.hpp}}"{}}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <list>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <limits>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ Data>\ \textcolor{keyword}{class\ }\mbox{\hyperlink{class_munkres}{Munkres}}}
+\DoxyCodeLine{00032\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ NORMAL\ =\ 0;}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ STAR\ \ \ =\ 1;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ PRIME\ \ =\ 2;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00039\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{00040\ \textcolor{comment}{\ \ \ \ \ *\ Linear\ assignment\ problem\ solution}}
+\DoxyCodeLine{00041\ \textcolor{comment}{\ \ \ \ \ *\ [modifies\ matrix\ in-\/place.]}}
+\DoxyCodeLine{00042\ \textcolor{comment}{\ \ \ \ \ *\ matrix(row,col):\ row\ major\ format\ assumed.}}
+\DoxyCodeLine{00043\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{00044\ \textcolor{comment}{\ \ \ \ \ *\ Assignments\ are\ remaining\ 0\ values}}
+\DoxyCodeLine{00045\ \textcolor{comment}{\ \ \ \ \ *\ (extra\ 0\ values\ are\ replaced\ with\ -\/1)}}
+\DoxyCodeLine{00046\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{00047\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_munkres_a743f554d8574ec8342d24ed81f7187b1}{solve}}(\mbox{\hyperlink{class_matrix}{Matrix<Data>}}\ \&m)\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows\ =\ m.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}(),}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ columns\ =\ m.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}(),}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ size\ =\ std::max(rows,\ columns);}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#ifdef\ DEBUG}}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Munkres\ input:\ "{}}\ <<\ m\ <<\ std::endl;}
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Copy\ input\ matrix}}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ this-\/>matrix\ =\ m;}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ rows\ !=\ columns\ )\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ the\ input\ matrix\ isn't\ square,\ make\ it\ square}}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ and\ fill\ the\ empty\ values\ with\ the\ largest\ value\ present}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ in\ the\ matrix.}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ matrix.\mbox{\hyperlink{class_matrix_a61cc9e991bbc443da6644265808116c5}{resize}}(size,\ size,\ matrix.\mbox{\hyperlink{class_matrix_a447d760b71dd518adc2351c3286b133b}{max}}());}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ STAR\ ==\ 1\ ==\ starred,\ PRIME\ ==\ 2\ ==\ primed}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ mask\_matrix.\mbox{\hyperlink{class_matrix_a61cc9e991bbc443da6644265808116c5}{resize}}(size,\ size);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ row\_mask\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{bool}[size];}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ col\_mask\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{bool}[size];}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ size\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ row\_mask[i]\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ size\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ col\_mask[i]\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Prepare\ the\ matrix\ values...}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ there\ were\ any\ infinities,\ replace\ them\ with\ a\ value\ greater}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ than\ the\ maximum\ value\ in\ the\ matrix.}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_munkres_a9248629fc0180a8299333e7721d7d6ad}{replace\_infinites}}(matrix);}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_munkres_a31bf3a8eb977b1c7a23448f476d8a11f}{minimize\_along\_direction}}(matrix,\ rows\ >=\ columns);}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \mbox{\hyperlink{class_munkres_a31bf3a8eb977b1c7a23448f476d8a11f}{minimize\_along\_direction}}(matrix,\ rows\ <\ \ columns);}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Follow\ the\ steps}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ step\ =\ 1;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (\ step\ )\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (\ step\ )\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 1:}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ step\ =\ step1();}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ step\ is\ always\ 2}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 2:}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ step\ =\ step2();}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ step\ is\ always\ either\ 0\ or\ 3}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 3:}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ step\ =\ step3();}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ step\ in\ [3,\ 4,\ 5]}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 4:}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ step\ =\ step4();}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ step\ is\ always\ 2}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 5:}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ step\ =\ step5();}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ step\ is\ always\ 3}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Store\ results}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ size\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ size\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ mask\_matrix(row,\ col)\ ==\ STAR\ )\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ matrix(row,\ col)\ =\ 0;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ matrix(row,\ col)\ =\ -\/1;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \textcolor{preprocessor}{\#ifdef\ DEBUG}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Munkres\ output:\ "{}}\ <<\ matrix\ <<\ std::endl;}
+\DoxyCodeLine{00130\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Remove\ the\ excess\ rows\ or\ columns\ that\ we\ added\ to\ fit\ the}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ input\ to\ a\ square\ matrix.}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ matrix.\mbox{\hyperlink{class_matrix_a61cc9e991bbc443da6644265808116c5}{resize}}(rows,\ columns);}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ m\ =\ matrix;}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}\ []\ row\_mask;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}\ []\ col\_mask;}
+\DoxyCodeLine{00139\ \ \ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_munkres_a9248629fc0180a8299333e7721d7d6ad}{replace\_infinites}}(\mbox{\hyperlink{class_matrix}{Matrix<Data>}}\ \&matrix)\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows\ =\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}(),}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ columns\ =\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}();}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ assert(\ rows\ >\ 0\ \&\&\ columns\ >\ 0\ );}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ max\ =\ matrix(0,\ 0);}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keyword}{auto}\ infinity\ =\ std::numeric\_limits<double>::infinity();}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \textcolor{comment}{//\ Find\ the\ greatest\ value\ in\ the\ matrix\ that\ isn't\ infinity.}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ matrix(row,\ col)\ !=\ infinity\ )\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ max\ ==\ infinity\ )\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\ =\ matrix(row,\ col);}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\ =\ std::max<double>(max,\ matrix(row,\ col));}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \textcolor{comment}{//\ a\ value\ higher\ than\ the\ maximum\ value\ present\ in\ the\ matrix.}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ max\ ==\ infinity\ )\ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ case\ only\ occurs\ when\ all\ values\ are\ infinite.}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ max\ =\ 0;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ max++;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ matrix(row,\ col)\ ==\ infinity\ )\ \{}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ matrix(row,\ col)\ =\ max;}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{class_munkres_a31bf3a8eb977b1c7a23448f476d8a11f}{minimize\_along\_direction}}(\mbox{\hyperlink{class_matrix}{Matrix<Data>}}\ \&matrix,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{bool}\ over\_columns)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ outer\_size\ =\ over\_columns\ ?\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}()\ :\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}(),}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inner\_size\ =\ over\_columns\ ?\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}()\ :\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}();}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \textcolor{comment}{//\ Look\ for\ a\ minimum\ value\ to\ subtract\ from\ all\ values\ along}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \textcolor{comment}{//\ the\ "{}outer"{}\ direction.}}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ outer\_size\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ min\ =\ over\_columns\ ?\ matrix(0,\ i)\ :\ matrix(i,\ 0);}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ As\ long\ as\ the\ current\ minimum\ is\ greater\ than\ zero,}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ keep\ looking\ for\ the\ minimum.}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Start\ at\ one\ because\ we\ already\ have\ the\ 0th\ value\ in\ min.}}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ j\ =\ 1\ ;\ j\ <\ inner\_size\ \&\&\ min\ >\ 0\ ;\ j++\ )\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ min\ =\ std::min<double>(}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ min,}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ over\_columns\ ?\ matrix(j,\ i)\ :\ matrix(i,\ j));}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ min\ >\ 0\ )\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ j\ =\ 0\ ;\ j\ <\ inner\_size\ ;\ j++\ )\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ over\_columns\ )\ \{}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ matrix(j,\ i)\ -\/=\ min;}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ matrix(i,\ j)\ -\/=\ min;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \ \ \}}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ find\_uncovered\_in\_matrix(\textcolor{keyword}{const}\ \textcolor{keywordtype}{double}\ item,\ \textcolor{keywordtype}{size\_t}\ \&row,\ \textcolor{keywordtype}{size\_t}\ \&col)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows\ =\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}(),}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ columns\ =\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}();}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ !row\_mask[row]\ )\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ !col\_mask[col]\ )\ \{}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ matrix(row,col)\ ==\ item\ )\ \{}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00225\ \ \ \ \ \}}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00228\ \ \ \}}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \ \ \textcolor{keywordtype}{bool}\ pair\_in\_list(\textcolor{keyword}{const}\ std::pair<size\_t,size\_t>\ \&needle,\ \textcolor{keyword}{const}\ std::list<std::pair<size\_t,size\_t>\ >\ \&haystack)\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ std::list<std::pair<size\_t,size\_t>\ >::const\_iterator\ i\ =\ haystack.begin()\ ;\ i\ !=\ haystack.end()\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ needle\ ==\ *i\ )\ \{}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00235\ \ \ \ \ \}}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00238\ \ \ \}}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \textcolor{keywordtype}{int}\ step1()\ \{}
+\DoxyCodeLine{00241\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows\ =\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}(),}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ columns\ =\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}();}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ 0\ ==\ matrix(row,\ col)\ )\ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ nrow\ =\ 0\ ;\ nrow\ <\ row\ ;\ nrow++\ )}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ STAR\ ==\ mask\_matrix(nrow,col)\ )}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{goto}\ next\_column;}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ mask\_matrix(row,col)\ =\ STAR;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{goto}\ next\_row;}
+\DoxyCodeLine{00253\ }
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ next\_column:;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ next\_row:;}
+\DoxyCodeLine{00258\ \ \ \ \ \}}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \ \ \textcolor{keywordflow}{return}\ 2;}
+\DoxyCodeLine{00261\ \ \ \}}
+\DoxyCodeLine{00262\ }
+\DoxyCodeLine{00263\ \ \ \textcolor{keywordtype}{int}\ step2()\ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows\ =\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}(),}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ columns\ =\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}();}
+\DoxyCodeLine{00266\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ covercount\ =\ 0;}
+\DoxyCodeLine{00267\ }
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ STAR\ ==\ mask\_matrix(row,\ col)\ )\ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ col\_mask[col]\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ covercount++;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \ \ \ \ \textcolor{keywordflow}{if}\ (\ covercount\ >=\ matrix.\mbox{\hyperlink{class_matrix_a0c8b3762ae5b75d0eb167735017cd039}{minsize}}()\ )\ \{}
+\DoxyCodeLine{00276\ \textcolor{preprocessor}{\ \ \#ifdef\ DEBUG}}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Final\ cover\ count:\ "{}}\ <<\ covercount\ <<\ std::endl;}
+\DoxyCodeLine{00278\ \textcolor{preprocessor}{\ \ \#endif}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00280\ \ \ \ \ \}}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \textcolor{preprocessor}{\ \ \#ifdef\ DEBUG}}
+\DoxyCodeLine{00283\ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}Munkres\ matrix\ has\ "{}}\ <<\ covercount\ <<\ \textcolor{stringliteral}{"{}\ of\ "{}}\ <<\ matrix.\mbox{\hyperlink{class_matrix_a0c8b3762ae5b75d0eb167735017cd039}{minsize}}()\ <<\ \textcolor{stringliteral}{"{}\ Columns\ covered:"{}}\ <<\ std::endl;}
+\DoxyCodeLine{00284\ \ \ \ \ std::cout\ <<\ matrix\ <<\ std::endl;}
+\DoxyCodeLine{00285\ \textcolor{preprocessor}{\ \ \#endif}}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ \ \ \ \ \textcolor{keywordflow}{return}\ 3;}
+\DoxyCodeLine{00288\ \ \ \}}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ \ \ \textcolor{keywordtype}{int}\ step3()\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00292\ \textcolor{comment}{\ \ \ \ Main\ Zero\ Search}}
+\DoxyCodeLine{00293\ \textcolor{comment}{}}
+\DoxyCodeLine{00294\ \textcolor{comment}{\ \ \ \ \ 1.\ Find\ an\ uncovered\ Z\ in\ the\ distance\ matrix\ and\ prime\ it.\ If\ no\ such\ zero\ exists,\ go\ to\ Step\ 5}}
+\DoxyCodeLine{00295\ \textcolor{comment}{\ \ \ \ \ 2.\ If\ No\ Z*\ exists\ in\ the\ row\ of\ the\ Z',\ go\ to\ Step\ 4.}}
+\DoxyCodeLine{00296\ \textcolor{comment}{\ \ \ \ \ 3.\ If\ a\ Z*\ exists,\ cover\ this\ row\ and\ uncover\ the\ column\ of\ the\ Z*.\ Return\ to\ Step\ 3.1\ to\ find\ a\ new\ Z}}
+\DoxyCodeLine{00297\ \textcolor{comment}{\ \ \ \ */}}
+\DoxyCodeLine{00298\ \ \ \ \ \textcolor{keywordflow}{if}\ (\ find\_uncovered\_in\_matrix(0,\ saverow,\ savecol)\ )\ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ mask\_matrix(saverow,savecol)\ =\ PRIME;\ \textcolor{comment}{//\ prime\ it.}}
+\DoxyCodeLine{00300\ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 5;}
+\DoxyCodeLine{00302\ \ \ \ \ \}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ ncol\ =\ 0\ ;\ ncol\ <\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}()\ ;\ ncol++\ )\ \{}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ mask\_matrix(saverow,ncol)\ ==\ STAR\ )\ \{}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ row\_mask[saverow]\ =\ \textcolor{keyword}{true};\ \textcolor{comment}{//cover\ this\ row\ and}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ col\_mask[ncol]\ =\ \textcolor{keyword}{false};\ \textcolor{comment}{//\ uncover\ the\ column\ containing\ the\ starred\ zero}}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 3;\ \textcolor{comment}{//\ repeat}}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00310\ \ \ \ \ \}}
+\DoxyCodeLine{00311\ }
+\DoxyCodeLine{00312\ \ \ \ \ \textcolor{keywordflow}{return}\ 4;\ \textcolor{comment}{//\ no\ starred\ zero\ in\ the\ row\ containing\ this\ primed\ zero}}
+\DoxyCodeLine{00313\ \ \ \}}
+\DoxyCodeLine{00314\ }
+\DoxyCodeLine{00315\ \ \ \textcolor{keywordtype}{int}\ step4()\ \{}
+\DoxyCodeLine{00316\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows\ =\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}(),}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ columns\ =\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}();}
+\DoxyCodeLine{00318\ }
+\DoxyCodeLine{00319\ \ \ \ \ \textcolor{comment}{//\ seq\ contains\ pairs\ of\ row/column\ values\ where\ we\ have\ found}}
+\DoxyCodeLine{00320\ \ \ \ \ \textcolor{comment}{//\ either\ a\ star\ or\ a\ prime\ that\ is\ part\ of\ the\ \`{}\`{}alternating\ sequence``.}}
+\DoxyCodeLine{00321\ \ \ \ \ std::list<std::pair<size\_t,size\_t>\ >\ seq;}
+\DoxyCodeLine{00322\ \ \ \ \ \textcolor{comment}{//\ use\ saverow,\ savecol\ from\ step\ 3.}}
+\DoxyCodeLine{00323\ \ \ \ \ std::pair<size\_t,size\_t>\ z0(saverow,\ savecol);}
+\DoxyCodeLine{00324\ \ \ \ \ seq.insert(seq.end(),\ z0);}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00326\ \ \ \ \ \textcolor{comment}{//\ We\ have\ to\ find\ these\ two\ pairs:}}
+\DoxyCodeLine{00327\ \ \ \ \ std::pair<size\_t,size\_t>\ z1(-\/1,\ -\/1);}
+\DoxyCodeLine{00328\ \ \ \ \ std::pair<size\_t,size\_t>\ z2n(-\/1,\ -\/1);}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ row,\ col\ =\ savecol;}
+\DoxyCodeLine{00331\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00332\ \textcolor{comment}{\ \ \ \ Increment\ Set\ of\ Starred\ Zeros}}
+\DoxyCodeLine{00333\ \textcolor{comment}{}}
+\DoxyCodeLine{00334\ \textcolor{comment}{\ \ \ \ \ 1.\ Construct\ the\ \`{}\`{}alternating\ sequence''\ of\ primed\ and\ starred\ zeros:}}
+\DoxyCodeLine{00335\ \textcolor{comment}{}}
+\DoxyCodeLine{00336\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ Z0\ :\ Unpaired\ Z'\ from\ Step\ 4.2}}
+\DoxyCodeLine{00337\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ Z1\ :\ The\ Z*\ in\ the\ column\ of\ Z0}}
+\DoxyCodeLine{00338\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ Z[2N]\ :\ The\ Z'\ in\ the\ row\ of\ Z[2N-\/1],\ if\ such\ a\ zero\ exists}}
+\DoxyCodeLine{00339\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ Z[2N+1]\ :\ The\ Z*\ in\ the\ column\ of\ Z[2N]}}
+\DoxyCodeLine{00340\ \textcolor{comment}{}}
+\DoxyCodeLine{00341\ \textcolor{comment}{\ \ \ \ \ \ \ \ The\ sequence\ eventually\ terminates\ with\ an\ unpaired\ Z'\ =\ Z[2N]\ for\ some\ N.}}
+\DoxyCodeLine{00342\ \textcolor{comment}{\ \ \ \ */}}
+\DoxyCodeLine{00343\ \ \ \ \ \textcolor{keywordtype}{bool}\ madepair;}
+\DoxyCodeLine{00344\ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ madepair\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ mask\_matrix(row,col)\ ==\ STAR\ )\ \{}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ z1.first\ =\ row;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ z1.second\ =\ col;}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ pair\_in\_list(z1,\ seq)\ )\ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00353\ }
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ madepair\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ seq.insert(seq.end(),\ z1);}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00359\ }
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ !madepair\ )}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00363\ \ \ \ \ \ \ madepair\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00364\ }
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ mask\_matrix(row,\ col)\ ==\ PRIME\ )\ \{}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ z2n.first\ =\ row;}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ z2n.second\ =\ col;}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ pair\_in\_list(z2n,\ seq)\ )\ \{}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ madepair\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ seq.insert(seq.end(),\ z2n);}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00377\ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (\ madepair\ );}
+\DoxyCodeLine{00378\ }
+\DoxyCodeLine{00379\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ std::list<std::pair<size\_t,size\_t>\ >::iterator\ i\ =\ seq.begin()\ ;}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ i\ !=\ seq.end()\ ;}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ i++\ )\ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \textcolor{comment}{//\ 2.\ Unstar\ each\ starred\ zero\ of\ the\ sequence.}}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ mask\_matrix(i-\/>first,i-\/>second)\ ==\ STAR\ )}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ mask\_matrix(i-\/>first,i-\/>second)\ =\ NORMAL;}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \textcolor{comment}{//\ 3.\ Star\ each\ primed\ zero\ of\ the\ sequence,}}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \textcolor{comment}{//\ thus\ increasing\ the\ number\ of\ starred\ zeros\ by\ one.}}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ mask\_matrix(i-\/>first,i-\/>second)\ ==\ PRIME\ )}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ mask\_matrix(i-\/>first,i-\/>second)\ =\ STAR;}
+\DoxyCodeLine{00390\ \ \ \ \ \}}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00392\ \ \ \ \ \textcolor{comment}{//\ 4.\ Erase\ all\ primes,\ uncover\ all\ columns\ and\ rows,}}
+\DoxyCodeLine{00393\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ mask\_matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}()\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ mask\_matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}()\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ mask\_matrix(row,col)\ ==\ PRIME\ )\ \{}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ mask\_matrix(row,col)\ =\ NORMAL;}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00399\ \ \ \ \ \}}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00401\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ row\_mask[i]\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00403\ \ \ \ \ \}}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ columns\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ col\_mask[i]\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00407\ \ \ \ \ \}}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \ \ \ \ \textcolor{comment}{//\ and\ return\ to\ Step\ 2.}}
+\DoxyCodeLine{00410\ \ \ \ \ \textcolor{keywordflow}{return}\ 2;}
+\DoxyCodeLine{00411\ \ \ \}}
+\DoxyCodeLine{00412\ }
+\DoxyCodeLine{00413\ \ \ \textcolor{keywordtype}{int}\ step5()\ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows\ =\ matrix.\mbox{\hyperlink{class_matrix_a5330adf02b284293259eb9f7c9acaa99}{rows}}(),}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ columns\ =\ matrix.\mbox{\hyperlink{class_matrix_a710d9b6934a24229fe06789f65ed0571}{columns}}();}
+\DoxyCodeLine{00416\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00417\ \textcolor{comment}{\ \ \ \ New\ Zero\ Manufactures}}
+\DoxyCodeLine{00418\ \textcolor{comment}{}}
+\DoxyCodeLine{00419\ \textcolor{comment}{\ \ \ \ \ 1.\ Let\ h\ be\ the\ smallest\ uncovered\ entry\ in\ the\ (modified)\ distance\ matrix.}}
+\DoxyCodeLine{00420\ \textcolor{comment}{\ \ \ \ \ 2.\ Add\ h\ to\ all\ covered\ rows.}}
+\DoxyCodeLine{00421\ \textcolor{comment}{\ \ \ \ \ 3.\ Subtract\ h\ from\ all\ uncovered\ columns}}
+\DoxyCodeLine{00422\ \textcolor{comment}{\ \ \ \ \ 4.\ Return\ to\ Step\ 3,\ without\ altering\ stars,\ primes,\ or\ covers.}}
+\DoxyCodeLine{00423\ \textcolor{comment}{\ \ \ \ */}}
+\DoxyCodeLine{00424\ \ \ \ \ \textcolor{keywordtype}{double}\ h\ =\ std::numeric\_limits<double>::max();}
+\DoxyCodeLine{00425\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ !row\_mask[row]\ )\ \{}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ !col\_mask[col]\ )\ \{}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ h\ >\ matrix(row,\ col)\ \&\&\ matrix(row,\ col)\ !=\ 0\ )\ \{}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ h\ =\ matrix(row,\ col);}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00435\ \ \ \ \ \}}
+\DoxyCodeLine{00436\ }
+\DoxyCodeLine{00437\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ row\_mask[row]\ )\ \{}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ matrix(row,\ col)\ +=\ h;}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00443\ \ \ \ \ \}}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00445\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ col\ =\ 0\ ;\ col\ <\ columns\ ;\ col++\ )\ \{}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\ !col\_mask[col]\ )\ \{}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ row\ =\ 0\ ;\ row\ <\ rows\ ;\ row++\ )\ \{}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ matrix(row,\ col)\ -\/=\ h;}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00451\ \ \ \ \ \}}
+\DoxyCodeLine{00452\ }
+\DoxyCodeLine{00453\ \ \ \ \ \textcolor{keywordflow}{return}\ 3;}
+\DoxyCodeLine{00454\ \ \ \}}
+\DoxyCodeLine{00455\ }
+\DoxyCodeLine{00456\ \ \ \mbox{\hyperlink{class_matrix}{Matrix<int>}}\ mask\_matrix;}
+\DoxyCodeLine{00457\ \ \ \mbox{\hyperlink{class_matrix}{Matrix<Data>}}\ matrix;}
+\DoxyCodeLine{00458\ \ \ \textcolor{keywordtype}{bool}\ *row\_mask;}
+\DoxyCodeLine{00459\ \ \ \textcolor{keywordtype}{bool}\ *col\_mask;}
+\DoxyCodeLine{00460\ \ \ \textcolor{keywordtype}{size\_t}\ saverow\ =\ 0,\ savecol\ =\ 0;}
+\DoxyCodeLine{00461\ \};}
+\DoxyCodeLine{00462\ }
+\DoxyCodeLine{00463\ }
+\DoxyCodeLine{00464\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{/*\ !defined(\_MUNKRES\_H\_)\ */}\textcolor{preprocessor}{}}
+
+\end{DoxyCode}

@@ -1,0 +1,80 @@
+\doxysection{server\+::http\+\_\+response\+::response Struct Reference}
+\hypertarget{structserver_1_1http__response_1_1response}{}\label{structserver_1_1http__response_1_1response}\index{server::http\_response::response@{server::http\_response::response}}
+
+
+{\ttfamily \#include $<$response.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{structserver_1_1http__response_1_1response_a04ee1437ca8b78882e04a7a8cdc2f4c6}{set\+\_\+status}} (\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\+\_\+type}} status\+\_\+code)
+\item 
+void \mbox{\hyperlink{structserver_1_1http__response_1_1response_a5c50503fe43393451b5b1cc80ad29930}{add\+\_\+header}} (const std\+::string \&name, const std\+::string \&value)
+\item 
+std\+::vector$<$ boost\+::asio\+::const\+\_\+buffer $>$ \mbox{\hyperlink{structserver_1_1http__response_1_1response_a8f6b12ba44d597482decb5e3f9e1cae4}{to\+\_\+buffers}} () const
+\item 
+std\+::string \mbox{\hyperlink{structserver_1_1http__response_1_1response_a82ca578a7137af8a4e63820cf0111738}{response\+\_\+body\+\_\+to\+\_\+string}} (\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\+\_\+type}} \mbox{\hyperlink{structserver_1_1http__response_1_1response_a4f62791bd1036c828ada6a6a1d700eed}{status}})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\+\_\+type}} \mbox{\hyperlink{structserver_1_1http__response_1_1response_a4f62791bd1036c828ada6a6a1d700eed}{status}}
+\item 
+std\+::vector$<$ std\+::pair$<$ std\+::string, std\+::string $>$ $>$ \mbox{\hyperlink{structserver_1_1http__response_1_1response_aa72d35ac26bf9077855d6f09e59a5ad4}{headers}}
+\item 
+std\+::string \mbox{\hyperlink{structserver_1_1http__response_1_1response_a8200a7625642dbd9c086a5d5ceaf555d}{content}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{structserver_1_1http__response_1_1response_a5c50503fe43393451b5b1cc80ad29930}\index{server::http\_response::response@{server::http\_response::response}!add\_header@{add\_header}}
+\index{add\_header@{add\_header}!server::http\_response::response@{server::http\_response::response}}
+\doxysubsubsection{\texorpdfstring{add\_header()}{add\_header()}}
+{\footnotesize\ttfamily \label{structserver_1_1http__response_1_1response_a5c50503fe43393451b5b1cc80ad29930} 
+void server\+::http\+\_\+response\+::response\+::add\+\_\+header (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{name}{, }\item[{const std\+::string \&}]{value}{}\end{DoxyParamCaption})}
+
+\Hypertarget{structserver_1_1http__response_1_1response_a82ca578a7137af8a4e63820cf0111738}\index{server::http\_response::response@{server::http\_response::response}!response\_body\_to\_string@{response\_body\_to\_string}}
+\index{response\_body\_to\_string@{response\_body\_to\_string}!server::http\_response::response@{server::http\_response::response}}
+\doxysubsubsection{\texorpdfstring{response\_body\_to\_string()}{response\_body\_to\_string()}}
+{\footnotesize\ttfamily \label{structserver_1_1http__response_1_1response_a82ca578a7137af8a4e63820cf0111738} 
+std\+::string server\+::http\+\_\+response\+::response\+::response\+\_\+body\+\_\+to\+\_\+string (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\+\_\+type}}}]{status}{}\end{DoxyParamCaption})}
+
+\Hypertarget{structserver_1_1http__response_1_1response_a04ee1437ca8b78882e04a7a8cdc2f4c6}\index{server::http\_response::response@{server::http\_response::response}!set\_status@{set\_status}}
+\index{set\_status@{set\_status}!server::http\_response::response@{server::http\_response::response}}
+\doxysubsubsection{\texorpdfstring{set\_status()}{set\_status()}}
+{\footnotesize\ttfamily \label{structserver_1_1http__response_1_1response_a04ee1437ca8b78882e04a7a8cdc2f4c6} 
+void server\+::http\+\_\+response\+::response\+::set\+\_\+status (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\+\_\+type}}}]{status\+\_\+code}{}\end{DoxyParamCaption})}
+
+\Hypertarget{structserver_1_1http__response_1_1response_a8f6b12ba44d597482decb5e3f9e1cae4}\index{server::http\_response::response@{server::http\_response::response}!to\_buffers@{to\_buffers}}
+\index{to\_buffers@{to\_buffers}!server::http\_response::response@{server::http\_response::response}}
+\doxysubsubsection{\texorpdfstring{to\_buffers()}{to\_buffers()}}
+{\footnotesize\ttfamily \label{structserver_1_1http__response_1_1response_a8f6b12ba44d597482decb5e3f9e1cae4} 
+std\+::vector$<$ boost\+::asio\+::const\+\_\+buffer $>$ server\+::http\+\_\+response\+::response\+::to\+\_\+buffers (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{structserver_1_1http__response_1_1response_a8200a7625642dbd9c086a5d5ceaf555d}\index{server::http\_response::response@{server::http\_response::response}!content@{content}}
+\index{content@{content}!server::http\_response::response@{server::http\_response::response}}
+\doxysubsubsection{\texorpdfstring{content}{content}}
+{\footnotesize\ttfamily \label{structserver_1_1http__response_1_1response_a8200a7625642dbd9c086a5d5ceaf555d} 
+std\+::string server\+::http\+\_\+response\+::response\+::content}
+
+\Hypertarget{structserver_1_1http__response_1_1response_aa72d35ac26bf9077855d6f09e59a5ad4}\index{server::http\_response::response@{server::http\_response::response}!headers@{headers}}
+\index{headers@{headers}!server::http\_response::response@{server::http\_response::response}}
+\doxysubsubsection{\texorpdfstring{headers}{headers}}
+{\footnotesize\ttfamily \label{structserver_1_1http__response_1_1response_aa72d35ac26bf9077855d6f09e59a5ad4} 
+std\+::vector$<$std\+::pair$<$std\+::string, std\+::string$>$ $>$ server\+::http\+\_\+response\+::response\+::headers}
+
+\Hypertarget{structserver_1_1http__response_1_1response_a4f62791bd1036c828ada6a6a1d700eed}\index{server::http\_response::response@{server::http\_response::response}!status@{status}}
+\index{status@{status}!server::http\_response::response@{server::http\_response::response}}
+\doxysubsubsection{\texorpdfstring{status}{status}}
+{\footnotesize\ttfamily \label{structserver_1_1http__response_1_1response_a4f62791bd1036c828ada6a6a1d700eed} 
+\mbox{\hyperlink{namespaceserver_1_1http__response_aece6bf236346da1b4a9456fbb83dcdbe}{response\+\_\+type}} server\+::http\+\_\+response\+::response\+::status}
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{response_8hpp}{response.\+hpp}}\item 
+src/\mbox{\hyperlink{response_8cpp}{response.\+cpp}}\end{DoxyCompactItemize}

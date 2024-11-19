@@ -1,0 +1,242 @@
+\doxysection{matrix.\+cpp}
+\hypertarget{matrix_8cpp_source}{}\label{matrix_8cpp_source}\index{include/matrix.cpp@{include/matrix.cpp}}
+\mbox{\hyperlink{matrix_8cpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{\ *\ \ \ Copyright\ (c)\ 2007\ John\ Weaver}}
+\DoxyCodeLine{00003\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00004\ \textcolor{comment}{\ *\ \ \ This\ program\ is\ free\ software;\ you\ can\ redistribute\ it\ and/or\ modify}}
+\DoxyCodeLine{00005\ \textcolor{comment}{\ *\ \ \ it\ under\ the\ terms\ of\ the\ GNU\ General\ Public\ License\ as\ published\ by}}
+\DoxyCodeLine{00006\ \textcolor{comment}{\ *\ \ \ the\ Free\ Software\ Foundation;\ either\ version\ 2\ of\ the\ License,\ or}}
+\DoxyCodeLine{00007\ \textcolor{comment}{\ *\ \ \ (at\ your\ option)\ any\ later\ version.}}
+\DoxyCodeLine{00008\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00009\ \textcolor{comment}{\ *\ \ \ This\ program\ is\ distributed\ in\ the\ hope\ that\ it\ will\ be\ useful,}}
+\DoxyCodeLine{00010\ \textcolor{comment}{\ *\ \ \ but\ WITHOUT\ ANY\ WARRANTY;\ without\ even\ the\ implied\ warranty\ of}}
+\DoxyCodeLine{00011\ \textcolor{comment}{\ *\ \ \ MERCHANTABILITY\ or\ FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE.\ \ See\ the}}
+\DoxyCodeLine{00012\ \textcolor{comment}{\ *\ \ \ GNU\ General\ Public\ License\ for\ more\ details.}}
+\DoxyCodeLine{00013\ \textcolor{comment}{\ *}}
+\DoxyCodeLine{00014\ \textcolor{comment}{\ *\ \ \ You\ should\ have\ received\ a\ copy\ of\ the\ GNU\ General\ Public\ License}}
+\DoxyCodeLine{00015\ \textcolor{comment}{\ *\ \ \ along\ with\ this\ program;\ if\ not,\ write\ to\ the\ Free\ Software}}
+\DoxyCodeLine{00016\ \textcolor{comment}{\ *\ \ \ Foundation,\ Inc.,\ 59\ Temple\ Place,\ Suite\ 330,\ Boston,\ MA\ \ 02111-\/1307\ USA}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ */}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ "{}\mbox{\hyperlink{matrix_8hpp}{matrix.hpp}}"{}}}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <cassert>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <cstdlib>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00026\ \mbox{\hyperlink{class_matrix_a9d567e3a121b1be0c3f9c461cab524fe}{Matrix<T>::Matrix}}()\ \{}
+\DoxyCodeLine{00027\ \ \ m\_rows\ =\ 0;}
+\DoxyCodeLine{00028\ \ \ m\_columns\ =\ 0;}
+\DoxyCodeLine{00029\ \ \ m\_matrix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00030\ \}}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00033\ \mbox{\hyperlink{class_matrix_a9d567e3a121b1be0c3f9c461cab524fe}{Matrix<T>::Matrix}}(\textcolor{keyword}{const}\ std::initializer\_list<std::initializer\_list<T>>\ init)\ \{}
+\DoxyCodeLine{00034\ \ \ m\_matrix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00035\ \ \ m\_rows\ =\ init.size();}
+\DoxyCodeLine{00036\ \ \ \textcolor{keywordflow}{if}\ (\ m\_rows\ ==\ 0\ )\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ m\_columns\ =\ 0;}
+\DoxyCodeLine{00038\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ m\_columns\ =\ init.begin()-\/>size();}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{if}\ (\ m\_columns\ >\ 0\ )\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ resize(m\_rows,\ m\_columns);}
+\DoxyCodeLine{00042\ \ \ \ \ \}}
+\DoxyCodeLine{00043\ \ \ \}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \textcolor{keywordtype}{size\_t}\ i\ =\ 0,\ j;}
+\DoxyCodeLine{00046\ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keyword}{auto}\ row\ =\ init.begin()\ ;\ row\ !=\ init.end()\ ;\ ++row,\ ++i\ )\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ assert\ (\ row-\/>size()\ ==\ m\_columns\ \&\&\ \textcolor{stringliteral}{"{}All\ rows\ must\ have\ the\ same\ number\ of\ columns."{}}\ );}
+\DoxyCodeLine{00048\ \ \ \ \ j\ =\ 0;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keyword}{auto}\ value\ =\ row-\/>begin()\ ;\ value\ !=\ row-\/>end()\ ;\ ++value,\ ++j\ )\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ m\_matrix[i][j]\ =\ *value;}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \}}
+\DoxyCodeLine{00053\ \}}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00056\ \mbox{\hyperlink{class_matrix_a9d567e3a121b1be0c3f9c461cab524fe}{Matrix<T>::Matrix}}(\textcolor{keyword}{const}\ \mbox{\hyperlink{class_matrix}{Matrix<T>}}\ \&other)\ \{}
+\DoxyCodeLine{00057\ \ \ \textcolor{keywordflow}{if}\ (\ other.m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ )\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//\ copy\ arrays}}
+\DoxyCodeLine{00059\ \ \ \ \ m\_matrix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00060\ \ \ \ \ resize(other.m\_rows,\ other.m\_columns);}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ m\_rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ j\ =\ 0\ ;\ j\ <\ m\_columns\ ;\ j++\ )\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ m\_matrix[i][j]\ =\ other.m\_matrix[i][j];}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ m\_matrix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00068\ \ \ \ \ m\_rows\ =\ 0;}
+\DoxyCodeLine{00069\ \ \ \ \ m\_columns\ =\ 0;}
+\DoxyCodeLine{00070\ \ \ \}}
+\DoxyCodeLine{00071\ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00074\ \mbox{\hyperlink{class_matrix_a9d567e3a121b1be0c3f9c461cab524fe}{Matrix<T>::Matrix}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ columns)\ \{}
+\DoxyCodeLine{00075\ \ \ m\_matrix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00076\ \ \ resize(rows,\ columns);}
+\DoxyCodeLine{00077\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00080\ \mbox{\hyperlink{class_matrix}{Matrix<T>}}\ \&}
+\DoxyCodeLine{00081\ \mbox{\hyperlink{class_matrix_a8d1a6d2863b582f254a075a9bcc75516}{Matrix<T>::operator=\ }}(\textcolor{keyword}{const}\ \mbox{\hyperlink{class_matrix}{Matrix<T>}}\ \&other)\ \{}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordflow}{if}\ (\ other.m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ )\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{comment}{//\ copy\ arrays}}
+\DoxyCodeLine{00084\ \ \ \ \ resize(other.m\_rows,\ other.m\_columns);}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ m\_rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ j\ =\ 0\ ;\ j\ <\ m\_columns\ ;\ j++\ )\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ m\_matrix[i][j]\ =\ other.m\_matrix[i][j];}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{//\ free\ arrays}}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ m\_columns\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \textcolor{keyword}{delete}\ []\ m\_matrix[i];}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keyword}{delete}\ []\ m\_matrix;}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \ \ m\_matrix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00099\ \ \ \ \ m\_rows\ =\ 0;}
+\DoxyCodeLine{00100\ \ \ \ \ m\_columns\ =\ 0;}
+\DoxyCodeLine{00101\ \ \ \}}
+\DoxyCodeLine{00102\ \ \ }
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordflow}{return}\ *\textcolor{keyword}{this};}
+\DoxyCodeLine{00104\ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00107\ \mbox{\hyperlink{class_matrix_a91aa704de674203e96aece9e1955ccd3}{Matrix<T>::\string~Matrix}}()\ \{}
+\DoxyCodeLine{00108\ \ \ \textcolor{keywordflow}{if}\ (\ m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ )\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{comment}{//\ free\ arrays}}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ m\_rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \textcolor{keyword}{delete}\ []\ m\_matrix[i];}
+\DoxyCodeLine{00112\ \ \ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{delete}\ []\ m\_matrix;}
+\DoxyCodeLine{00115\ \ \ \}}
+\DoxyCodeLine{00116\ \ \ m\_matrix\ =\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00117\ \}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00120\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00121\ \mbox{\hyperlink{class_matrix_a61cc9e991bbc443da6644265808116c5}{Matrix<T>::resize}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ rows,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ columns,\ \textcolor{keyword}{const}\ T\ default\_value)\ \{}
+\DoxyCodeLine{00122\ \ \ assert\ (\ rows\ >\ 0\ \&\&\ columns\ >\ 0\ \&\&\ \textcolor{stringliteral}{"{}Columns\ and\ rows\ must\ exist."{}}\ );}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \textcolor{keywordflow}{if}\ (\ m\_matrix\ ==\ \textcolor{keyword}{nullptr}\ )\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{//\ alloc\ arrays}}
+\DoxyCodeLine{00126\ \ \ \ \ m\_matrix\ =\ \textcolor{keyword}{new}\ T*[rows];\ \textcolor{comment}{//\ rows}}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ m\_matrix[i]\ =\ \textcolor{keyword}{new}\ T[columns];\ \textcolor{comment}{//\ columns}}
+\DoxyCodeLine{00129\ \ \ \ \ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \ \ m\_rows\ =\ rows;}
+\DoxyCodeLine{00132\ \ \ \ \ m\_columns\ =\ columns;}
+\DoxyCodeLine{00133\ \ \ \ \ clear();}
+\DoxyCodeLine{00134\ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{comment}{//\ save\ array\ pointer}}
+\DoxyCodeLine{00136\ \ \ \ \ T\ **new\_matrix;}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{comment}{//\ alloc\ new\ arrays}}
+\DoxyCodeLine{00138\ \ \ \ \ new\_matrix\ =\ \textcolor{keyword}{new}\ T*[rows];\ \textcolor{comment}{//\ rows}}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ new\_matrix[i]\ =\ \textcolor{keyword}{new}\ T[columns];\ \textcolor{comment}{//\ columns}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ j\ =\ 0\ ;\ j\ <\ columns\ ;\ j++\ )\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ new\_matrix[i][j]\ =\ default\_value;}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00144\ \ \ \ \ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{comment}{//\ copy\ data\ from\ saved\ pointer\ to\ new\ arrays}}
+\DoxyCodeLine{00147\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ minrows\ =\ std::min(rows,\ m\_rows);}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordtype}{size\_t}\ mincols\ =\ std::min(columns,\ m\_columns);}
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ x\ =\ 0\ ;\ x\ <\ minrows\ ;\ x++\ )\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ y\ =\ 0\ ;\ y\ <\ mincols\ ;\ y++\ )\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ new\_matrix[x][y]\ =\ m\_matrix[x][y];}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{comment}{//\ delete\ old\ arrays}}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keywordflow}{if}\ (\ m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ )\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ m\_rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{keyword}{delete}\ []\ m\_matrix[i];}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \textcolor{keyword}{delete}\ []\ m\_matrix;}
+\DoxyCodeLine{00162\ \ \ \ \ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ m\_matrix\ =\ new\_matrix;}
+\DoxyCodeLine{00165\ \ \ \}}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ m\_rows\ =\ rows;}
+\DoxyCodeLine{00168\ \ \ m\_columns\ =\ columns;}
+\DoxyCodeLine{00169\ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00172\ \textcolor{keywordtype}{void}}
+\DoxyCodeLine{00173\ \mbox{\hyperlink{class_matrix_ad39022f082bfee09e24d098796e14e10}{Matrix<T>::clear}}()\ \{}
+\DoxyCodeLine{00174\ \ \ assert(\ m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ );}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ m\_rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ j\ =\ 0\ ;\ j\ <\ m\_columns\ ;\ j++\ )\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ m\_matrix[i][j]\ =\ 0;}
+\DoxyCodeLine{00179\ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \}}
+\DoxyCodeLine{00181\ \}}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00184\ \textcolor{keyword}{inline}\ T\&}
+\DoxyCodeLine{00185\ \mbox{\hyperlink{class_matrix_aff72f739717ef910678e04ae807f287a}{Matrix<T>::operator\ ()}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ y)\ \{}
+\DoxyCodeLine{00186\ \ \ assert\ (\ x\ <\ m\_rows\ );}
+\DoxyCodeLine{00187\ \ \ assert\ (\ y\ <\ m\_columns\ );}
+\DoxyCodeLine{00188\ \ \ assert\ (\ m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ );}
+\DoxyCodeLine{00189\ \ \ \textcolor{keywordflow}{return}\ m\_matrix[x][y];}
+\DoxyCodeLine{00190\ \}}
+\DoxyCodeLine{00191\ }
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00194\ \textcolor{keyword}{inline}\ \textcolor{keyword}{const}\ T\&}
+\DoxyCodeLine{00195\ \mbox{\hyperlink{class_matrix_aff72f739717ef910678e04ae807f287a}{Matrix<T>::operator\ ()}}(\textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ x,\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{size\_t}\ y)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00196\ \ \ assert\ (\ x\ <\ m\_rows\ );}
+\DoxyCodeLine{00197\ \ \ assert\ (\ y\ <\ m\_columns\ );}
+\DoxyCodeLine{00198\ \ \ assert\ (\ m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ );}
+\DoxyCodeLine{00199\ \ \ \textcolor{keywordflow}{return}\ m\_matrix[x][y];}
+\DoxyCodeLine{00200\ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00203\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00204\ \textcolor{keyword}{const}\ T}
+\DoxyCodeLine{00205\ \mbox{\hyperlink{class_matrix_af36b6a12bf1ec84601442fbf4e996554}{Matrix<T>::min}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00206\ \ \ assert(\ m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ );}
+\DoxyCodeLine{00207\ \ \ assert\ (\ m\_rows\ >\ 0\ );}
+\DoxyCodeLine{00208\ \ \ assert\ (\ m\_columns\ >\ 0\ );}
+\DoxyCodeLine{00209\ \ \ T\ min\ =\ m\_matrix[0][0];}
+\DoxyCodeLine{00210\ }
+\DoxyCodeLine{00211\ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ m\_rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ j\ =\ 0\ ;\ j\ <\ m\_columns\ ;\ j++\ )\ \{}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ min\ =\ std::min<T>(min,\ m\_matrix[i][j]);}
+\DoxyCodeLine{00214\ \ \ \ \ \}}
+\DoxyCodeLine{00215\ \ \ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \ \ \textcolor{keywordflow}{return}\ min;}
+\DoxyCodeLine{00218\ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ }
+\DoxyCodeLine{00221\ \textcolor{comment}{/*export*/}\ \textcolor{keyword}{template}\ <\textcolor{keyword}{class}\ T>}
+\DoxyCodeLine{00222\ \textcolor{keyword}{const}\ T}
+\DoxyCodeLine{00223\ \mbox{\hyperlink{class_matrix_a447d760b71dd518adc2351c3286b133b}{Matrix<T>::max}}()\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00224\ \ \ assert(\ m\_matrix\ !=\ \textcolor{keyword}{nullptr}\ );}
+\DoxyCodeLine{00225\ \ \ assert\ (\ m\_rows\ >\ 0\ );}
+\DoxyCodeLine{00226\ \ \ assert\ (\ m\_columns\ >\ 0\ );}
+\DoxyCodeLine{00227\ \ \ T\ max\ =\ m\_matrix[0][0];}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ i\ =\ 0\ ;\ i\ <\ m\_rows\ ;\ i++\ )\ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \textcolor{keywordflow}{for}\ (\ \textcolor{keywordtype}{size\_t}\ j\ =\ 0\ ;\ j\ <\ m\_columns\ ;\ j++\ )\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ max\ =\ std::max<T>(max,\ m\_matrix[i][j]);}
+\DoxyCodeLine{00232\ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \}}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \textcolor{keywordflow}{return}\ max;}
+\DoxyCodeLine{00236\ \}}
+
+\end{DoxyCode}

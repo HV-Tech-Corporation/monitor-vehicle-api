@@ -1,0 +1,48 @@
+\doxysection{tvm\+\_\+wrapper.\+hpp}
+\hypertarget{tvm__wrapper_8hpp_source}{}\label{tvm__wrapper_8hpp_source}\index{include/tvm\_wrapper.hpp@{include/tvm\_wrapper.hpp}}
+\mbox{\hyperlink{tvm__wrapper_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#ifndef\ TVM\_WRAPPER\_}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#define\ TVM\_WRAPPER\_}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <tvm/runtime/module.h>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <tvm/runtime/packed\_func.h>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <tvm/runtime/ndarray.h>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <opencv4/opencv2/opencv.hpp>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <thread>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <chrono>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{namespace\ }\mbox{\hyperlink{namespaceapi}{api}}\ \{}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{keyword}{namespace\ }detection\ \{}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{static}\ std::vector<std::string>\ COCO\_CLASS\_80\ =\ \{}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}person"{}},\ \textcolor{stringliteral}{"{}bicycle"{}},\ \textcolor{stringliteral}{"{}car"{}},\ \textcolor{stringliteral}{"{}motorbike"{}},\ \textcolor{stringliteral}{"{}aeroplane"{}},\ \textcolor{stringliteral}{"{}bus"{}},\ \textcolor{stringliteral}{"{}train"{}},\ \textcolor{stringliteral}{"{}truck"{}},\ \textcolor{stringliteral}{"{}boat"{}},\ \textcolor{stringliteral}{"{}traffic\ light"{}},\ }
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}fire\ hydrant"{}},\ \textcolor{stringliteral}{"{}stop\ sign"{}},\ \textcolor{stringliteral}{"{}parking\ meter"{}},\ \textcolor{stringliteral}{"{}bench"{}},\ \textcolor{stringliteral}{"{}bird"{}},\ \textcolor{stringliteral}{"{}cat"{}},\ \textcolor{stringliteral}{"{}dog"{}},\ \textcolor{stringliteral}{"{}horse"{}},\ \textcolor{stringliteral}{"{}sheep"{}},\ \textcolor{stringliteral}{"{}cow"{}},\ }
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}elephant"{}},\ \textcolor{stringliteral}{"{}bear"{}},\ \textcolor{stringliteral}{"{}zebra"{}},\ \textcolor{stringliteral}{"{}giraffe"{}},\ \textcolor{stringliteral}{"{}backpack"{}},\ \textcolor{stringliteral}{"{}umbrella"{}},\ \textcolor{stringliteral}{"{}handbag"{}},\ \textcolor{stringliteral}{"{}tie"{}},\ \textcolor{stringliteral}{"{}suitcase"{}},\ \textcolor{stringliteral}{"{}frisbee"{}},\ }
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}skis"{}},\ \textcolor{stringliteral}{"{}snowboard"{}},\ \textcolor{stringliteral}{"{}sports\ ball"{}},\ \textcolor{stringliteral}{"{}kite"{}},\ \textcolor{stringliteral}{"{}baseball\ bat"{}},\ \textcolor{stringliteral}{"{}baseball\ glove"{}},\ \textcolor{stringliteral}{"{}skateboard"{}},\ \textcolor{stringliteral}{"{}surfboard"{}},\ }
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}tennis\ racket"{}},\ \textcolor{stringliteral}{"{}bottle"{}},\ \textcolor{stringliteral}{"{}wine\ glass"{}},\ \textcolor{stringliteral}{"{}cup"{}},\ \textcolor{stringliteral}{"{}fork"{}},\ \textcolor{stringliteral}{"{}knife"{}},\ \textcolor{stringliteral}{"{}spoon"{}},\ \textcolor{stringliteral}{"{}bowl"{}},\ \textcolor{stringliteral}{"{}banana"{}},\ \textcolor{stringliteral}{"{}apple"{}},\ }
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sandwich"{}},\ \textcolor{stringliteral}{"{}orange"{}},\ \textcolor{stringliteral}{"{}broccoli"{}},\ \textcolor{stringliteral}{"{}carrot"{}},\ \textcolor{stringliteral}{"{}hot\ dog"{}},\ \textcolor{stringliteral}{"{}pizza"{}},\ \textcolor{stringliteral}{"{}donut"{}},\ \textcolor{stringliteral}{"{}cake"{}},\ \textcolor{stringliteral}{"{}chair"{}},\ \textcolor{stringliteral}{"{}sofa"{}},\ }
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}pottedplant"{}},\ \textcolor{stringliteral}{"{}bed"{}},\ \textcolor{stringliteral}{"{}diningtable"{}},\ \textcolor{stringliteral}{"{}toilet"{}},\ \textcolor{stringliteral}{"{}tvmonitor"{}},\ \textcolor{stringliteral}{"{}laptop"{}},\ \textcolor{stringliteral}{"{}mouse"{}},\ \textcolor{stringliteral}{"{}remote"{}},\ \textcolor{stringliteral}{"{}keyboard"{}},\ }
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}cell\ phone"{}},\ \textcolor{stringliteral}{"{}microwave"{}},\ \textcolor{stringliteral}{"{}oven"{}},\ \textcolor{stringliteral}{"{}toaster"{}},\ \textcolor{stringliteral}{"{}sink"{}},\ \textcolor{stringliteral}{"{}refrigerator"{}},\ \textcolor{stringliteral}{"{}book"{}},\ \textcolor{stringliteral}{"{}clock"{}},\ \textcolor{stringliteral}{"{}vase"{}},\ \textcolor{stringliteral}{"{}scissors"{}},\ }
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}teddy\ bear"{}},\ \textcolor{stringliteral}{"{}hair\ drier"{}},\ \textcolor{stringliteral}{"{}toothbrush"{}}}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceapi_1_1detection_af3f8400426b114d2eaa679155a650b28}{load\_model}}(\textcolor{keyword}{const}\ std::string\&\ model\_path,\ \textcolor{keyword}{const}\ std::string\ device\ =\ \textcolor{stringliteral}{"{}cpu"{}});}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \mbox{\hyperlink{namespaceapi_1_1detection_a056dcd1d8f9bf5b4dddaf53f218b9bb8}{detect}}(}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ std::atomic<bool>\&\ start\_detection,}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ \ \ \ \ std::atomic<bool>\&\ pause\_detection,}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \ \ \ \ std::mutex\&\ frame\_mutex,}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \ \ std::condition\_variable\&\ detection\_cv,}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ cv::Mat\&\ shared\_frame}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ tvm::runtime::Module\ \mbox{\hyperlink{namespaceapi_1_1detection_a409a7c89f01b0193e9987322e26e85f1}{loaded\_lib}};}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ tvm::runtime::Module\ \mbox{\hyperlink{namespaceapi_1_1detection_a97b6e97db4c969f9f64491862d2613b8}{mod}};}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ tvm::runtime::PackedFunc\ \mbox{\hyperlink{namespaceapi_1_1detection_ab50e4169b386b67d5c6562126f618944}{set\_input}};}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ tvm::runtime::PackedFunc\ \mbox{\hyperlink{namespaceapi_1_1detection_af5caf7ab9cdbe2ed1ed8ad831c596ef4}{run}};}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ tvm::runtime::PackedFunc\ \mbox{\hyperlink{namespaceapi_1_1detection_a91ffeaf01a94fb4b12140f58b4451b1e}{get\_output}};}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \textcolor{keyword}{extern}\ DLDevice\ \mbox{\hyperlink{namespaceapi_1_1detection_a9a80085072bd2fa6d480229aebe0b500}{dev}};}
+\DoxyCodeLine{00040\ \ \ \ \ \}\ \textcolor{comment}{//\ namespace\ detection}}
+\DoxyCodeLine{00041\ \}\textcolor{comment}{//\ namsespace\ api}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ TVM\_WRAPPER\_}}
+
+\end{DoxyCode}

@@ -1,26 +1,34 @@
 #include "tvm_wrapper.hpp"
+#include "tracker.hpp"
 
 namespace api {
     namespace detection {
+        // DetectedObject structure
+        struct DetectedObject {
+            int id;
+            cv::Rect boxes;
+            cv::KalmanFilter kalman;
+            float confidences;
+            int class_ids;
+            bool matched = false;
+            int lost_frames = 0;  // To handle occlusion and disappearance
+        };
+
+
         tvm::runtime::Module loaded_lib;
         tvm::runtime::Module mod;
         tvm::runtime::PackedFunc set_input;
         tvm::runtime::PackedFunc run;
         tvm::runtime::PackedFunc get_output;
         DLDevice dev;
+        std::set<int> saved_ids;
+        std::vector<DetectedObject> trackedObjects;
+        int currentId = 0;
+
+        ObjectTracker tracker;
     }
 }
 
-// DetectedObject structure
-struct DetectedObject {
-    int id;
-    cv::Rect boxes;
-    cv::KalmanFilter kalman;
-    float confidences;
-    int class_ids;
-    bool matched = false;
-    int lost_frames = 0;  // To handle occlusion and disappearance
-};
 
 // IoU(Intersection over Union) 계산 함수
 float IoU(const cv::Rect& box1, const cv::Rect& box2) {
@@ -38,7 +46,7 @@ float IoU(const cv::Rect& box1, const cv::Rect& box2) {
 
 
 // // Non-Maximum Suppression (NMS) 함수
-std::vector<int> NonMaximumSuppression(const std::vector<DetectedObject>& tracking_object_group, float iou_threshold) {
+std::vector<int> NonMaximumSuppression(const std::vector<api::detection::DetectedObject>& tracking_object_group, float iou_threshold) {
     std::vector<int> indices;
     std::vector<int> sorted_indices(tracking_object_group.size());
 
@@ -118,7 +126,7 @@ void api::detection::load_model(const std::string& model_path, const std::string
 }
 
 std::vector<cv::Rect> ProcessYOLOOutput(tvm::runtime::NDArray output, const std::vector<std::string>& class_names, cv::Mat& frame, 
-                       std::vector<DetectedObject>& trackedObjects, int& currentID, float conf_threshold = 0.75) {
+                       std::vector<api::detection::DetectedObject>& trackedObjects, int& currentID, float conf_threshold = 0.75) {
 
     // LOG(INFO) << "detection start...";
 
@@ -135,7 +143,7 @@ std::vector<cv::Rect> ProcessYOLOOutput(tvm::runtime::NDArray output, const std:
 
     const int data_stride = 5 + num_classes;
 
-    std::vector<DetectedObject> detected_objects;
+    std::vector<api::detection::DetectedObject> detected_objects;
     
     // Extract detected objects
     for (int i = 0; i < num_detections; ++i) {
@@ -157,7 +165,7 @@ std::vector<cv::Rect> ProcessYOLOOutput(tvm::runtime::NDArray output, const std:
                 int x2 = static_cast<int>(cx + (w / 2));
                 int y2 = static_cast<int>(cy + (h / 2));
 
-                DetectedObject obj;
+                api::detection::DetectedObject obj;
                 obj.id = -1;  // Will be assigned later
                 obj.boxes = cv::Rect(x1, y1, x2 - x1, y2 - y1);
                 obj.confidences = confidence;
@@ -190,6 +198,7 @@ void api::detection::detect(
     cv::Mat& shared_frame
 ) {
     LOG(INFO) << "Detection start";
+    
     while (start_detection) {
         std::unique_lock<std::mutex> lock(frame_mutex);
         detection_cv.wait(lock, [&pause_detection, &start_detection] { 
@@ -206,14 +215,47 @@ void api::detection::detect(
             continue;
         }
 
-        cv::Mat frame = shared_frame.clone();
-        lock.unlock();
-        tvm::runtime::NDArray input =  preprocess_frame(frame, 1, 640, 640);
+        // Detection과 트래킹을 shared_frame에서 직접 수행
+        tvm::runtime::NDArray input = preprocess_frame(shared_frame, 1, 640, 640);
         set_input("input", input);
         run();
         tvm::runtime::NDArray output = get_output(0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(30));
-        std::cout << "test" << std::endl;
+
+        // YOLO 및 트래킹 결과 계산
+        std::vector<cv::Rect> all_detections = ProcessYOLOOutput(output, COCO_CLASS_80, shared_frame, trackedObjects, currentId, 0.45);
+        tracker.Run(all_detections);
+        const auto tracks = tracker.GetTracks();
+
+        // detection 및 트래킹 결과를 shared_frame에 업데이트
+        // for (const auto& det : all_detections) {
+        //     cv::rectangle(shared_frame, det, cv::Scalar(0, 0, 255), 2);
+        //     std::cout << "currentID" << currentId <<  std::endl;
+        //     currentId++;
+        // }
+
+        for (auto& trk : tracks) {
+            if (trk.second.coast_cycles_ < kMaxCoastCycles && (trk.second.hit_streak_ >= kMinHits)) {
+                const auto& bbox = trk.second.GetStateAsBbox();
+                if (saved_ids.find(trk.first) == saved_ids.end()) {
+                    if (bbox.x >= 0 && bbox.y >= 0 && bbox.x + bbox.width <= shared_frame.cols 
+                    && bbox.y + bbox.height <= shared_frame.rows) {
+                        // 아직 저장되지 않은 새로운 ID이므로 바운더리 박스를 이미지로 저장
+                        
+                        cv::Mat cropped_image = shared_frame(bbox).clone(); // 바운더리 박스 영역만 잘라내기
+                        cv::rectangle(shared_frame, bbox, cv::Scalar(0, 0, 255), 2);
+                        // std::string filename = "object_" + std::to_string(trk.first) + ".png";
+                        // cv::imwrite(filename, cropped_image);
+                        
+
+                        // ID를 saved_ids에 추가하여 이후에는 저장되지 않도록 함
+                        saved_ids.insert(trk.first);
+                    }
+                }
+            }
+        }
+
+        lock.unlock();  // 락을 해제하여 외부에서 frame을 접근할 수 있도록 함
+        std::this_thread::sleep_for(std::chrono::milliseconds(30));  // 대기 시간 조정
     }
     LOG(INFO) << "Detection Complete";
 }

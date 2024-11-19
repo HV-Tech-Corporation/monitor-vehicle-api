@@ -7,8 +7,9 @@
 
 void receive_rtp_stream() {
     // GStreamer RTP 스트림을 수신하는 파이프라인
-    std::string pipeline = "udpsrc port=5004 ! application/x-rtp, payload=96 ! "
-                           "rtph264depay ! avdec_h264 ! videoconvert ! appsink";
+    std::string pipeline = "udpsrc port=5004 caps=\"application/x-rtp, payload=96\" ! "
+                       "rtpjpegdepay ! queue ! jpegdec ! queue ! "
+                       "videoconvert ! appsink";
 
     cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
     if (!cap.isOpened()) {
