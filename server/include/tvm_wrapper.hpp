@@ -23,9 +23,11 @@ namespace api {
         };
 
         void load_model(const std::string& model_path, const std::string device = "cpu");
+
         void detect(
             std::atomic<bool>& start_detection,
             std::atomic<bool>& pause_detection,
+            std::atomic<bool>& shared_frame_updated,
             std::mutex& frame_mutex,
             std::condition_variable& detection_cv,
             cv::Mat& shared_frame

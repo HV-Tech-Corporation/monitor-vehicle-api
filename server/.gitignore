@@ -1,3 +1,4 @@
 opencv
 build
 .vscode
+.DS_Store

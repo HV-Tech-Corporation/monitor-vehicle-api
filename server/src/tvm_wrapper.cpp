@@ -193,6 +193,7 @@ std::vector<cv::Rect> ProcessYOLOOutput(tvm::runtime::NDArray output, const std:
 void api::detection::detect(
     std::atomic<bool>& start_detection,
     std::atomic<bool>& pause_detection,
+    std::atomic<bool>& shared_frame_updated,
     std::mutex& frame_mutex,
     std::condition_variable& detection_cv,
     cv::Mat& shared_frame
@@ -202,12 +203,13 @@ void api::detection::detect(
     while (start_detection) {
         std::unique_lock<std::mutex> lock(frame_mutex);
         detection_cv.wait(lock, [&pause_detection, &start_detection] { 
-            return !pause_detection || !start_detection; 
+            return !pause_detection || start_detection; 
         });
 
         if (!start_detection) {
             break;
         }
+
 
         if (shared_frame.empty()) {
             lock.unlock();
@@ -240,22 +242,23 @@ void api::detection::detect(
                     if (bbox.x >= 0 && bbox.y >= 0 && bbox.x + bbox.width <= shared_frame.cols 
                     && bbox.y + bbox.height <= shared_frame.rows) {
                         // 아직 저장되지 않은 새로운 ID이므로 바운더리 박스를 이미지로 저장
-                        
                         cv::Mat cropped_image = shared_frame(bbox).clone(); // 바운더리 박스 영역만 잘라내기
                         cv::rectangle(shared_frame, bbox, cv::Scalar(0, 0, 255), 2);
-                        // std::string filename = "object_" + std::to_string(trk.first) + ".png";
-                        // cv::imwrite(filename, cropped_image);
-                        
-
+                        std::string filename = "object_" + std::to_string(trk.first) + ".png";
+                        cv::imwrite(filename, cropped_image);
                         // ID를 saved_ids에 추가하여 이후에는 저장되지 않도록 함
                         saved_ids.insert(trk.first);
                     }
                 }
             }
         }
-
+        
+        shared_frame_updated.store(true);
+        detection_cv.notify_one();
+        
         lock.unlock();  // 락을 해제하여 외부에서 frame을 접근할 수 있도록 함
         std::this_thread::sleep_for(std::chrono::milliseconds(30));  // 대기 시간 조정
+        
     }
     LOG(INFO) << "Detection Complete";
 }

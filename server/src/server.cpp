@@ -11,7 +11,7 @@ namespace server {
         std::atomic<bool> rewind_streaming(false); 
         std::atomic<bool> start_detection(false);
         std::atomic<bool> pause_detection(false);
-
+        std::atomic<bool> shared_frame_updated(false);
         std::string client_ip;
 
         std::condition_variable detection_cv;
@@ -164,17 +164,19 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
             pause_streaming = false;
         }
         else if (method == "GET" && path == "/start_detection") {
-            std::cout << "detection start" << std::endl;
-            send_response(socket , server::http_response::response_type::ok);
+            send_response(socket, server::http_response::response_type::ok);
+
             start_detection.store(true);
+            detection_cv.notify_one();
             
             api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_arm.so");
             std::thread(&api::detection::detect, 
-                std::ref(start_detection),
-                std::ref(pause_detection),
-                std::ref(frame_mutex),
-                std::ref(detection_cv),
-                std::ref(shared_frame)).detach();
+                        std::ref(start_detection),
+                        std::ref(pause_detection),
+                        std::ref(shared_frame_updated),
+                        std::ref(frame_mutex),
+                        std::ref(detection_cv),
+                        std::ref(shared_frame)).detach();
         }
         else if (method == "GET" && path == "/pause_detection") {
             std::cout << "pause detection" << std::endl;
@@ -199,9 +201,7 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
 
             std::string full_path = "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/docs/html" + relative_path;
             std::cout << "Serving file: " << full_path << std::endl;
-            
             send_file_doxygen(socket, full_path);
-            
         }
         else {
             send_response(socket , server::http_response::response_type::not_found);
@@ -249,23 +249,31 @@ void server::rtp::app::start_streaming(const std::string& video_path) {
             rewind_streaming = false;  // 플래그를 초기화
         }
 
-        // 프레임을 읽고 비어있는 경우 영상 끝에 도달했으므로 처음으로 되감기
         cap >> frame;
         if (frame.empty()) {
-            cap.set(cv::CAP_PROP_POS_FRAMES, 0); 
+            cap.set(cv::CAP_PROP_POS_FRAMES, 0);
             continue;
         }
 
-        {
-            std::lock_guard<std::mutex> lock(frame_mutex);
-            shared_frame = frame.clone();
+        cv::Mat output_frame;
+        shared_frame = frame.clone();
+
+       if (start_detection) {
+            std::unique_lock<std::mutex> lock(frame_mutex);
+            detection_cv.wait(lock, [this]() {
+                return shared_frame_updated.load();
+            });
+            // output_frame = shared_frame.clone(); // 처리된 프레임 복사
+            shared_frame_updated.store(false);   // 플래그 리셋
+        } else {
+            output_frame = frame.clone();
+            {
+                std::lock_guard<std::mutex> lock(frame_mutex);
+                shared_frame = frame.clone();
+            }
         }
 
         writer.write(shared_frame);
-
-        if (start_detection) {
-            detection_cv.notify_one();
-        }
     }
 
     cap.release();
