@@ -229,11 +229,9 @@ void api::detection::detect(
         const auto tracks = tracker.GetTracks();
 
         // detection 및 트래킹 결과를 shared_frame에 업데이트
-        // for (const auto& det : all_detections) {
-        //     cv::rectangle(shared_frame, det, cv::Scalar(0, 0, 255), 2);
-        //     std::cout << "currentID" << currentId <<  std::endl;
-        //     currentId++;
-        // }
+        for (const auto& det : all_detections) {
+            cv::rectangle(shared_frame, det, cv::Scalar(0, 0, 255), 2);
+        }
 
         for (auto& trk : tracks) {
             if (trk.second.coast_cycles_ < kMaxCoastCycles && (trk.second.hit_streak_ >= kMinHits)) {
@@ -243,7 +241,7 @@ void api::detection::detect(
                     && bbox.y + bbox.height <= shared_frame.rows) {
                         // 아직 저장되지 않은 새로운 ID이므로 바운더리 박스를 이미지로 저장
                         cv::Mat cropped_image = shared_frame(bbox).clone(); // 바운더리 박스 영역만 잘라내기
-                        cv::rectangle(shared_frame, bbox, cv::Scalar(0, 0, 255), 2);
+                        // cv::rectangle(shared_frame, bbox, cv::Scalar(0, 0, 255), 2);
                         std::string filename = "object_" + std::to_string(trk.first) + ".png";
                         cv::imwrite(filename, cropped_image);
                         // ID를 saved_ids에 추가하여 이후에는 저장되지 않도록 함
@@ -258,7 +256,98 @@ void api::detection::detect(
         
         lock.unlock();  // 락을 해제하여 외부에서 frame을 접근할 수 있도록 함
         std::this_thread::sleep_for(std::chrono::milliseconds(30));  // 대기 시간 조정
-        
     }
     LOG(INFO) << "Detection Complete";
+}
+
+
+void api::detection::preprocess_detect(
+    const std::string& video_path,
+    std::unordered_map<int, cv::Mat>& detected_frames,
+    std::mutex& detected_frames_mutex,
+    std::atomic<bool>& preload_complete,
+    std::mutex& bestShot_mutex,
+    cv::Mat bestShot_frame
+) {
+    LOG(INFO) << "Preloading and Detection Start";
+    
+    cv::VideoCapture cap(video_path);
+    if (!cap.isOpened()) {
+        std::cerr << "Error: Could not open video file for detection" << std::endl;
+        return;
+    }
+
+    std::unordered_set<int> processed_ids;
+
+    int frame_index = 0;  // 현재 프레임 인덱스
+    cv::Mat frame;
+
+    ObjectTracker tracker;
+
+    while (true) {
+        cap >> frame;
+        if (frame.empty()) {
+            break;  // 비디오 끝에 도달
+        }
+        
+        // YOLO 모델을 사용해 탐지 수행
+        tvm::runtime::NDArray input = preprocess_frame(frame, 1, 640, 640);
+        set_input("input", input);
+        run();
+        tvm::runtime::NDArray output = get_output(0);
+
+        // YOLO 및 트래킹 결과 계산
+        std::vector<cv::Rect> all_detections = ProcessYOLOOutput(output, COCO_CLASS_80, frame, trackedObjects, currentId, 0.45);
+
+        // 탐지 결과를 복사하고 바운딩 박스를 그립니다.
+        cv::Mat detected_frame = frame.clone();
+        
+        tracker.Run(all_detections);
+        const auto tracks = tracker.GetTracks();
+
+        // detection 및 트래킹 결과를 shared_frame에 업데이트
+        for (const auto& det : all_detections) {
+            
+        }
+
+        for (auto &trk : tracks) {
+            if (trk.second.coast_cycles_ < kMaxCoastCycles &&
+                (trk.second.hit_streak_ >= kMinHits)) {
+                const auto &bbox = trk.second.GetStateAsBbox();
+                if (bbox.x >= 0 && bbox.y >= 0 && bbox.x + bbox.width <= frame.cols && bbox.y + bbox.height <= frame.rows) {
+                    cv::putText(detected_frame, std::to_string(trk.first), cv::Point(bbox.tl().x, bbox.tl().y - 10),
+                                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+                    cv::rectangle(detected_frame, bbox, cv::Scalar(0, 0, 255), 2);
+
+                    if (processed_ids.find(trk.first) == processed_ids.end()) {
+                        // 새로운 ID일 경우 이미지를 저장
+                        cv::Mat bestShot_frame = frame(bbox).clone();
+                        cv::imwrite("bestShot_" + std::to_string(frame_index) + "_" + std::to_string(trk.first) + ".jpg", bestShot_frame);
+
+                        // 처리된 ID 목록에 추가
+                        processed_ids.insert(trk.first);
+
+                        // bestShot frame 업데이트
+                        {
+                            std::lock_guard<std::mutex> lock(bestShot_mutex);
+                            bestShot_frame = frame(bbox).clone();
+                        }
+                    }
+                }
+            }
+        }
+    
+        // 탐지된 결과를 저장
+        {
+            std::lock_guard<std::mutex> lock(detected_frames_mutex);
+            detected_frames[frame_index] = detected_frame;  // 프레임 인덱스에 결과 저장
+        }
+
+        frame_index++;  // 다음 프레임으로 이동
+    }
+
+    preload_complete.store(true);  // 탐지 작업 완료 플래그 설정
+    cap.release();
+    std::cout << "preprocess done!!" << std::endl;
+    LOG(INFO) << "Detection and Preloading Complete";
 }

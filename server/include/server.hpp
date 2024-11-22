@@ -64,10 +64,9 @@ namespace server {
             // GStreamer 파이프라인
             std::string get_gstream_pipeline() const;
             // 비디오 스트리밍 함수
-            void start_streaming(const std::string& video_path);   
+            void start_streaming(const std::string& video_path, boost::asio::ip::tcp::socket& socket);   
         }; //struct app
 
-        
         // 서버 시작 함수
         void start_server(uint16_t port);  
 
@@ -80,10 +79,6 @@ namespace server {
         extern std::condition_variable detection_cv;
         extern std::mutex frame_mutex;
         extern cv::Mat shared_frame;
-
-        
-
-
         
     } // namespace rtp
 } // namespace server

@@ -37,6 +37,7 @@ set(SOURCE_SERVER_DIR
     src/response.cpp
     src/hungarian.cpp
     src/kalman_filter.cpp
+    src/line.cpp
     src/munkres.cpp
     src/track.cpp
     src/tracker.cpp

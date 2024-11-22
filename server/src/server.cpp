@@ -12,6 +12,16 @@ namespace server {
         std::atomic<bool> start_detection(false);
         std::atomic<bool> pause_detection(false);
         std::atomic<bool> shared_frame_updated(false);
+        std::atomic<bool> is_streaming(false);
+
+        std::atomic<bool> preload_complete(false);
+        
+        std::unordered_map<int, cv::Mat> detected_frames;
+        std::mutex detected_frames_mutex;
+
+        std::mutex bestShot_mutex;
+        cv::Mat bestShot_frame;
+
         std::string client_ip;
 
         std::condition_variable detection_cv;
@@ -105,33 +115,22 @@ void send_image_list_response(boost::asio::ip::tcp::socket& socket) {
     boost::asio::write(socket, boost::asio::buffer(response.str()));
 }
 
-void send_image_response(boost::asio::ip::tcp::socket& socket, const std::string& filename) {
-    std::string image_path = "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/build/" + filename;
+void send_image_response(boost::asio::ip::tcp::socket& socket, const cv::Mat& image) {
+    std::vector<uchar> buf;
+    cv::imencode(".jpg", image, buf);  // 이미지를 JPEG로 인코딩
 
-    std::ifstream file(image_path, std::ios::binary);
-    if (!file) {
-        send_response(socket, server::http_response::response_type::not_found);
-        return;
-    }
+    std::ostringstream header;
+    header << "HTTP/1.1 200 OK\r\n"
+           << "Content-Type: image/jpeg\r\n"
+           << "Content-Length: " << buf.size() << "\r\n"
+           << "\r\n";
 
-    file.seekg(0, std::ios::end);
-    std::size_t file_size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    std::string file_data(file_size, '\0');
-    file.read(&file_data[0], file_size);
-
-    std::ostringstream response;
-    response << "HTTP/1.1 200 OK\r\n";
-    response << "Content-Type: image/jpeg\r\n";
-    response << "Content-Length: " << file_size << "\r\n";
-    response << "\r\n";
-
-    boost::asio::write(socket, boost::asio::buffer(response.str()));
-    boost::asio::write(socket, boost::asio::buffer(file_data));
+    boost::asio::write(socket, boost::asio::buffer(header.str()));
+    boost::asio::write(socket, boost::asio::buffer(buf));
 }
 
 void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& socket) {
+    
     
     try {
         boost::asio::streambuf request;
@@ -140,13 +139,33 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
         std::istream request_stream(&request);
         std::string method, path;
         request_stream >> method >> path;
-        
-        if(method == "GET" && path == "/start_stream") {
-            std::cout << "start stream" << std::endl;
-            send_response(socket, server::http_response::response_type::ok);
+
+        if (method == "GET" && path == "/start_stream") {
+            if (is_streaming.load()) {
+                send_response(socket, server::http_response::response_type::bad_request);
+                return;
+            }
+
+            send_response(socket, server::http_response::response_type::ok); // 먼저 응답을 보냄
+
+            is_streaming.store(true);
             pause_streaming = false;
-            std::thread(&server::rtp::app::start_streaming, this, video_path).detach();
-        } 
+
+            std::string video_path = "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4";
+
+            // 새로운 스트리밍 쓰레드 생성
+            std::thread([this, socket = std::move(socket), video_path] () mutable {
+                try {
+                    start_streaming(video_path, socket);
+                } catch (const std::exception& e) {
+                    std::cerr << "Error in streaming thread: " << e.what() << std::endl;
+                }
+                is_streaming.store(false); // 스트리밍 종료 시 상태 업데이트
+            }).detach();
+
+            std::cout << "start stream" << std::endl;
+        }
+
         else if (method == "GET" && path == "/pause_stream") {
             std::cout << "pause stream" << std::endl;
             send_response(socket , server::http_response::response_type::ok);
@@ -165,11 +184,10 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
         }
         else if (method == "GET" && path == "/start_detection") {
             send_response(socket, server::http_response::response_type::ok);
-
             start_detection.store(true);
             detection_cv.notify_one();
             
-            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_arm.so");
+            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
             std::thread(&api::detection::detect, 
                         std::ref(start_detection),
                         std::ref(pause_detection),
@@ -178,16 +196,31 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
                         std::ref(detection_cv),
                         std::ref(shared_frame)).detach();
         }
+        else if (method == "GET" && path == "/preprocess_detection") {
+            send_response(socket, server::http_response::response_type::ok);
+            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
+            std::thread detection_thread([&]() {
+                api::detection::preprocess_detect(
+                    "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4",
+                    std::ref(detected_frames),
+                    std::ref(detected_frames_mutex),
+                    std::ref(preload_complete),
+                    std::ref(bestShot_mutex),
+                    std::ref(bestShot_frame)
+                );
+            });
+            detection_thread.detach(); // 스레드를 분리하여 서버를 차단하지 않음
+        }
         else if (method == "GET" && path == "/pause_detection") {
             std::cout << "pause detection" << std::endl;
+            start_detection.store(false);
             send_response(socket, server::http_response::response_type::ok);
-            pause_detection = true;
+            // pause_detection = true;
         } 
         else if (method == "GET" && path == "/resume_detection") {
             std::cout << "resume detection" << std::endl;
             send_response(socket, server::http_response::response_type::ok);
-            pause_detection = false;
-            detection_cv.notify_one();
+            start_detection.store(true);
         } 
         else if (method == "GET" && path == "/get_detection_img") {
             std::cout << "Serving detection images" << std::endl;
@@ -198,11 +231,14 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
             if (relative_path.empty() || relative_path == "/") {
                 relative_path = "/index.html";
             }
-
             std::string full_path = "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/docs/html" + relative_path;
             std::cout << "Serving file: " << full_path << std::endl;
             send_file_doxygen(socket, full_path);
         }
+        else if (method == "GET" && path.find("/best_shot") == 0) {
+            
+        }
+        
         else {
             send_response(socket , server::http_response::response_type::not_found);
         } 
@@ -217,7 +253,7 @@ std::string server::rtp::app::get_gstream_pipeline() const {
 			"udpsink host="+ client_ip + " port=5004 auto-multicast=true";
 }
 
-void server::rtp::app::start_streaming(const std::string& video_path) {
+void server::rtp::app::start_streaming(const std::string& video_path, boost::asio::ip::tcp::socket& socket) {
     cv::VideoCapture cap(video_path);
     if (!cap.isOpened()) {
         std::cerr << "Error: Could not open video file" << std::endl;
@@ -226,54 +262,75 @@ void server::rtp::app::start_streaming(const std::string& video_path) {
 
     cv::Size frame_size((int)cap.get(cv::CAP_PROP_FRAME_WIDTH), (int)cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     double fps = cap.get(cv::CAP_PROP_FPS);
-    cv::VideoWriter writer;
+    std::cout << "fps is : " << fps << std::endl;
 
+    int frame_delay_ms = static_cast<int>(1000.0 / fps); // 프레임 간 대기 시간
+
+    cv::VideoWriter writer;
     if (!writer.open(get_gstream_pipeline(), cv::CAP_GSTREAMER, 0, fps, frame_size)) {
         std::cerr << "Error: Could not open Gstreamer pipeline for writing" << std::endl;
         return;
     }
 
+    int frame_counter = 0; // 프레임 번호
     cv::Mat frame;
+
     while (true) {
-        // 일시 정지 상태일 경우, 일시 정지 해제될 때까지 대기
+        auto start_time = std::chrono::steady_clock::now(); // 루프 시작 시간
+
         if (pause_streaming) {
             std::this_thread::sleep_for(std::chrono::milliseconds(30));
-            if (!frame.empty()) {
-                writer.write(frame);  // 현재 프레임을 계속해서 송출하여 정지 상태 유지
-            }
             continue;
         }
 
         if (rewind_streaming) {
-            cap.set(cv::CAP_PROP_POS_FRAMES, 0);  // 프레임을 처음으로 설정
-            rewind_streaming = false;  // 플래그를 초기화
+            cap.set(cv::CAP_PROP_POS_FRAMES, 0);
+            frame_counter = 0;
+            rewind_streaming = false;
         }
 
-        cap >> frame;
+        cap >> frame; // 원본 프레임 읽기
         if (frame.empty()) {
             cap.set(cv::CAP_PROP_POS_FRAMES, 0);
+            frame_counter = 0;
             continue;
         }
 
         cv::Mat output_frame;
-        shared_frame = frame.clone();
-
-       if (start_detection) {
-            std::unique_lock<std::mutex> lock(frame_mutex);
-            detection_cv.wait(lock, [this]() {
-                return shared_frame_updated.load();
-            });
-            // output_frame = shared_frame.clone(); // 처리된 프레임 복사
-            shared_frame_updated.store(false);   // 플래그 리셋
-        } else {
-            output_frame = frame.clone();
-            {
-                std::lock_guard<std::mutex> lock(frame_mutex);
-                shared_frame = frame.clone();
+        if (preload_complete.load()) {
+            // 탐지된 프레임 사용
+            std::lock_guard<std::mutex> lock(detected_frames_mutex);
+            if (detected_frames.find(frame_counter) != detected_frames.end()) {
+                output_frame = detected_frames[frame_counter]; // 탐지된 프레임 사용
+                for (const auto& entry : std::filesystem::directory_iterator(".")) {
+                    std::string file_name = entry.path().filename().string();
+                    // 파일 이름이 "bestShot_<frame_index>_<object_id>.jpg" 형식인지 확인
+                    std::string prefix = "bestShot_" + std::to_string(frame_counter) + "_";
+                    if (file_name.find(prefix) == 0 && file_name.substr(file_name.size() - 4) == ".jpg") {
+                        cv::Mat bestShot_frame = cv::imread("/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/build/bestShot_363_52.jpg");
+                        if (!bestShot_frame.empty()) {
+                            // 각 이미지를 클라이언트에 전송
+                            send_image_response(socket, bestShot_frame);
+                        }
+                    }
+                }
+            } else {
+                output_frame = frame.clone(); // 탐지 결과가 없을 경우 원본 사용
             }
+        } else {
+            output_frame = frame.clone(); // 탐지 결과가 준비되지 않으면 원본 사용
         }
 
-        writer.write(shared_frame);
+        writer.write(output_frame); // 프레임 송출
+        frame_counter++;
+
+        // 전송 속도 제어
+        auto end_time = std::chrono::steady_clock::now();
+        int elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+        int sleep_time = frame_delay_ms - elapsed_ms;
+        if (sleep_time > 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
+        }
     }
 
     cap.release();

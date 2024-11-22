@@ -33,6 +33,15 @@ namespace api {
             cv::Mat& shared_frame
         );
 
+        void preprocess_detect(
+            const std::string& video_path,
+            std::unordered_map<int, cv::Mat>& detected_frames,
+            std::mutex& detected_frames_mutex,
+            std::atomic<bool>& preload_complete,
+            std::mutex& bestShot_mutex,
+            cv::Mat bestShot_frame
+        );
+
         extern tvm::runtime::Module loaded_lib;
         extern tvm::runtime::Module mod;
         extern tvm::runtime::PackedFunc set_input;
