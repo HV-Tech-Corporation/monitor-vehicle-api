@@ -18,6 +18,7 @@ namespace server {
         
         std::unordered_map<int, cv::Mat> detected_frames;
         std::mutex detected_frames_mutex;
+        std::mutex socket_mutex;
 
         std::mutex bestShot_mutex;
         cv::Mat bestShot_frame;
@@ -42,6 +43,7 @@ void send_response(boost::asio::ip::tcp::socket& socket, server::http_response::
     server::http_response::response _http_response;
     res_inst.set_status(status);
     res_inst.add_header("Content-Type", "text/html");
+    res_inst.add_header("Connection", "keep-alive");
 
     // 응답 본문을 설정 (response_type에 따라 본문 선택)
     res_inst.content = _http_response.response_body_to_string(status);
@@ -115,22 +117,47 @@ void send_image_list_response(boost::asio::ip::tcp::socket& socket) {
     boost::asio::write(socket, boost::asio::buffer(response.str()));
 }
 
-void send_image_response(boost::asio::ip::tcp::socket& socket, const cv::Mat& image) {
-    std::vector<uchar> buf;
-    cv::imencode(".jpg", image, buf);  // 이미지를 JPEG로 인코딩
+void send_multipart_image_response(boost::asio::ip::tcp::socket& socket, const std::vector<cv::Mat>& images) {
+    std::string boundary = "----BoundaryForMultipart";
 
+    // HTTP 응답 헤더 작성
     std::ostringstream header;
     header << "HTTP/1.1 200 OK\r\n"
-           << "Content-Type: image/jpeg\r\n"
-           << "Content-Length: " << buf.size() << "\r\n"
+           << "Content-Type: multipart/mixed; boundary=" << boundary << "\r\n"
+           << "Connection: keep-alive\r\n"
            << "\r\n";
 
-    boost::asio::write(socket, boost::asio::buffer(header.str()));
-    boost::asio::write(socket, boost::asio::buffer(buf));
+    try {
+        // 헤더 전송
+        boost::asio::write(socket, boost::asio::buffer(header.str()));
+
+        for (const auto& image : images) {
+            std::vector<uchar> buf;
+            cv::imencode(".jpg", image, buf);  // 이미지를 JPEG로 인코딩
+
+            // 각 파트의 시작
+            std::ostringstream part;
+            part << "--" << boundary << "\r\n"
+                 << "Content-Type: image/jpeg\r\n"
+                 << "Content-Length: " << buf.size() << "\r\n"
+                 << "\r\n";
+            boost::asio::write(socket, boost::asio::buffer(part.str()));
+            boost::asio::write(socket, boost::asio::buffer(buf));
+            boost::asio::write(socket, boost::asio::buffer("\r\n"));
+        }
+
+        // 멀티파트 종료
+        std::ostringstream end_boundary;
+        end_boundary << "--" << boundary << "--\r\n";
+        boost::asio::write(socket, boost::asio::buffer(end_boundary.str()));
+
+    } catch (const boost::system::system_error& e) {
+        std::cerr << "Error sending multipart image: " << e.what() << std::endl;
+    }
 }
 
+
 void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& socket) {
-    
     
     try {
         boost::asio::streambuf request;
@@ -235,10 +262,6 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
             std::cout << "Serving file: " << full_path << std::endl;
             send_file_doxygen(socket, full_path);
         }
-        else if (method == "GET" && path.find("/best_shot") == 0) {
-            
-        }
-        
         else {
             send_response(socket , server::http_response::response_type::not_found);
         } 
@@ -310,7 +333,7 @@ void server::rtp::app::start_streaming(const std::string& video_path, boost::asi
                         cv::Mat bestShot_frame = cv::imread("/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/build/bestShot_363_52.jpg");
                         if (!bestShot_frame.empty()) {
                             // 각 이미지를 클라이언트에 전송
-                            send_image_response(socket, bestShot_frame);
+                            send_multipart_image_response(socket, bestShot_frame);
                         }
                     }
                 }
@@ -337,16 +360,54 @@ void server::rtp::app::start_streaming(const std::string& video_path, boost::asi
     writer.release();
 }
 
+void enable_tcp_keep_alive(boost::asio::ip::tcp::socket& socket) {
+    boost::asio::socket_base::keep_alive option(true);
+    socket.set_option(option);  // TCP Keep-Alive 활성화
+}
+
 void server::rtp::start_server(uint16_t port) {
     boost::asio::io_context io_context;
     boost::asio::ip::tcp::acceptor acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port));
     app rtp_app;
+    std::vector<std::thread> thread_pool;
+
     std::cout << "Server started on port " << port << std::endl;
+
     while (true) {
         boost::asio::ip::tcp::socket socket(io_context);
         acceptor.accept(socket);
-        boost::asio::ip::tcp::endpoint remote_ep = socket.remote_endpoint();
-        client_ip = remote_ep.address().to_string();
-        rtp_app.handle_streaming_request(socket);
+
+        try {
+            if (socket.is_open()) {
+                boost::asio::socket_base::keep_alive option(true);
+                socket.set_option(option);
+
+                boost::asio::ip::tcp::endpoint remote_ep = socket.remote_endpoint();
+                client_ip = remote_ep.address().to_string();
+
+                // 새로운 스레드 생성
+                thread_pool.emplace_back([&rtp_app, socket = std::move(socket)]() mutable {
+                    try {
+                        rtp_app.handle_streaming_request(socket);
+                    } catch (const std::exception& e) {
+                        std::cerr << "Error in client thread: " << e.what() << std::endl;
+                    }
+                });
+
+                // 스레드 관리 (주기적으로 정리)
+                for (auto it = thread_pool.begin(); it != thread_pool.end();) {
+                    if (it->joinable()) {
+                        it->join();
+                        it = thread_pool.erase(it);
+                    } else {
+                        ++it;
+                    }
+                }
+            } else {
+                std::cerr << "Error: Socket is not open after accept" << std::endl;
+            }
+        } catch (const boost::system::system_error& e) {
+            std::cerr << "Error handling client: " << e.what() << std::endl;
+        }
     }
 }
