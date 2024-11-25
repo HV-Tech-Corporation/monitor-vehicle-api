@@ -118,11 +118,12 @@ void send_image_list_response(boost::asio::ip::tcp::socket& socket) {
 }
 
 void send_multipart_image_response(boost::asio::ip::tcp::socket& socket, const std::vector<cv::Mat>& images) {
-    std::string boundary = "----BoundaryForMultipart";
+    std::cout << "multipart process executed..." << std::endl;
+    std::string boundary = "--frame";
 
     // HTTP 응답 헤더 작성
     std::ostringstream header;
-    header << "HTTP/1.1 200 OK\r\n"
+    header << "HTTP/1.1 400 Bad Request\r\n"
            << "Content-Type: multipart/mixed; boundary=" << boundary << "\r\n"
            << "Connection: keep-alive\r\n"
            << "\r\n";
@@ -330,10 +331,10 @@ void server::rtp::app::start_streaming(const std::string& video_path, boost::asi
                     // 파일 이름이 "bestShot_<frame_index>_<object_id>.jpg" 형식인지 확인
                     std::string prefix = "bestShot_" + std::to_string(frame_counter) + "_";
                     if (file_name.find(prefix) == 0 && file_name.substr(file_name.size() - 4) == ".jpg") {
-                        cv::Mat bestShot_frame = cv::imread("/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/build/bestShot_363_52.jpg");
-                        if (!bestShot_frame.empty()) {
+                        cv::Mat bestShot_frame2 = cv::imread("/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/bestShot_2_3.jpg");
+                        if (!bestShot_frame2.empty()) {
                             // 각 이미지를 클라이언트에 전송
-                            send_multipart_image_response(socket, bestShot_frame);
+                            send_multipart_image_response(socket, bestShot_frame2);
                         }
                     }
                 }

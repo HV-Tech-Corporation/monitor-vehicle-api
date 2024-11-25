@@ -39,6 +39,7 @@ set(SOURCE_SERVER_DIR
     src/kalman_filter.cpp
     src/line.cpp
     src/munkres.cpp
+    src/ocr.cpp
     src/track.cpp
     src/tracker.cpp
     src/tvm_wrapper.cpp

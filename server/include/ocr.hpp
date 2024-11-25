@@ -11,7 +11,39 @@
 namespace api {
     namespace recognition {
         namespace ocr {
-            
+
+            cv::Mat localization(cv::Mat& bbox, const std::string& xml_path) {
+                // Haar Cascade 로드
+                cv::CascadeClassifier plateCascade;
+                if (!plateCascade.load(xml_path)) {
+                    std::cerr << "Error loading Haar Cascade file for license plate" << std::endl;
+                    return cv::Mat(); // 빈 Mat 반환
+                }
+
+                // bbox 영역을 사용하여 bestShot_frame 생성
+                cv::Mat bestShot_frame = bbox.clone(); // bbox를 복사
+                if (bestShot_frame.empty()) {
+                    std::cerr << "Error: Input frame (bbox) is empty" << std::endl;
+                    return cv::Mat(); // 빈 Mat 반환
+                }
+
+                // plate 탐지
+                std::vector<cv::Rect> plates;
+                cv::Mat gray;
+                cv::cvtColor(bestShot_frame, gray, cv::COLOR_BGR2GRAY); // 그레이스케일 변환
+                plateCascade.detectMultiScale(gray, plates, 1.05, 3, 0, cv::Size(20, 20));
+
+                // plates가 비어 있을 경우 처리
+                if (plates.empty()) {
+                    std::cerr << "No license plates detected" << std::endl;
+                    return cv::Mat(); // 빈 Mat 반환
+                }
+
+                // plates가 비어 있지 않을 경우 첫 번째 plate 반환
+                cv::Mat plate_img = bestShot_frame(plates[0]).clone();
+                return plate_img;
+            }
+
             void reconginze(const std::string& model_path, const cv::Mat& image) {
                 tvm::runtime::Module lib = tvm::runtime::Module::LoadFromFile("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/tvm_recognition_fixed.so");
                 tvm::runtime::PackedFunc get_func = lib.GetFunction("default");
