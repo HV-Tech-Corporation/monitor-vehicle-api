@@ -60,11 +60,11 @@ namespace server {
              * 
              * @param socket The client socket connection.
              */
-            void handle_streaming_request(boost::asio::ip::tcp::socket& socket);
+            void handle_streaming_request(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket);
             // GStreamer 파이프라인
             std::string get_gstream_pipeline() const;
             // 비디오 스트리밍 함수
-            void start_streaming(const std::string& video_path, boost::asio::ip::tcp::socket& socket);   
+            void start_streaming(const std::string& video_path, std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket);   
         }; //struct app
 
         // 서버 시작 함수

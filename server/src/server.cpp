@@ -13,7 +13,6 @@ namespace server {
         std::atomic<bool> pause_detection(false);
         std::atomic<bool> shared_frame_updated(false);
         std::atomic<bool> is_streaming(false);
-
         std::atomic<bool> preload_complete(false);
         
         std::unordered_map<int, cv::Mat> detected_frames;
@@ -38,7 +37,7 @@ namespace server {
     }
 } 
 
-void send_response(boost::asio::ip::tcp::socket& socket, server::http_response::response_type status) {
+void send_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, server::http_response::response_type status) {
     server::http_response::response res_inst;
     server::http_response::response _http_response;
     res_inst.set_status(status);
@@ -49,7 +48,7 @@ void send_response(boost::asio::ip::tcp::socket& socket, server::http_response::
     res_inst.content = _http_response.response_body_to_string(status);
 
     auto buffers = res_inst.to_buffers();
-    boost::asio::write(socket, buffers);
+    boost::asio::write(*shared_socket, buffers);
 }
 
 std::string get_content_type(const std::string& file_path) {
@@ -67,11 +66,11 @@ std::string get_content_type(const std::string& file_path) {
     return "application/octet-stream"; // 기본 값
 }
 
-void send_file_doxygen(boost::asio::ip::tcp::socket& socket, const std::string& file_path) {
+void send_file_doxygen(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const std::string& file_path) {
     std::ifstream file(file_path, std::ios::binary);
     if (!file.is_open()) {
         std::string response = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n";
-        boost::asio::write(socket, boost::asio::buffer(response));
+        boost::asio::write(*shared_socket, boost::asio::buffer(response));
         return;
     }
 
@@ -85,84 +84,65 @@ void send_file_doxygen(boost::asio::ip::tcp::socket& socket, const std::string& 
     response += "Content-Length: " + std::to_string(content.size()) + "\r\n\r\n";
     response += content;
 
-    boost::asio::write(socket, boost::asio::buffer(response));
+    boost::asio::write(*shared_socket, boost::asio::buffer(response));
 }
 
+void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const cv::Mat& image) {
+    std::cout << "Sending single image2..." << std::endl;
 
-void send_image_list_response(boost::asio::ip::tcp::socket& socket) {
-    std::ostringstream response;
-    response << "HTTP/1.1 200 OK\r\n";
-    response << "Content-Type: text/html\r\n\r\n";
-
-    // HTML 응답 시작 부분
-    response << "<html><head><title>Detection Images</title></head><body>";
-    response << "<h2>Detection Images</h2>";
-
-    // 이미지 파일들이 저장된 디렉토리
-    fs::path directory("/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/build");
-
-    // 디렉토리를 탐색하며 이미지 파일을 HTML에 추가
-    for (const auto& entry : fs::directory_iterator(directory)) {
-        if (fs::is_regular_file(entry) && 
-           (entry.path().extension() == ".jpg" || entry.path().extension() == ".png")) {
-            std::string filename = entry.path().filename().string();
-            response << "<div><p>" << filename << "</p>";
-            response << "<img src='/get_image/" << filename << "' style='max-width:200px;'/></div><br/>";
-        }
+    // 이미지 인코딩 (JPEG 형식)
+    std::vector<uchar> buf;
+    if (!cv::imencode(".jpg", image, buf)) {
+        std::cerr << "Error: Failed to encode image." << std::endl;
+        return;
     }
 
-    response << "</body></html>";
+    if (image.empty()) {
+        std::cerr << "Error: Input image is empty." << std::endl;
+        return;
+    }
 
-    // HTML 응답 전송
-    boost::asio::write(socket, boost::asio::buffer(response.str()));
-}
+    if (buf.empty()) {
+        std::cerr << "Error: Encoded buffer is empty." << std::endl;
+        return;
+    }
 
-void send_multipart_image_response(boost::asio::ip::tcp::socket& socket, const std::vector<cv::Mat>& images) {
-    std::cout << "multipart process executed..." << std::endl;
-    std::string boundary = "--frame";
+    if (!shared_socket || !shared_socket->is_open()) {
+        std::cerr << "Error: Socket is not open or is null." << std::endl;
+        return;
+    }
+
 
     // HTTP 응답 헤더 작성
     std::ostringstream header;
-    header << "HTTP/1.1 400 Bad Request\r\n"
-           << "Content-Type: multipart/mixed; boundary=" << boundary << "\r\n"
+    header << "HTTP/1.1 200 OK\r\n"
+           << "Content-Type: image/jpeg\r\n"
+           << "Content-Length: " << buf.size() << "\r\n"
            << "Connection: keep-alive\r\n"
            << "\r\n";
 
     try {
-        // 헤더 전송
-        boost::asio::write(socket, boost::asio::buffer(header.str()));
-
-        for (const auto& image : images) {
-            std::vector<uchar> buf;
-            cv::imencode(".jpg", image, buf);  // 이미지를 JPEG로 인코딩
-
-            // 각 파트의 시작
-            std::ostringstream part;
-            part << "--" << boundary << "\r\n"
-                 << "Content-Type: image/jpeg\r\n"
-                 << "Content-Length: " << buf.size() << "\r\n"
-                 << "\r\n";
-            boost::asio::write(socket, boost::asio::buffer(part.str()));
-            boost::asio::write(socket, boost::asio::buffer(buf));
-            boost::asio::write(socket, boost::asio::buffer("\r\n"));
-        }
-
-        // 멀티파트 종료
-        std::ostringstream end_boundary;
-        end_boundary << "--" << boundary << "--\r\n";
-        boost::asio::write(socket, boost::asio::buffer(end_boundary.str()));
-
+        // 헤더와 이미지 데이터 전송
+        boost::asio::write(*shared_socket, boost::asio::buffer(header.str()));
+        boost::asio::write(*shared_socket, boost::asio::buffer(buf));
+        std::cout << "buffer send success..." << std::endl;
     } catch (const boost::system::system_error& e) {
-        std::cerr << "Error sending multipart image: " << e.what() << std::endl;
+        if (e.code() == boost::asio::error::broken_pipe) {
+            std::cerr << "Broken pipe: Client disconnected prematurely." << std::endl;
+        } else {
+            std::cerr << "Error sending image: " << e.what() << std::endl;
+        }
+        if (shared_socket->is_open()) {
+            shared_socket->close();
+        }
     }
 }
 
-
-void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& socket) {
+void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket) {
     
     try {
         boost::asio::streambuf request;
-        boost::asio::read_until(socket, request, "\r\n");
+        boost::asio::read_until(*shared_socket, request, "\r\n");
 
         std::istream request_stream(&request);
         std::string method, path;
@@ -170,48 +150,50 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
 
         if (method == "GET" && path == "/start_stream") {
             if (is_streaming.load()) {
-                send_response(socket, server::http_response::response_type::bad_request);
+                send_response(shared_socket, server::http_response::response_type::bad_request);
                 return;
             }
-
-            send_response(socket, server::http_response::response_type::ok); // 먼저 응답을 보냄
+   
+            send_response(shared_socket, server::http_response::response_type::ok); // 먼저 응답을 보냄
+            auto streaming_socket = std::make_shared<boost::asio::ip::tcp::socket>(std::move(*shared_socket));
 
             is_streaming.store(true);
             pause_streaming = false;
 
             std::string video_path = "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4";
-
+            
             // 새로운 스트리밍 쓰레드 생성
-            std::thread([this, socket = std::move(socket), video_path] () mutable {
+            std::thread([this, streaming_socket, video_path]() mutable {
                 try {
-                    start_streaming(video_path, socket);
+                    start_streaming(video_path, streaming_socket);
                 } catch (const std::exception& e) {
                     std::cerr << "Error in streaming thread: " << e.what() << std::endl;
                 }
                 is_streaming.store(false); // 스트리밍 종료 시 상태 업데이트
             }).detach();
 
+
             std::cout << "start stream" << std::endl;
         }
 
         else if (method == "GET" && path == "/pause_stream") {
             std::cout << "pause stream" << std::endl;
-            send_response(socket , server::http_response::response_type::ok);
+            send_response(shared_socket , server::http_response::response_type::ok);
             pause_streaming = true;
         }
         else if (method == "GET" && path == "/resume_stream") {
             std::cout << "resume stream" << std::endl;
-            send_response(socket , server::http_response::response_type::ok);
+            send_response(shared_socket , server::http_response::response_type::ok);
             pause_streaming = false;
         }
         else if (method == "GET" && path == "/rewind_stream") {
             std::cout << "rewind stream" << std::endl;
-            send_response(socket , server::http_response::response_type::ok);
+            send_response(shared_socket , server::http_response::response_type::ok);
             rewind_streaming = true;
             pause_streaming = false;
         }
         else if (method == "GET" && path == "/start_detection") {
-            send_response(socket, server::http_response::response_type::ok);
+            send_response(shared_socket, server::http_response::response_type::ok);
             start_detection.store(true);
             detection_cv.notify_one();
             
@@ -221,12 +203,15 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
                         std::ref(pause_detection),
                         std::ref(shared_frame_updated),
                         std::ref(frame_mutex),
-                        std::ref(detection_cv),
+                         std::ref(detection_cv),
                         std::ref(shared_frame)).detach();
         }
         else if (method == "GET" && path == "/preprocess_detection") {
-            send_response(socket, server::http_response::response_type::ok);
+            send_response(shared_socket, server::http_response::response_type::ok);
             api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
+
+            
+
             std::thread detection_thread([&]() {
                 api::detection::preprocess_detect(
                     "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4",
@@ -242,17 +227,13 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
         else if (method == "GET" && path == "/pause_detection") {
             std::cout << "pause detection" << std::endl;
             start_detection.store(false);
-            send_response(socket, server::http_response::response_type::ok);
+            send_response(shared_socket, server::http_response::response_type::ok);
             // pause_detection = true;
         } 
         else if (method == "GET" && path == "/resume_detection") {
             std::cout << "resume detection" << std::endl;
-            send_response(socket, server::http_response::response_type::ok);
+            send_response(shared_socket, server::http_response::response_type::ok);
             start_detection.store(true);
-        } 
-        else if (method == "GET" && path == "/get_detection_img") {
-            std::cout << "Serving detection images" << std::endl;
-            send_image_list_response(socket);
         } 
         else if (method == "GET" && path.find("/show_api_docs") == 0) {
             std::string relative_path = path.substr(strlen("/show_api_docs"));
@@ -261,13 +242,13 @@ void server::rtp::app::handle_streaming_request(boost::asio::ip::tcp::socket& so
             }
             std::string full_path = "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/docs/html" + relative_path;
             std::cout << "Serving file: " << full_path << std::endl;
-            send_file_doxygen(socket, full_path);
+            send_file_doxygen(shared_socket, full_path);
         }
         else {
-            send_response(socket , server::http_response::response_type::not_found);
+            send_response(shared_socket , server::http_response::response_type::not_found);
         } 
     } catch (std::exception &e) {
-        send_response(socket , server::http_response::response_type::internal_server_error);
+        send_response(shared_socket , server::http_response::response_type::internal_server_error);
     }
 }
 
@@ -277,7 +258,7 @@ std::string server::rtp::app::get_gstream_pipeline() const {
 			"udpsink host="+ client_ip + " port=5004 auto-multicast=true";
 }
 
-void server::rtp::app::start_streaming(const std::string& video_path, boost::asio::ip::tcp::socket& socket) {
+void server::rtp::app::start_streaming(const std::string& video_path, std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket) {
     cv::VideoCapture cap(video_path);
     if (!cap.isOpened()) {
         std::cerr << "Error: Could not open video file" << std::endl;
@@ -322,7 +303,8 @@ void server::rtp::app::start_streaming(const std::string& video_path, boost::asi
 
         cv::Mat output_frame;
         if (preload_complete.load()) {
-            // 탐지된 프레임 사용
+        // //     // 탐지된 프레임 사용
+            std::cout << "preload complete!" << std::endl;
             std::lock_guard<std::mutex> lock(detected_frames_mutex);
             if (detected_frames.find(frame_counter) != detected_frames.end()) {
                 output_frame = detected_frames[frame_counter]; // 탐지된 프레임 사용
@@ -334,7 +316,7 @@ void server::rtp::app::start_streaming(const std::string& video_path, boost::asi
                         cv::Mat bestShot_frame2 = cv::imread("/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/bestShot_2_3.jpg");
                         if (!bestShot_frame2.empty()) {
                             // 각 이미지를 클라이언트에 전송
-                            send_multipart_image_response(socket, bestShot_frame2);
+                            send_single_image_response(shared_socket, bestShot_frame2);
                         }
                     }
                 }
@@ -361,49 +343,36 @@ void server::rtp::app::start_streaming(const std::string& video_path, boost::asi
     writer.release();
 }
 
-void enable_tcp_keep_alive(boost::asio::ip::tcp::socket& socket) {
-    boost::asio::socket_base::keep_alive option(true);
-    socket.set_option(option);  // TCP Keep-Alive 활성화
-}
 
+// Initialize the io_context object for asynchronous I/O operations.
+// Infinite loop to continuously accept incoming client connections.
 void server::rtp::start_server(uint16_t port) {
+    
     boost::asio::io_context io_context;
     boost::asio::ip::tcp::acceptor acceptor(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port));
     app rtp_app;
-    std::vector<std::thread> thread_pool;
 
     std::cout << "Server started on port " << port << std::endl;
 
     while (true) {
-        boost::asio::ip::tcp::socket socket(io_context);
-        acceptor.accept(socket);
+        auto shared_socket = std::make_shared<boost::asio::ip::tcp::socket>(io_context);
+        acceptor.accept(*shared_socket);
 
         try {
-            if (socket.is_open()) {
+            if (shared_socket->is_open()) {
                 boost::asio::socket_base::keep_alive option(true);
-                socket.set_option(option);
+                shared_socket->set_option(option);
 
-                boost::asio::ip::tcp::endpoint remote_ep = socket.remote_endpoint();
+                boost::asio::ip::tcp::endpoint remote_ep = shared_socket->remote_endpoint();
                 client_ip = remote_ep.address().to_string();
 
-                // 새로운 스레드 생성
-                thread_pool.emplace_back([&rtp_app, socket = std::move(socket)]() mutable {
+                std::thread([&rtp_app, shared_socket]() {
                     try {
-                        rtp_app.handle_streaming_request(socket);
+                        rtp_app.handle_streaming_request(shared_socket);
                     } catch (const std::exception& e) {
                         std::cerr << "Error in client thread: " << e.what() << std::endl;
                     }
-                });
-
-                // 스레드 관리 (주기적으로 정리)
-                for (auto it = thread_pool.begin(); it != thread_pool.end();) {
-                    if (it->joinable()) {
-                        it->join();
-                        it = thread_pool.erase(it);
-                    } else {
-                        ++it;
-                    }
-                }
+                }).detach();
             } else {
                 std::cerr << "Error: Socket is not open after accept" << std::endl;
             }
@@ -412,3 +381,4 @@ void server::rtp::start_server(uint16_t port) {
         }
     }
 }
+
