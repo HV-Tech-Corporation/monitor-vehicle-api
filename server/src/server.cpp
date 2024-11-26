@@ -112,31 +112,35 @@ void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> sh
         return;
     }
 
-
     // HTTP 응답 헤더 작성
     std::ostringstream header;
     header << "HTTP/1.1 200 OK\r\n"
            << "Content-Type: image/jpeg\r\n"
            << "Content-Length: " << buf.size() << "\r\n"
-           << "Connection: keep-alive\r\n"
+           << "Connection: close\r\n" // Keep-Alive 대신 Close 사용
            << "\r\n";
 
     try {
-        // 헤더와 이미지 데이터 전송
-        boost::asio::write(*shared_socket, boost::asio::buffer(header.str()));
-        boost::asio::write(*shared_socket, boost::asio::buffer(buf));
-        std::cout << "buffer send success..." << std::endl;
+        // 헤더 전송
+        std::string header_str = header.str();
+        boost::asio::write(*shared_socket, boost::asio::buffer(header_str));
+
+        // 데이터를 모든 바이트가 전송될 때까지 보장
+        size_t total_bytes_sent = 0;
+        while (total_bytes_sent < buf.size()) {
+            total_bytes_sent += boost::asio::write(
+                *shared_socket, boost::asio::buffer(buf.data() + total_bytes_sent, buf.size() - total_bytes_sent));
+        }
+        std::cout << "Successfully sent " << total_bytes_sent << " bytes." << std::endl;
     } catch (const boost::system::system_error& e) {
         if (e.code() == boost::asio::error::broken_pipe) {
             std::cerr << "Broken pipe: Client disconnected prematurely." << std::endl;
         } else {
             std::cerr << "Error sending image: " << e.what() << std::endl;
         }
-        if (shared_socket->is_open()) {
-            shared_socket->close();
-        }
     }
 }
+
 
 void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket) {
     
@@ -171,8 +175,6 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
                 }
                 is_streaming.store(false); // 스트리밍 종료 시 상태 업데이트
             }).detach();
-
-
             std::cout << "start stream" << std::endl;
         }
 
@@ -196,7 +198,7 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
             send_response(shared_socket, server::http_response::response_type::ok);
             start_detection.store(true);
             detection_cv.notify_one();
-            
+        
             api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
             std::thread(&api::detection::detect, 
                         std::ref(start_detection),
@@ -209,9 +211,6 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
         else if (method == "GET" && path == "/preprocess_detection") {
             send_response(shared_socket, server::http_response::response_type::ok);
             api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
-
-            
-
             std::thread detection_thread([&]() {
                 api::detection::preprocess_detect(
                     "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4",
@@ -228,7 +227,6 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
             std::cout << "pause detection" << std::endl;
             start_detection.store(false);
             send_response(shared_socket, server::http_response::response_type::ok);
-            // pause_detection = true;
         } 
         else if (method == "GET" && path == "/resume_detection") {
             std::cout << "resume detection" << std::endl;
@@ -313,7 +311,8 @@ void server::rtp::app::start_streaming(const std::string& video_path, std::share
                     // 파일 이름이 "bestShot_<frame_index>_<object_id>.jpg" 형식인지 확인
                     std::string prefix = "bestShot_" + std::to_string(frame_counter) + "_";
                     if (file_name.find(prefix) == 0 && file_name.substr(file_name.size() - 4) == ".jpg") {
-                        cv::Mat bestShot_frame2 = cv::imread("/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/bestShot_2_3.jpg");
+                        std::cout << entry.path().string() << std::endl;
+                        cv::Mat bestShot_frame2 = cv::imread(entry.path().string());
                         if (!bestShot_frame2.empty()) {
                             // 각 이미지를 클라이언트에 전송
                             send_single_image_response(shared_socket, bestShot_frame2);

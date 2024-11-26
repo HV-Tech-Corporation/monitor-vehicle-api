@@ -14,7 +14,6 @@ namespace api {
             int lost_frames = 0;  // To handle occlusion and disappearance
         };
 
-
         tvm::runtime::Module loaded_lib;
         tvm::runtime::Module mod;
         tvm::runtime::PackedFunc set_input;
@@ -28,7 +27,6 @@ namespace api {
         ObjectTracker tracker;
     }
 }
-
 
 // IoU(Intersection over Union) 계산 함수
 float IoU(const cv::Rect& box1, const cv::Rect& box2) {
@@ -336,7 +334,6 @@ void api::detection::preprocess_detect(
                 }
             }
         }
-    
         // 탐지된 결과를 저장
         {
             std::lock_guard<std::mutex> lock(detected_frames_mutex);
