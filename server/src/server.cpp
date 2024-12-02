@@ -3,10 +3,9 @@
 #include <fstream>
 #include <sstream>
 
-namespace fs = boost::filesystem;
-
 namespace server {
     namespace rtp {
+        
         std::atomic<bool> pause_streaming(false);  
         std::atomic<bool> rewind_streaming(false); 
         std::atomic<bool> start_detection(false);
@@ -43,62 +42,24 @@ void send_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, 
     res_inst.set_status(status);
     res_inst.add_header("Content-Type", "text/html");
     res_inst.add_header("Connection", "keep-alive");
-
     // 응답 본문을 설정 (response_type에 따라 본문 선택)
     res_inst.content = _http_response.response_body_to_string(status);
-
     auto buffers = res_inst.to_buffers();
     boost::asio::write(*shared_socket, buffers);
 }
 
-std::string get_content_type(const std::string& file_path) {
-    if (file_path.ends_with(".html")) return "text/html";
-    if (file_path.ends_with(".css")) return "text/css";
-    if (file_path.ends_with(".js")) return "application/javascript";
-    if (file_path.ends_with(".png")) return "image/png";
-    if (file_path.ends_with(".jpg") || file_path.ends_with(".jpeg")) return "image/jpeg";
-    if (file_path.ends_with(".gif")) return "image/gif";
-    if (file_path.ends_with(".svg")) return "image/svg+xml";
-    if (file_path.ends_with(".woff")) return "font/woff";
-    if (file_path.ends_with(".woff2")) return "font/woff2";
-    if (file_path.ends_with(".ttf")) return "font/ttf";
-    if (file_path.ends_with(".otf")) return "font/otf";
-    return "application/octet-stream"; // 기본 값
-}
+void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const cv::Mat& image) {
+    std::cout << "Sending single image with XML description..." << std::endl;
 
-void send_file_doxygen(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const std::string& file_path) {
-    std::ifstream file(file_path, std::ios::binary);
-    if (!file.is_open()) {
-        std::string response = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n";
-        boost::asio::write(*shared_socket, boost::asio::buffer(response));
+    if (image.empty()) {
+        std::cerr << "Error: Input image is empty." << std::endl;
         return;
     }
-
-    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    file.close();
-
-    std::string content_type = get_content_type(file_path); // 파일 확장자에 따라 MIME 타입 결정
-
-    std::string response = "HTTP/1.1 200 OK\r\n";
-    response += "Content-Type: " + content_type + "\r\n"; // 동적으로 Content-Type 설정
-    response += "Content-Length: " + std::to_string(content.size()) + "\r\n\r\n";
-    response += content;
-
-    boost::asio::write(*shared_socket, boost::asio::buffer(response));
-}
-
-void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const cv::Mat& image) {
-    std::cout << "Sending single image2..." << std::endl;
 
     // 이미지 인코딩 (JPEG 형식)
     std::vector<uchar> buf;
     if (!cv::imencode(".jpg", image, buf)) {
         std::cerr << "Error: Failed to encode image." << std::endl;
-        return;
-    }
-
-    if (image.empty()) {
-        std::cerr << "Error: Input image is empty." << std::endl;
         return;
     }
 
@@ -112,35 +73,72 @@ void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> sh
         return;
     }
 
+    // 현재 시간을 가져오기
+    auto now = std::chrono::system_clock::now();
+    auto now_time_t = std::chrono::system_clock::to_time_t(now);
+    std::ostringstream time_stream;
+    time_stream << std::put_time(std::localtime(&now_time_t), "%Y-%m-%dT%H:%M:%S");
+
+    // XML 데이터 생성
+    std::ostringstream xml_description;
+    xml_description << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                    << "<response>\n"
+                    << "  <description>Image with timestamp</description>\n"
+                    << "  <timestamp>" << time_stream.str() << "</timestamp>\n"
+                    << "</response>\n";
+
+    std::string xml_data = xml_description.str();
+    size_t xml_size = xml_data.size();
+
     // HTTP 응답 헤더 작성
     std::ostringstream header;
     header << "HTTP/1.1 200 OK\r\n"
-           << "Content-Type: image/jpeg\r\n"
-           << "Content-Length: " << buf.size() << "\r\n"
-           << "Connection: close\r\n" // Keep-Alive 대신 Close 사용
+           << "Content-Type: multipart/related; boundary=--boundary\r\n"
+           << "Connection: close\r\n"
            << "\r\n";
+
+    // 멀티파트 데이터 작성
+    std::ostringstream multipart;
+    multipart << "--boundary\r\n"
+              << "Content-Type: application/xml\r\n"
+              << "Content-Length: " << xml_size << "\r\n\r\n"
+              << xml_data << "\r\n"
+              << "--boundary\r\n"
+              << "Content-Type: image/jpeg\r\n"
+              << "Content-Length: " << buf.size() << "\r\n\r\n";
+
+    std::string header_str = header.str();
+    std::string multipart_str = multipart.str();
 
     try {
         // 헤더 전송
-        std::string header_str = header.str();
         boost::asio::write(*shared_socket, boost::asio::buffer(header_str));
 
-        // 데이터를 모든 바이트가 전송될 때까지 보장
+        // 멀티파트 헤더 및 XML 데이터 전송
+        boost::asio::write(*shared_socket, boost::asio::buffer(multipart_str));
+        boost::asio::write(*shared_socket, boost::asio::buffer(xml_data));
+
+        // 이미지 데이터 전송
         size_t total_bytes_sent = 0;
         while (total_bytes_sent < buf.size()) {
-            total_bytes_sent += boost::asio::write(
+            size_t bytes_sent = boost::asio::write(
                 *shared_socket, boost::asio::buffer(buf.data() + total_bytes_sent, buf.size() - total_bytes_sent));
+            total_bytes_sent += bytes_sent;
         }
-        std::cout << "Successfully sent " << total_bytes_sent << " bytes." << std::endl;
+
+        // 멀티파트 종료
+        std::string boundary_end = "\r\n--boundary--\r\n";
+        boost::asio::write(*shared_socket, boost::asio::buffer(boundary_end));
+
+        std::cout << "Successfully sent XML and image data." << std::endl;
     } catch (const boost::system::system_error& e) {
         if (e.code() == boost::asio::error::broken_pipe) {
             std::cerr << "Broken pipe: Client disconnected prematurely." << std::endl;
         } else {
-            std::cerr << "Error sending image: " << e.what() << std::endl;
+            std::cerr << "Error sending response: " << e.what() << std::endl;
         }
     }
 }
-
 
 void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket) {
     
@@ -151,7 +149,6 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
         std::istream request_stream(&request);
         std::string method, path;
         request_stream >> method >> path;
-
         if (method == "GET" && path == "/start_stream") {
             if (is_streaming.load()) {
                 send_response(shared_socket, server::http_response::response_type::bad_request);
@@ -210,7 +207,7 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
         }
         else if (method == "GET" && path == "/preprocess_detection") {
             send_response(shared_socket, server::http_response::response_type::ok);
-            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
+            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5l_m2_raspberry.so");
             std::thread detection_thread([&]() {
                 api::detection::preprocess_detect(
                     "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4",
@@ -233,15 +230,6 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
             send_response(shared_socket, server::http_response::response_type::ok);
             start_detection.store(true);
         } 
-        else if (method == "GET" && path.find("/show_api_docs") == 0) {
-            std::string relative_path = path.substr(strlen("/show_api_docs"));
-            if (relative_path.empty() || relative_path == "/") {
-                relative_path = "/index.html";
-            }
-            std::string full_path = "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/docs/html" + relative_path;
-            std::cout << "Serving file: " << full_path << std::endl;
-            send_file_doxygen(shared_socket, full_path);
-        }
         else {
             send_response(shared_socket , server::http_response::response_type::not_found);
         } 
@@ -316,6 +304,7 @@ void server::rtp::app::start_streaming(const std::string& video_path, std::share
                         if (!bestShot_frame2.empty()) {
                             // 각 이미지를 클라이언트에 전송
                             send_single_image_response(shared_socket, bestShot_frame2);
+                            
                         }
                     }
                 }

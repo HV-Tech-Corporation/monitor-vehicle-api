@@ -1,5 +1,6 @@
 #include "tvm_wrapper.hpp"
 #include "tracker.hpp"
+#include "line.hpp"
 
 namespace api {
     namespace detection {
@@ -276,11 +277,22 @@ void api::detection::preprocess_detect(
     }
 
     std::unordered_set<int> processed_ids;
+    std::map<int, std::vector<cv::Point>> points_by_bbox;
 
     int frame_index = 0;  // 현재 프레임 인덱스
     cv::Mat frame;
 
     ObjectTracker tracker;
+
+    std::map<int, cv::Scalar> color_map = {
+        {0, cv::Scalar(0, 255, 0)},  // 초록색
+        {1, cv::Scalar(255, 0, 0)},  // 파란색
+        {2, cv::Scalar(0, 0, 255)},  // 빨간색
+        {3, cv::Scalar(255, 255, 0)} // 노란색
+    };
+
+    cv::Scalar default_color(255, 255, 255); 
+    
 
     while (true) {
         cap >> frame;
@@ -308,20 +320,34 @@ void api::detection::preprocess_detect(
             
         }
 
+        // api::detection::line::drawLine(detected_frame, api::detection::line::lane1, Scalar(255, 0, 0));
+        // api::detection::line::drawLine(detected_frame, api::detection::line::lane2, Scalar(0, 255, 0));
+        
         for (auto &trk : tracks) {
             if (trk.second.coast_cycles_ < kMaxCoastCycles &&
                 (trk.second.hit_streak_ >= kMinHits)) {
                 const auto &bbox = trk.second.GetStateAsBbox();
                 if (bbox.x >= 0 && bbox.y >= 0 && bbox.x + bbox.width <= frame.cols && bbox.y + bbox.height <= frame.rows) {
+                    cv::Point predicted_point = trk.second.GetPredictedPoint();
+                    cv::Point pos(predicted_point.x, predicted_point.y);
+                    cv::circle(detected_frame, pos, 5, cv::Scalar(0, 0, 0), 2);
+
+                    int pos_bbox = api::detection::line::checkPosition(pos);
+
                     cv::putText(detected_frame, std::to_string(trk.first), cv::Point(bbox.tl().x, bbox.tl().y - 10),
                                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
+                    cv::putText(detected_frame, std::to_string(pos_bbox), cv::Point(bbox.tl().x + bbox.width, bbox.tl().y - 10),
+                                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 0), 2);
+
                     cv::rectangle(detected_frame, bbox, cv::Scalar(0, 0, 255), 2);
+
+                    points_by_bbox[pos_bbox].emplace_back(pos);
 
                     if (processed_ids.find(trk.first) == processed_ids.end()) {
                         // 새로운 ID일 경우 이미지를 저장
                         cv::Mat bestShot_frame = frame(bbox).clone();
                         cv::imwrite("bestShot_" + std::to_string(frame_index) + "_" + std::to_string(trk.first) + ".jpg", bestShot_frame);
-
+                        
                         // 처리된 ID 목록에 추가
                         processed_ids.insert(trk.first);
 
@@ -338,6 +364,26 @@ void api::detection::preprocess_detect(
         {
             std::lock_guard<std::mutex> lock(detected_frames_mutex);
             detected_frames[frame_index] = detected_frame;  // 프레임 인덱스에 결과 저장
+        }
+
+        for (auto &[id, points] : points_by_bbox) {
+            // 객체별 색상 생성
+            cv::Scalar color((id * 50) % 256, (id * 80) % 256, (id * 120) % 256);
+
+            // Y축 기준으로 정렬
+            std::sort(points.begin(), points.end(), [](const cv::Point &a, const cv::Point &b) {
+                return a.y < b.y; // y 좌표 기준 오름차순 정렬
+            });
+
+            // 노드끼리 연결
+            for (size_t i = 1; i < points.size(); ++i) {
+                cv::line(detected_frame, points[i - 1], points[i], color, 2);
+            }
+
+            // 오래된 점 삭제 (필요시)
+            if (points.size() > 50) { // 최대 50개의 점만 유지
+                points.erase(points.begin(), points.end() - 50);
+            }
         }
 
         frame_index++;  // 다음 프레임으로 이동

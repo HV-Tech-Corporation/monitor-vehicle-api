@@ -1,5 +1,21 @@
 #include "line.hpp"
 
+namespace api {
+    namespace detection { 
+        namespace line {
+            std::vector<cv::Point> lane1 = {
+                cv::Point(147, 0), cv::Point(203, 68), cv::Point(314, 222), 
+                cv::Point(453, 510), cv::Point(457, 572), cv::Point(437, 720)
+            };
+
+            std::vector<cv::Point> lane2 = {
+                cv::Point(424, 0), cv::Point(493, 66), cv::Point(503, 79),
+                cv::Point(835, 424), cv::Point(897, 543), cv::Point(907, 720)
+            };
+        } // line namespace
+    } // detection namespace
+} // api namespace
+
 void api::detection::line::drawLine(cv::Mat& frame, const std::vector<std::vector<cv::Point>> &lane, const Scalar& color) {
     for (const auto& roi : lane ) {
         cv::fillConvexPoly(frame, roi, color, LINE_AA);
@@ -7,53 +23,37 @@ void api::detection::line::drawLine(cv::Mat& frame, const std::vector<std::vecto
 }
 
 int api::detection::line::checkPosition(const cv::Point& point) {
-    bool inLane1 = false, inLane2 = false;
+    // 보간된 lane1과 lane2의 좌표 계산
+    int lane1_x = INT_MIN;
+    int lane2_x = INT_MAX;
 
-    for(const auto& roi : lane1) {
-        if(!roi.empty() && pointPolygonTest(roi, point, false) >= 0) {
-            inLane1 = true;
+    for (size_t i = 1; i < lane1.size(); ++i) {
+        if (point.y >= lane1[i - 1].y && point.y <= lane1[i].y) {
+            float t = (float)(point.y - lane1[i - 1].y) / (lane1[i].y - lane1[i - 1].y); // 비율 계산
+            lane1_x = lane1[i - 1].x + t * (lane1[i].x - lane1[i - 1].x);
             break;
         }
     }
 
-    for (const auto& roi : lane2) {
-        if(!roi.empty() && pointPolygonTest(roi, point, false) >= 0) {
-            inLane2 = true;
+    for (size_t i = 1; i < lane2.size(); ++i) {
+        if (point.y >= lane2[i - 1].y && point.y <= lane2[i].y) {
+            float t = (float)(point.y - lane2[i - 1].y) / (lane2[i].y - lane2[i - 1].y); // 비율 계산
+            lane2_x = lane2[i - 1].x + t * (lane2[i].x - lane2[i - 1].x);
             break;
         }
     }
 
-    if (inLane1) {
-        return 1;
+    // 점의 위치 판단
+    if (point.x < lane1_x) {
+        return 1; // lane1 왼쪽
     }
-    if (inLane2) {
-        return 2;
+    if (point.x > lane2_x) {
+        return 3; // lane2 오른쪽
     }
-
-    for (const auto& roi : lane1) {
-        if (!roi.empty()) {
-            int minX = roi[0].x;
-            for(const auto& pt : roi) {
-                if(pt.x < minX) minX = pt.x;
-            }
-            if (point.x < minX) {
-                return 1;
-            }
-        }
+    if (point.x >= lane1_x && point.x <= lane2_x) {
+        return 2; // lane1과 lane2 사이
     }
 
-    size_t numPolygons = std::min(lane1.size(), lane2.size());
-    for (size_t i = 0; i < numPolygons; ++i) {
-        // lane1[i]와 lane2[i]가 충분한 요소를 가지고 있는지 확인
-        if (lane1[i].size() > 2 && !lane2[i].empty()) {
-            int lane1_right = lane1[i][2].x;  // lane1의 오른쪽 경계 x 좌표
-            int lane2_left = lane2[i][0].x;   // lane2의 왼쪽 경계 x 좌표
-
-            if (point.x >= lane1_right && point.x <= lane2_left) {
-                return 2;  // lane1과 lane2 사이에 위치
-            }
-        }
-    }
-
-    return 0;  // lane1과 lane2 밖에 위치
+    return 0; // 기타
 }
+
