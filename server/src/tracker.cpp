@@ -76,10 +76,10 @@ void ObjectTracker::HungarianMatching(const std::vector<std::vector<float>>& iou
 }
 
 
-void ObjectTracker::AssociateDetectionsToTrackers(const std::vector<cv::Rect>& detection,
-                                            std::map<int, Track>& tracks,
-                                            std::map<int, cv::Rect>& matched,
-                                            std::vector<cv::Rect>& unmatched_det,
+void ObjectTracker::AssociateDetectionsToTrackers(const std::vector<std::pair<int, cv::Rect>>& detection,
+                                            std::map<int, std::pair<int, Track>>& tracks,
+                                            std::map<int, std::pair<int, cv::Rect>>& matched,
+                                            std::vector<std::pair<int, cv::Rect>>& unmatched_det,
                                             float iou_threshold) {
 
     // Set all detection as unmatched if no tracks existing
@@ -98,12 +98,11 @@ void ObjectTracker::AssociateDetectionsToTrackers(const std::vector<cv::Rect>& d
     // resize association matrix based on number of detection and tracks
     association.resize(detection.size(), std::vector<float>(tracks.size()));
 
-
     // row - detection, column - tracks
     for (size_t i = 0; i < detection.size(); i++) {
         size_t j = 0;
         for (const auto& trk : tracks) {
-            iou_matrix[i][j] = CalculateIou(detection[i], trk.second);
+            iou_matrix[i][j] = CalculateIou(detection[i].second, trk.second.second);
             j++;
         }
     }
@@ -118,7 +117,7 @@ void ObjectTracker::AssociateDetectionsToTrackers(const std::vector<cv::Rect>& d
             if (0 == association[i][j]) {
                 // Filter out matched with low IOU
                 if (iou_matrix[i][j] >= iou_threshold) {
-                    matched[trk.first] = detection[i];
+                    matched[trk.first] = { detection[i].first, detection[i].second};
                     matched_flag = true;
                 }
                 // It builds 1 to 1 association, so we can break from here
@@ -134,17 +133,17 @@ void ObjectTracker::AssociateDetectionsToTrackers(const std::vector<cv::Rect>& d
 }
 
 
-void ObjectTracker::Run(const std::vector<cv::Rect>& detections) {
+void ObjectTracker::Run(const std::vector<std::pair<int, cv::Rect>>& detections) {
 
     /*** Predict internal tracks from previous frame ***/
     for (auto &track : tracks_) {
-        track.second.Predict();
+        track.second.second.Predict();
     }
 
     // Hash-map between track ID and associated detection bounding box
-    std::map<int, cv::Rect> matched;
+    std::map<int, std::pair<int, cv::Rect>> matched;
     // vector of unassociated detections
-    std::vector<cv::Rect> unmatched_det;
+    std::vector<std::pair<int, cv::Rect>> unmatched_det;
 
     // return values - matched, unmatched_det
     if (!detections.empty()) {
@@ -154,20 +153,21 @@ void ObjectTracker::Run(const std::vector<cv::Rect>& detections) {
     /*** Update tracks with associated bbox ***/
     for (const auto &match : matched) {
         const auto &ID = match.first;
-        tracks_[ID].Update(match.second);
+        tracks_[ID].second.Update(match.second.second);
+        tracks_[ID].first = match.second.first;
     }
 
     /*** Create new tracks for unmatched detections ***/
     for (const auto &det : unmatched_det) {
         Track tracker;
-        tracker.Init(det);
+        tracker.Init(det.second);
         // Create new track and generate new ID
-        tracks_[id_++] = tracker;
+        tracks_[id_++].second = tracker;
     }
 
     /*** Delete lose tracked tracks ***/
     for (auto it = tracks_.begin(); it != tracks_.end();) {
-        if (it->second.coast_cycles_ > kMaxCoastCycles) {
+        if (it->second.second.coast_cycles_ > kMaxCoastCycles) {
             it = tracks_.erase(it);
         } else {
             it++;
@@ -176,6 +176,6 @@ void ObjectTracker::Run(const std::vector<cv::Rect>& detections) {
 }
 
 
-std::map<int, Track> ObjectTracker::GetTracks() {
+std::map<int, std::pair<int, Track>> ObjectTracker::GetTracks() {
     return tracks_;
 }

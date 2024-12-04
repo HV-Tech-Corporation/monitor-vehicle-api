@@ -27,19 +27,19 @@ public:
  * @param unmatched_det
  * @param iou_threshold
  */
-    static void AssociateDetectionsToTrackers(const std::vector<cv::Rect>& detection,
-                                       std::map<int, Track>& tracks,
-                                       std::map<int, cv::Rect>& matched,
-                                       std::vector<cv::Rect>& unmatched_det,
+    static void AssociateDetectionsToTrackers(const std::vector<std::pair<int, cv::Rect>>& detection,
+                                       std::map<int, std::pair<int, Track>>& tracks,
+                                       std::map<int, std::pair<int, cv::Rect>>& matched,
+                                       std::vector<std::pair<int, cv::Rect>>& unmatched_det,
                                        float iou_threshold = 0.3);
 
-    void Run(const std::vector<cv::Rect>& detections);
+    void Run(const std::vector<std::pair<int, cv::Rect>>& detections);
 
-    std::map<int, Track> GetTracks();
+    std::map<int, std::pair<int, Track>> GetTracks();
 
 private:
     // Hash-map between ID and corresponding tracker
-    std::map<int, Track> tracks_;
+    std::map<int, std::pair<int, Track>> tracks_;
 
     // Assigned ID for each bounding box
     int id_;

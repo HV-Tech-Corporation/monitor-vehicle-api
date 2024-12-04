@@ -48,7 +48,7 @@ void send_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, 
     boost::asio::write(*shared_socket, buffers);
 }
 
-void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const cv::Mat& image) {
+void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const cv::Mat& image, int class_id) {
     // std::cout << "Sending single image with XML description..." << std::endl;
 
     if (image.empty()) {
@@ -78,13 +78,23 @@ void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> sh
     auto now_time_t = std::chrono::system_clock::to_time_t(now);
     std::ostringstream time_stream;
     time_stream << std::put_time(std::localtime(&now_time_t), "%Y-%m-%dT%H:%M:%S");
+    
+    std::string class_name;
+    if (class_id == 1) class_name = "bicycle";
+    else if (class_id == 2) class_name = "car";
+    else if (class_id == 3) class_name = "motorbike";
+    else if (class_id == 5) class_name = "bus";
+    else {
+        std::cerr << "Error: Invalid class_id: " << class_id << std::endl;
+        class_name = "unknown";
+    }
 
     // XML 데이터 생성
     std::ostringstream xml_description;
     xml_description << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                     << "<response>\n"
                     << "  <description>Image with timestamp</description>\n"
-                    << "  <class></class>\n"
+                    << "  <class>"<< class_name <<"</class>\n"
                     << "  <timestamp>" << time_stream.str() << "</timestamp>\n"
                     << "</response>\n";
 
@@ -208,7 +218,7 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
         }
         else if (method == "GET" && path == "/preprocess_detection") {
             send_response(shared_socket, server::http_response::response_type::ok);
-            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
+            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5l_m2_raspberry.so");
             std::thread detection_thread([&]() {
                 api::detection::preprocess_detect(
                     "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4",
@@ -298,10 +308,22 @@ void server::rtp::app::start_streaming(const std::string& video_path, std::share
                     // 파일 이름이 "bestShot_<frame_index>_<object_id>.jpg" 형식인지 확인
                     std::string prefix = "bestShot_" + std::to_string(frame_counter) + "_";
                     if (file_name.find(prefix) == 0 && file_name.substr(file_name.size() - 4) == ".jpg") {
-                        cv::Mat bestShot_frame2 = cv::imread(entry.path().string());
-                        if (!bestShot_frame2.empty()) {
-                            // 각 이미지를 클라이언트에 전송
-                            send_single_image_response(shared_socket, bestShot_frame2);                  
+                        // "class_ids_" 뒤의 값을 찾기 위해 정규 표현식 또는 단순 검색 사용
+                        std::string class_id_prefix = "class_ids_";
+                        size_t class_id_pos = file_name.find(class_id_prefix);
+                        if (class_id_pos != std::string::npos) {
+                            size_t class_id_start = class_id_pos + class_id_prefix.size();
+                            size_t class_id_end = file_name.find('_', class_id_start); // 다른 구분자가 있을 경우 처리
+                            std::string class_id_str = file_name.substr(class_id_start, class_id_end - class_id_start);
+                            
+                            // class_ids 인덱스를 정수로 변환
+                            int class_id = std::stoi(class_id_str);
+
+                            cv::Mat bestShot_frame2 = cv::imread(entry.path().string());
+                            if (!bestShot_frame2.empty()) {
+                                // 클래스 ID와 이미지를 함께 클라이언트로 전송
+                                send_single_image_response(shared_socket, bestShot_frame2, class_id);
+                            }
                         }
                     }
                 }

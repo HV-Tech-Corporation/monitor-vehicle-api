@@ -175,7 +175,7 @@ std::vector<api::detection::DetectedObject> ProcessYOLOOutput(tvm::runtime::NDAr
         }
 
     }
-    float iou_threshold = 0.55f; 
+    float iou_threshold = 0.45f; 
     std::vector<int> nms_indices = NonMaximumSuppression(detected_objects, iou_threshold);
     std::vector<cv::Rect> bbox_per_frame;
 
@@ -232,7 +232,7 @@ void api::detection::detect(
             all_detections.push_back(yolo_output[idx].boxes);
         }
 
-        tracker.Run(all_detections);
+        // tracker.Run(all_detections);
         const auto tracks = tracker.GetTracks();
 
         // detection 및 트래킹 결과를 shared_frame에 업데이트
@@ -241,8 +241,8 @@ void api::detection::detect(
         }
 
         for (auto& trk : tracks) {
-            if (trk.second.coast_cycles_ < kMaxCoastCycles && (trk.second.hit_streak_ >= kMinHits)) {
-                const auto& bbox = trk.second.GetStateAsBbox();
+            if (trk.second.second.coast_cycles_ < kMaxCoastCycles && (trk.second.second.hit_streak_ >= kMinHits)) {
+                const auto& bbox = trk.second.second.GetStateAsBbox();
                 if (saved_ids.find(trk.first) == saved_ids.end()) {
                     if (bbox.x >= 0 && bbox.y >= 0 && bbox.x + bbox.width <= shared_frame.cols 
                     && bbox.y + bbox.height <= shared_frame.rows) {
@@ -321,22 +321,20 @@ void api::detection::preprocess_detect(
         std::vector<api::detection::DetectedObject> yolo_output = ProcessYOLOOutput(output, COCO_CLASS_80, frame, trackedObjects, currentId, 0.45);
         float iou_threshold = 0.4f;
         std::vector<int> nms_indices = NonMaximumSuppression(yolo_output, iou_threshold);
-        std::vector<std::pair<cv::Rect, int>> all_detections_with_class_ids;
+        std::vector<std::pair<int, cv::Rect>> all_detections_with_class_ids;
 
         // 탐지 결과를 복사하고 바운딩 박스를 그립니다.
         cv::Mat detected_frame = frame.clone();
         
-        
-
         for (int idx : nms_indices) {
             const auto& detected_object = yolo_output[idx];
-            all_detections_with_class_ids.emplace_back(detected_object.boxes, detected_object.class_ids);
+            all_detections_with_class_ids.emplace_back(detected_object.class_ids, detected_object.boxes);
             // cv::putText(detected_frame, class_text,
             //         cv::Point(yolo_output[idx].boxes.tl().x + yolo_output[idx].boxes.width, yolo_output[idx].boxes.y - 10),
             //         cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2); // 흰색 텍스트
         }
 
-        tracker.Run(all_detections);
+        tracker.Run(all_detections_with_class_ids);
         const auto tracks = tracker.GetTracks();
         
         // std::cout << "------------------------" << std::endl;
@@ -362,11 +360,11 @@ void api::detection::preprocess_detect(
         // }
 
         for (auto &trk : tracks) {
-            if (trk.second.coast_cycles_ < kMaxCoastCycles &&
-                (trk.second.hit_streak_ >= kMinHits)) {
-                const auto &bbox = trk.second.GetStateAsBbox();
+            if (trk.second.second.coast_cycles_ < kMaxCoastCycles &&
+                (trk.second.second.hit_streak_ >= kMinHits)) {
+                const auto &bbox = trk.second.second.GetStateAsBbox();
                 if (bbox.x >= 0 && bbox.y >= 0 && bbox.x + bbox.width <= frame.cols && bbox.y + bbox.height <= frame.rows) {
-                    cv::Point predicted_point = trk.second.GetPredictedPoint();
+                    cv::Point predicted_point = trk.second.second.GetPredictedPoint();
                     cv::Point pos(predicted_point.x, predicted_point.y);
                     cv::circle(detected_frame, pos, 5, cv::Scalar(0, 0, 0), 2);
             
@@ -375,7 +373,9 @@ void api::detection::preprocess_detect(
 
                     cv::putText(detected_frame, std::to_string(trk.first), cv::Point(bbox.tl().x, bbox.tl().y - 10),
                                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
-                    // cv::putText(detected_frame, std::to_string(pos_bbox), cv::Point(bbox.tl().x + bbox.width, bbox.tl().y - 10),
+                    cv::putText(detected_frame, std::to_string(pos_bbox), cv::Point(bbox.tl().x + bbox.width, bbox.tl().y - 10),
+                                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 0), 2);
+                    // cv::putText(detected_frame, std::to_string(trk.second.first), cv::Point(bbox.tl().x + bbox.width, bbox.tl().y - 10),
                     //             cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 0), 2);
                     
 
@@ -385,7 +385,7 @@ void api::detection::preprocess_detect(
                     if (processed_ids.find(trk.first) == processed_ids.end()) {
                         // 새로운 ID일 경우 이미지를 저장
                         cv::Mat bestShot_frame = frame(bbox).clone();
-                        cv::imwrite("bestShot_" + std::to_string(frame_index) + "_" + std::to_string(trk.first) +  "_class_ids_" + std::to_string(yolo_output[nms_indices[track_cnt]].class_ids) + ".jpg", bestShot_frame);
+                        cv::imwrite("bestShot_" + std::to_string(frame_index) + "_" + std::to_string(trk.first) +  "_class_ids_" + std::to_string(trk.second.first) + ".jpg", bestShot_frame);
                         // 처리된 ID 목록에 추가
                         processed_ids.insert(trk.first);
 
@@ -417,46 +417,81 @@ void api::detection::preprocess_detect(
             detected_frames[frame_index] = detected_frame;  // 프레임 인덱스에 결과 저장
         }
 
-        for (auto &[id, points] : points_by_bbox) {
+        std::vector<int> ids; // points_by_bbox의 id를 저장
+        for (const auto &[id, _] : points_by_bbox) {
+            ids.push_back(id);
+        }
+        std::sort(ids.begin(), ids.end()); // id를 오름차순으로 정렬
+
+        for (size_t idx = 0; idx < ids.size(); ++idx) {
+            int current_id = ids[idx];
+            auto &current_points = points_by_bbox[current_id];
+
             // 노드가 하나라면 그리지 않음
-            if (points.size() <= 1) {
+            if (current_points.size() <= 1) {
                 continue;
             }
 
             // Y축 기준으로 정렬
-            std::sort(points.begin(), points.end(), [](const cv::Point &a, const cv::Point &b) {
+            std::sort(current_points.begin(), current_points.end(), [](const cv::Point &a, const cv::Point &b) {
                 return a.y < b.y; // y 좌표 기준 오름차순 정렬
             });
 
-            for (size_t i = 1; i < points.size(); ++i) {
-                // 선 길이 계산
-                double distance = cv::norm(points[i] - points[i - 1]);
-                double max_distance = 500.0; // 예상되는 최대 거리
+            // 같은 id의 points 연결
+            for (size_t i = 1; i < current_points.size(); ++i) {
+                double distance = cv::norm(current_points[i] - current_points[i - 1]);
+                double max_distance = 500.0;
 
-                // 거리 정규화
-                double normalized_distance = std::min(distance / max_distance, 1.0); // 0 ~ 1로 정규화
-
-                // 거리 구간 설정 (세 가지 색상)
-                cv::Scalar color; // 색상 초기화
-                if (distance < max_distance / 3.0) { // 짧은 거리 (1/3 이하)
-                    color = cv::Scalar(50, 50, 255); // 밝은 빨간색
-                } else if (distance < 2 * max_distance / 3.0) { // 중간 거리 (1/3 ~ 2/3)
+                // 거리 구간 설정
+                cv::Scalar color;
+                if (distance < max_distance / 6.0) {
+                    color = cv::Scalar(255, 255, 255); // 밝은 빨간색
+                } else if (distance < max_distance / 3.0) {
+                    color = cv::Scalar(50, 50, 255); // 어두운 빨간색
+                } else if (distance < 2 * max_distance / 3.0) {
                     color = cv::Scalar(0, 165, 255); // 주황색
-                } else { // 긴 거리 (2/3 이상)
-                    color = cv::Scalar(0x4A, 0xB2, 0x2C); 
+                } else {
+                    color = cv::Scalar(0x4A, 0xB2, 0x2C); // 초록색
                 }
 
-                // 선 그리기
-                cv::line(detected_frame, points[i - 1], points[i], color, 2);
+                // 같은 id의 points 연결
+                cv::line(detected_frame, current_points[i - 1], current_points[i], color, 2);
             }
 
+            // 바로 옆 id의 points와 연결
+            if (idx < ids.size() - 1) {
+                int next_id = ids[idx + 1];
+                auto &next_points = points_by_bbox[next_id];
 
-            // 오래된 점 삭제 (필요시)
-            if (points.size() > 10) { // 최대 10개의 점만 유지
-                points.erase(points.begin(), points.end() - 10);
+                // 다음 id의 points와 연결
+                for (const auto &p1 : current_points) {
+                    for (const auto &p2 : next_points) {
+                        double distance = cv::norm(p2 - p1);
+                        double max_distance = 500.0;
+
+                        // 거리 구간 설정
+                        cv::Scalar color;
+                        if (distance < max_distance / 6.0) {
+                            color = cv::Scalar(255, 255, 255); // 밝은 빨간색
+                        } else if (distance < max_distance / 3.0) {
+                            color = cv::Scalar(50, 50, 255); // 어두운 빨간색
+                        } else if (distance < 2 * max_distance / 3.0) {
+                            color = cv::Scalar(0, 165, 255); // 주황색
+                        } else {
+                            color = cv::Scalar(0x4A, 0xB2, 0x2C); // 초록색
+                        }
+
+                        // 선 그리기
+                        cv::line(detected_frame, p1, p2, color, 2);
+                    }
+                }
+            }
+
+            // 오래된 점 삭제
+            if (current_points.size() > 10) {
+                current_points.erase(current_points.begin(), current_points.end() - 10);
             }
         }
-
 
         frame_index++;  // 다음 프레임으로 이동
     }
