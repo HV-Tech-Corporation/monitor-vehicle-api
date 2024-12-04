@@ -27,6 +27,5 @@ private:
     cv::Rect ConvertStateToBbox(const Eigen::VectorXd &state) const;
     std::pair<cv::Point, cv::Point> ConvertStateToLine(const Eigen::VectorXd &state) const;
     
-
     KalmanFilter kf_;
 };

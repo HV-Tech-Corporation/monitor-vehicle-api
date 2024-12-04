@@ -49,7 +49,7 @@ void send_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, 
 }
 
 void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const cv::Mat& image) {
-    std::cout << "Sending single image with XML description..." << std::endl;
+    // std::cout << "Sending single image with XML description..." << std::endl;
 
     if (image.empty()) {
         std::cerr << "Error: Input image is empty." << std::endl;
@@ -84,6 +84,7 @@ void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> sh
     xml_description << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                     << "<response>\n"
                     << "  <description>Image with timestamp</description>\n"
+                    << "  <class></class>\n"
                     << "  <timestamp>" << time_stream.str() << "</timestamp>\n"
                     << "</response>\n";
 
@@ -207,7 +208,7 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
         }
         else if (method == "GET" && path == "/preprocess_detection") {
             send_response(shared_socket, server::http_response::response_type::ok);
-            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5l_m2_raspberry.so");
+            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
             std::thread detection_thread([&]() {
                 api::detection::preprocess_detect(
                     "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4",
@@ -289,8 +290,6 @@ void server::rtp::app::start_streaming(const std::string& video_path, std::share
 
         cv::Mat output_frame;
         if (preload_complete.load()) {
-        // //     // 탐지된 프레임 사용
-            std::cout << "preload complete!" << std::endl;
             std::lock_guard<std::mutex> lock(detected_frames_mutex);
             if (detected_frames.find(frame_counter) != detected_frames.end()) {
                 output_frame = detected_frames[frame_counter]; // 탐지된 프레임 사용
@@ -299,12 +298,10 @@ void server::rtp::app::start_streaming(const std::string& video_path, std::share
                     // 파일 이름이 "bestShot_<frame_index>_<object_id>.jpg" 형식인지 확인
                     std::string prefix = "bestShot_" + std::to_string(frame_counter) + "_";
                     if (file_name.find(prefix) == 0 && file_name.substr(file_name.size() - 4) == ".jpg") {
-                        std::cout << entry.path().string() << std::endl;
                         cv::Mat bestShot_frame2 = cv::imread(entry.path().string());
                         if (!bestShot_frame2.empty()) {
                             // 각 이미지를 클라이언트에 전송
-                            send_single_image_response(shared_socket, bestShot_frame2);
-                            
+                            send_single_image_response(shared_socket, bestShot_frame2);                  
                         }
                     }
                 }
