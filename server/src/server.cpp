@@ -218,7 +218,7 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
         }
         else if (method == "GET" && path == "/preprocess_detection") {
             send_response(shared_socket, server::http_response::response_type::ok);
-            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5l_m2_raspberry.so");
+            api::detection::load_model("/Users/gyujinkim/Desktop/Ai/TVM_TUTORIAL/front/yolov5n_m2_raspberry.so");
             std::thread detection_thread([&]() {
                 api::detection::preprocess_detect(
                     "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4",

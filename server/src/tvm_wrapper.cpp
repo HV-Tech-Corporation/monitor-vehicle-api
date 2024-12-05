@@ -279,6 +279,7 @@ void api::detection::preprocess_detect(
     LOG(INFO) << "Preloading and Detection Start";
     
     cv::VideoCapture cap(video_path);
+
     if (!cap.isOpened()) {
         std::cerr << "Error: Could not open video file for detection" << std::endl;
         return;
@@ -292,17 +293,7 @@ void api::detection::preprocess_detect(
     cv::Mat frame;
 
     ObjectTracker tracker;
-
-    std::map<int, cv::Scalar> color_map = {
-        {0, cv::Scalar(0, 255, 0)},  // 초록색
-        {1, cv::Scalar(255, 0, 0)},  // 파란색
-        {2, cv::Scalar(0, 0, 255)},  // 빨간색
-        {3, cv::Scalar(255, 255, 0)} // 노란색
-    };
-
-    cv::Scalar default_color(255, 255, 255); 
     
-
     while (true) {
         cap >> frame;
         if (frame.empty()) {
@@ -329,27 +320,15 @@ void api::detection::preprocess_detect(
         for (int idx : nms_indices) {
             const auto& detected_object = yolo_output[idx];
             all_detections_with_class_ids.emplace_back(detected_object.class_ids, detected_object.boxes);
-            // cv::putText(detected_frame, class_text,
-            //         cv::Point(yolo_output[idx].boxes.tl().x + yolo_output[idx].boxes.width, yolo_output[idx].boxes.y - 10),
-            //         cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(255, 255, 255), 2); // 흰색 텍스트
         }
 
         tracker.Run(all_detections_with_class_ids);
         const auto tracks = tracker.GetTracks();
-        
-        // std::cout << "------------------------" << std::endl;
-        // std::cout << "nms size is :" << nms_indices.size() << std::endl; 
-        // std::cout << "track size is : " << tracks.size() << std::endl;
-
         vehicle_count_by_bbox.clear();
 
         // detection 및 트래킹 결과를 shared_frame에 업데이트
         int track_cnt = 0;
         
-        // std::cout << "track size  is  : " <<  tracks.size() << std::endl;
-        // api::detection::line::drawLine(detected_frame, api::detection::line::lane1, Scalar(255, 0, 0));
-        // api::detection::line::drawLine(detected_frame, api::detection::line::lane2, Scalar(0, 255, 0));
-
         // for(auto &trk : tracks) {
         //     const auto &bbox = trk.second.GetStateAsBbox();
         //     if(trk.second.coast_cycles_ < kMaxCoastCycles && (trk.second.hit_streak_ >= kMinHits || frame_index < kMinHits)) {
@@ -375,11 +354,10 @@ void api::detection::preprocess_detect(
                                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
                     cv::putText(detected_frame, std::to_string(pos_bbox), cv::Point(bbox.tl().x + bbox.width, bbox.tl().y - 10),
                                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 0), 2);
-                    // cv::putText(detected_frame, std::to_string(trk.second.first), cv::Point(bbox.tl().x + bbox.width, bbox.tl().y - 10),
-                    //             cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 0), 2);
-                    
 
                     cv::rectangle(detected_frame, bbox, cv::Scalar(0, 0, 255), 2);
+
+
                     points_by_bbox[pos_bbox].emplace_back(pos);
 
                     if (processed_ids.find(trk.first) == processed_ids.end()) {
@@ -395,19 +373,15 @@ void api::detection::preprocess_detect(
                             bestShot_frame = frame(bbox).clone();
                         }
                     }
-
                     track_cnt++;
                 }
                 
             }   
         }
 
-        
-
-
         for (const auto &[bbox_id, count] : vehicle_count_by_bbox) {
             std::string text = "LINE ID: " + std::to_string(bbox_id) + ", CAR: " + std::to_string(count);
-            cv::putText(detected_frame, text, cv::Point(50, 50 + bbox_id * 30), // bbox_id에 따라 Y 위치 조정
+            cv::putText(detected_frame, text, cv::Point(50, 50 + bbox_id * 30),
                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255), 2);
         }
         
@@ -421,11 +395,16 @@ void api::detection::preprocess_detect(
         for (const auto &[id, _] : points_by_bbox) {
             ids.push_back(id);
         }
+
         std::sort(ids.begin(), ids.end()); // id를 오름차순으로 정렬
+        std::string emergency_level;
+
+        int node_index = 0;
 
         for (size_t idx = 0; idx < ids.size(); ++idx) {
-            int current_id = ids[idx];
+            int current_id = ids[idx];            
             auto &current_points = points_by_bbox[current_id];
+            std::cout << "current point is " << current_points << std::endl;
 
             // 노드가 하나라면 그리지 않음
             if (current_points.size() <= 1) {
@@ -436,7 +415,7 @@ void api::detection::preprocess_detect(
             std::sort(current_points.begin(), current_points.end(), [](const cv::Point &a, const cv::Point &b) {
                 return a.y < b.y; // y 좌표 기준 오름차순 정렬
             });
-
+            
             // 같은 id의 points 연결
             for (size_t i = 1; i < current_points.size(); ++i) {
                 double distance = cv::norm(current_points[i] - current_points[i - 1]);
@@ -444,17 +423,23 @@ void api::detection::preprocess_detect(
 
                 // 거리 구간 설정
                 cv::Scalar color;
-                if (distance < max_distance / 6.0) {
+                if (distance < max_distance / 4.0) {
                     color = cv::Scalar(255, 255, 255); // 밝은 빨간색
+                    emergency_level = "1";
                 } else if (distance < max_distance / 3.0) {
                     color = cv::Scalar(50, 50, 255); // 어두운 빨간색
+                    emergency_level = "2";
                 } else if (distance < 2 * max_distance / 3.0) {
                     color = cv::Scalar(0, 165, 255); // 주황색
+                    emergency_level = "3";
                 } else {
                     color = cv::Scalar(0x4A, 0xB2, 0x2C); // 초록색
+                    emergency_level = "4";
                 }
 
                 // 같은 id의 points 연결
+
+                node_index++;
                 cv::line(detected_frame, current_points[i - 1], current_points[i], color, 2);
             }
 
@@ -471,14 +456,19 @@ void api::detection::preprocess_detect(
 
                         // 거리 구간 설정
                         cv::Scalar color;
-                        if (distance < max_distance / 6.0) {
+                        
+                        if (distance < max_distance / 4.0) {
                             color = cv::Scalar(255, 255, 255); // 밝은 빨간색
+                            emergency_level = "1";
                         } else if (distance < max_distance / 3.0) {
                             color = cv::Scalar(50, 50, 255); // 어두운 빨간색
+                            emergency_level = "2";
                         } else if (distance < 2 * max_distance / 3.0) {
                             color = cv::Scalar(0, 165, 255); // 주황색
+                            emergency_level = "3";
                         } else {
                             color = cv::Scalar(0x4A, 0xB2, 0x2C); // 초록색
+                            emergency_level = "4";
                         }
 
                         // 선 그리기
