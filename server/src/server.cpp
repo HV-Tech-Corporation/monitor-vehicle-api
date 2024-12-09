@@ -15,7 +15,10 @@ namespace server {
         std::atomic<bool> preload_complete(false);
         
         std::unordered_map<int, cv::Mat> detected_frames;
+        std::unordered_map<int, int> kruskal_results_per_frames;
+
         std::mutex detected_frames_mutex;
+        std::mutex kruskal_results_per_frames_mutex;
         std::mutex socket_mutex;
 
         std::mutex bestShot_mutex;
@@ -48,7 +51,7 @@ void send_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, 
     boost::asio::write(*shared_socket, buffers);
 }
 
-void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const cv::Mat& image, int class_id) {
+void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> shared_socket, const cv::Mat& image, int class_id, int kruskal_results_per_frames) {
     // std::cout << "Sending single image with XML description..." << std::endl;
 
     if (image.empty()) {
@@ -94,6 +97,7 @@ void send_single_image_response(std::shared_ptr<boost::asio::ip::tcp::socket> sh
     xml_description << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                     << "<response>\n"
                     << "  <description>Image with timestamp</description>\n"
+                    << "  <costs>"<< std::to_string(kruskal_results_per_frames) << "</costs>\n"
                     << "  <class>"<< class_name <<"</class>\n"
                     << "  <timestamp>" << time_stream.str() << "</timestamp>\n"
                     << "</response>\n";
@@ -224,6 +228,8 @@ void server::rtp::app::handle_streaming_request(std::shared_ptr<boost::asio::ip:
                     "/Users/gyujinkim/Desktop/Github/monitor-vehicle-api/server/traffic_jam2.mp4",
                     std::ref(detected_frames),
                     std::ref(detected_frames_mutex),
+                    std::ref(kruskal_results_per_frames),
+                    std::ref(kruskal_results_per_frames_mutex),
                     std::ref(preload_complete),
                     std::ref(bestShot_mutex),
                     std::ref(bestShot_frame)
@@ -322,7 +328,7 @@ void server::rtp::app::start_streaming(const std::string& video_path, std::share
                             cv::Mat bestShot_frame2 = cv::imread(entry.path().string());
                             if (!bestShot_frame2.empty()) {
                                 // 클래스 ID와 이미지를 함께 클라이언트로 전송
-                                send_single_image_response(shared_socket, bestShot_frame2, class_id);
+                                send_single_image_response(shared_socket, bestShot_frame2, class_id, kruskal_results_per_frames[frame_counter]);
                             }
                         }
                     }

@@ -1,6 +1,7 @@
 #include "tvm_wrapper.hpp"
 #include "tracker.hpp"
 #include "line.hpp"
+#include "kruskal.hpp"
 
 namespace api {
     namespace detection {
@@ -237,7 +238,7 @@ void api::detection::detect(
 
         // detection 및 트래킹 결과를 shared_frame에 업데이트
         for (const auto& det : all_detections) {
-            cv::rectangle(shared_frame, det, cv::Scalar(0, 0, 255), 2);
+            cv::rectangle(shared_frame, det, cv::Scalar(2, 255, 196), 2);
         }
 
         for (auto& trk : tracks) {
@@ -272,6 +273,8 @@ void api::detection::preprocess_detect(
     const std::string& video_path,
     std::unordered_map<int, cv::Mat>& detected_frames,
     std::mutex& detected_frames_mutex,
+    std::unordered_map<int, int>& kruskal_results_per_frames,
+    std::mutex& kruskal_results_per_frames_mutex,
     std::atomic<bool>& preload_complete,
     std::mutex& bestShot_mutex,
     cv::Mat bestShot_frame
@@ -286,8 +289,10 @@ void api::detection::preprocess_detect(
     }
 
     std::unordered_set<int> processed_ids;
-    std::map<int, std::vector<cv::Point>> points_by_bbox;
+    std::map<int, std::vector<std::pair<int , cv::Point>>> points_by_bbox;
     std::map<int, int> vehicle_count_by_bbox;
+    std::map<int, std::vector<std::tuple<int, int, int>>> frame_connections;
+
 
     int frame_index = 0;  // 현재 프레임 인덱스
     cv::Mat frame;
@@ -307,6 +312,7 @@ void api::detection::preprocess_detect(
         tvm::runtime::NDArray output = get_output(0);
 
         points_by_bbox.clear();
+        frame_connections.clear();
 
         // YOLO 및 트래킹 결과 계산
         std::vector<api::detection::DetectedObject> yolo_output = ProcessYOLOOutput(output, COCO_CLASS_80, frame, trackedObjects, currentId, 0.45);
@@ -325,6 +331,7 @@ void api::detection::preprocess_detect(
         tracker.Run(all_detections_with_class_ids);
         const auto tracks = tracker.GetTracks();
         vehicle_count_by_bbox.clear();
+        
 
         // detection 및 트래킹 결과를 shared_frame에 업데이트
         int track_cnt = 0;
@@ -337,6 +344,8 @@ void api::detection::preprocess_detect(
         //         << " Hit Streak = " << trk.second.hit_streak_ << " Coast Cycles = " << trk.second.coast_cycles_ << std::endl; 
         //     }
         // }
+
+        int node_index = 0;
 
         for (auto &trk : tracks) {
             if (trk.second.second.coast_cycles_ < kMaxCoastCycles &&
@@ -357,8 +366,8 @@ void api::detection::preprocess_detect(
 
                     cv::rectangle(detected_frame, bbox, cv::Scalar(0, 0, 255), 2);
 
-
-                    points_by_bbox[pos_bbox].emplace_back(pos);
+                    points_by_bbox[pos_bbox].emplace_back(node_index, pos);
+                    node_index++;
 
                     if (processed_ids.find(trk.first) == processed_ids.end()) {
                         // 새로운 ID일 경우 이미지를 저장
@@ -386,25 +395,28 @@ void api::detection::preprocess_detect(
         }
         
         // 탐지된 결과를 저장
-        {
-            std::lock_guard<std::mutex> lock(detected_frames_mutex);
-            detected_frames[frame_index] = detected_frame;  // 프레임 인덱스에 결과 저장
-        }
-
         std::vector<int> ids; // points_by_bbox의 id를 저장
         for (const auto &[id, _] : points_by_bbox) {
             ids.push_back(id);
         }
 
+        // std::cout << "---------------------------------------" << std::endl;
+        // for (const auto& [bbox_id, points] : points_by_bbox) {
+        //     std::cout << "BBox ID: " << bbox_id << std::endl;
+        //     for (const auto& [node_id, point] : points) {
+        //         std::cout << "  Node ID: " << node_id 
+        //                 << ", Point: (" << point.x << ", " << point.y << ")" 
+        //                 << std::endl;
+        //     }
+        //     std::cout << std::endl;
+        // }
+
         std::sort(ids.begin(), ids.end()); // id를 오름차순으로 정렬
         std::string emergency_level;
-
-        int node_index = 0;
 
         for (size_t idx = 0; idx < ids.size(); ++idx) {
             int current_id = ids[idx];            
             auto &current_points = points_by_bbox[current_id];
-            std::cout << "current point is " << current_points << std::endl;
 
             // 노드가 하나라면 그리지 않음
             if (current_points.size() <= 1) {
@@ -412,13 +424,14 @@ void api::detection::preprocess_detect(
             }
 
             // Y축 기준으로 정렬
-            std::sort(current_points.begin(), current_points.end(), [](const cv::Point &a, const cv::Point &b) {
-                return a.y < b.y; // y 좌표 기준 오름차순 정렬
+            std::sort(current_points.begin(), current_points.end(),
+              [](const std::pair<int, cv::Point> &a, const std::pair<int, cv::Point> &b) {
+                  return a.second.y < b.second.y; // y 좌표 기준 오름차순 정렬
             });
-            
+
             // 같은 id의 points 연결
             for (size_t i = 1; i < current_points.size(); ++i) {
-                double distance = cv::norm(current_points[i] - current_points[i - 1]);
+                double distance = cv::norm(current_points[i].second - current_points[i - 1].second);
                 double max_distance = 500.0;
 
                 // 거리 구간 설정
@@ -438,9 +451,8 @@ void api::detection::preprocess_detect(
                 }
 
                 // 같은 id의 points 연결
-
-                node_index++;
-                cv::line(detected_frame, current_points[i - 1], current_points[i], color, 2);
+                cv::line(detected_frame, current_points[i - 1].second, current_points[i].second, color, 2);
+                frame_connections[frame_index].emplace_back(current_points[i - 1].first, current_points[i].first, distance);
             }
 
             // 바로 옆 id의 points와 연결
@@ -449,8 +461,8 @@ void api::detection::preprocess_detect(
                 auto &next_points = points_by_bbox[next_id];
 
                 // 다음 id의 points와 연결
-                for (const auto &p1 : current_points) {
-                    for (const auto &p2 : next_points) {
+                for (const auto &[node1, p1] : current_points) {
+                    for (const auto &[node2, p2] : next_points) {
                         double distance = cv::norm(p2 - p1);
                         double max_distance = 500.0;
 
@@ -473,6 +485,7 @@ void api::detection::preprocess_detect(
 
                         // 선 그리기
                         cv::line(detected_frame, p1, p2, color, 2);
+                        frame_connections[frame_index].emplace_back(node1, node2, distance);
                     }
                 }
             }
@@ -482,6 +495,41 @@ void api::detection::preprocess_detect(
                 current_points.erase(current_points.begin(), current_points.end() - 10);
             }
         }
+
+        // std::cout << "Connections and Distances:" << std::endl;
+        for (const auto &[frame_idx, connections] : frame_connections) {
+            cout << "Frame " << frame_idx << ":" << endl;
+
+            // 모든 노드의 최대값 계산
+            int max_node = 0;
+            for (const auto &[node1, node2, distance] : connections) {
+                max_node = max({max_node, node1, node2});
+            }
+
+            int vertices = max_node + 1; // 정점 개수는 최대 인덱스 + 1
+            // cout << "Vertices count: " << vertices << endl;
+
+            Graph graph(vertices);
+
+            for (const auto &[node1, node2, distance] : connections) {
+                // cout << "  Node " << node1 << " -> Node " << node2 << " : Distance = " << distance << endl;
+                graph.addEdge(node1, node2, distance);
+            }
+
+            int test = graph.calculateMSTAverageCost();
+            kruskal_results_per_frames[frame_index] = test;
+            std::cout << "test data is  : " <<  test << std::endl;
+            cout << endl;
+        }
+
+        
+
+        {
+            std::lock_guard<std::mutex> lock(detected_frames_mutex);
+            detected_frames[frame_index] = detected_frame;  // 프레임 인덱스에 결과 저장
+            // std::cout << "node size is  : " << kruskal_results_per_frames[frame_index].first << std::endl;
+        }
+        
 
         frame_index++;  // 다음 프레임으로 이동
     }

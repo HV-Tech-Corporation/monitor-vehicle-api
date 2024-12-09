@@ -37,6 +37,8 @@ namespace api {
             const std::string& video_path,
             std::unordered_map<int, cv::Mat>& detected_frames,
             std::mutex& detected_frames_mutex,
+            std::unordered_map<int, int>& kruskal_results_per_frames,
+            std::mutex& kruskal_results_per_frames_mutex,
             std::atomic<bool>& preload_complete,
             std::mutex& bestShot_mutex,
             cv::Mat bestShot_frame
